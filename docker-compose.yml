@@ -1,0 +1,187 @@
+version: '3.9'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: pos-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pos_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pos_secure_password}
+      POSTGRES_DB: ${POSTGRES_DB:-pos_db}
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/migrations:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pos_user} -d ${POSTGRES_DB:-pos_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pos-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: pos-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_secure_password}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pos-network
+
+  # Go Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    container_name: pos-backend
+    restart: unless-stopped
+    environment:
+      # Server Configuration
+      PORT: 8080
+      ENV: development
+      LOG_LEVEL: debug
+      
+      # Database Configuration
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER:-pos_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-pos_secure_password}
+      DB_NAME: ${POSTGRES_DB:-pos_db}
+      DB_SSL_MODE: disable
+      
+      # Redis Configuration
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_secure_password}
+      
+      # JWT Configuration
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      JWT_EXPIRY: 24h
+      
+      # External Services
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      MINISTRY_API_URL: ${MINISTRY_API_URL:-https://api.hacienda.gob.sv}
+      MINISTRY_API_KEY: ${MINISTRY_API_KEY:-}
+    volumes:
+      - ./backend:/app
+      - /app/bin  # Exclude binary from volume mount
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - pos-network
+    command: air -c .air.toml  # Hot reload for development
+
+  # React Frontend
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      target: development
+    container_name: pos-web
+    restart: unless-stopped
+    environment:
+      # Vite requires VITE_ prefix for env vars
+      VITE_API_URL: http://localhost:8080/api/v1
+      VITE_WS_URL: ws://localhost:8080/ws
+      VITE_ENABLE_VOICE_SEARCH: ${ENABLE_VOICE_SEARCH:-true}
+      VITE_ENABLE_OFFLINE_MODE: ${ENABLE_OFFLINE_MODE:-true}
+      VITE_OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    volumes:
+      - ./web:/app
+      - /app/node_modules  # Exclude node_modules from volume mount
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - pos-network
+    command: pnpm dev --host  # Allow external connections
+
+  # Nginx Reverse Proxy (Optional - for production-like setup)
+  nginx:
+    image: nginx:alpine
+    container_name: pos-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - backend
+      - web
+    networks:
+      - pos-network
+    profiles:
+      - production
+
+  # PgAdmin for database management (Optional)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pos-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@pos.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - pos-network
+    profiles:
+      - tools
+
+  # Redis Commander for Redis management (Optional)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: pos-redis-commander
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379:0:${REDIS_PASSWORD:-redis_secure_password}
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - pos-network
+    profiles:
+      - tools
+
+# Networks
+networks:
+  pos-network:
+    driver: bridge
+    name: pos-network
+
+# Volumes
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
