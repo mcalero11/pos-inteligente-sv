@@ -18,6 +18,7 @@ Crear una solución POS moderna que democratice el acceso a tecnología avanzada
 ## 🏗️ Arquitectura Técnica
 
 ### Stack Principal
+
 - **Frontend**: Next.js 14+ con TypeScript, Tailwind CSS
 - **Backend**: Node.js con Express/Fastify, Prisma ORM
 - **Base de Datos**: PostgreSQL (principal), Redis (caché)
@@ -25,6 +26,7 @@ Crear una solución POS moderna que democratice el acceso a tecnología avanzada
 - **Infraestructura**: AWS/Google Cloud, Docker, Kubernetes
 
 ### Servicios Clave
+
 - Servicio de Facturación Electrónica
 - Motor de Análisis y Reportes
 - Pipeline de Procesamiento de Voz
@@ -33,6 +35,7 @@ Crear una solución POS moderna que democratice el acceso a tecnología avanzada
 ## 📋 Roadmap de Desarrollo
 
 ### Fase 1: MVP Funcional (8-10 semanas)
+
 - [ ] Setup inicial del proyecto y arquitectura base
 - [ ] Modelo de datos para productos, ventas y clientes
 - [ ] UI/UX del punto de venta básico
@@ -41,18 +44,21 @@ Crear una solución POS moderna que democratice el acceso a tecnología avanzada
 - [ ] Funcionalidades básicas de venta y facturación
 
 ### Fase 2: Inteligencia Básica (6-8 semanas)
+
 - [ ] Dashboard de analytics con insights automáticos
 - [ ] Integración de speech-to-text con Whisper
 - [ ] Procesamiento de lenguaje natural para comandos
 - [ ] Reportes inteligentes de ventas y tendencias
 
 ### Fase 3: Multi-tenant y Escalabilidad (10-12 semanas)
+
 - [ ] Arquitectura de microservicios
 - [ ] Sistema de gestión de múltiples sucursales
 - [ ] Sincronización de inventario en tiempo real
 - [ ] APIs para integraciones externas
 
 ### Fase 4: IA Avanzada (8-10 semanas)
+
 - [ ] Predicción de demanda con ML
 - [ ] Sistema de recomendaciones
 - [ ] Detección de anomalías
@@ -61,6 +67,7 @@ Crear una solución POS moderna que democratice el acceso a tecnología avanzada
 ## 🚀 Comenzando
 
 ### Prerequisitos
+
 - Node.js 18+
 - PostgreSQL 14+
 - Redis 6+
@@ -70,7 +77,7 @@ Crear una solución POS moderna que democratice el acceso a tecnología avanzada
 
 ```bash
 # Clonar el repositorio
-git clone git@github.com:tu-usuario/pos-inteligente-sv.git
+git clone git@github.com:mcalero11/pos-inteligente-sv.git
 cd pos-inteligente-sv
 
 # Instalar dependencias
@@ -105,7 +112,7 @@ Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](L
 
 ## 👥 Equipo
 
-- **Marvin Calero** - *Desarrollador Principal* - [@tu-github](https://github.com/tu-usuario)
+- **Marvin Calero** - *Desarrollador Principal* - [@mcalero11](https://github.com/mcalero11)
 
 ## 🙏 Agradecimientos
 

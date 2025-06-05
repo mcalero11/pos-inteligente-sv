@@ -1,119 +1,149 @@
 # 📊 PROJECT STATUS - POS Inteligente El Salvador
 
-> **Última Actualización**: 31 de Mayo, 2025
+> **Última Actualización**: 5 de Junio, 2025
 > **PM Virtual**: Claude (Anthropic)
 > **Desarrollador Principal**: Marvin Calero
 
 ## 🎯 Resumen Ejecutivo
 
-**Estado General**: 🟢 **INICIANDO** - Configuración inicial del proyecto
+**Estado General**: 🟡 **EN DESARROLLO** - Arquitectura base establecida
 
-**Fase Actual**: Pre-Desarrollo / Setup Inicial
+**Fase Actual**: Desarrollo inicial - Configuración de arquitectura multi-cliente
 
-**Próximo Milestone**: Completar setup del entorno de desarrollo y comenzar con modelo de datos
+**Próximo Milestone**: Implementar sincronización local-first con Automerge
 
 ## 📈 Métricas del Proyecto
 
 | Métrica | Valor | Tendencia |
 |---------|-------|-----------|
-| Velocidad de Desarrollo | - | - |
-| Tareas Completadas | 0 | - |
-| Tareas en Progreso | 1 | ⬆️ |
+| Velocidad de Desarrollo | Alta | ⬆️ |
+| Tareas Completadas | 4 | ⬆️ |
+| Tareas en Progreso | 3 | ⬆️ |
 | Bloqueos Activos | 0 | ✅ |
-| Riesgo General | Bajo | ✅ |
+| Riesgo General | Medio | ⚠️ |
 
 ## 🏃‍♂️ Sprint Actual
 
-### Sprint 0: Setup Inicial (31 Mayo - 7 Junio)
+### Sprint 1: Arquitectura Multi-Cliente (5 Junio - 12 Junio)
 
-**Objetivo**: Establecer la base técnica y organizacional del proyecto
+**Objetivo**: Establecer la arquitectura de tres clientes con sincronización local-first
 
-**Progreso**: ⬜⬜⬜⬜⬜ 0%
+**Progreso**: ⬛⬛⬜⬜⬜ 40%
 
 #### Tareas del Sprint:
 
 - [x] Crear estructura inicial del repositorio
-- [ ] Configurar entorno de desarrollo local
-- [ ] Definir arquitectura técnica detallada
-- [ ] Configurar CI/CD pipeline básico
-- [ ] Establecer convenciones de código
-- [ ] Crear estructura de carpetas del proyecto
+- [x] Configurar proyecto backend con Go
+- [x] Configurar proyecto web con React + Vite
+- [x] Configurar proyecto desktop con Tauri
+- [ ] Implementar modelo de datos con Automerge
+- [ ] Configurar sincronización entre Tauri y backend
+- [ ] Crear API de sincronización en Go
 
 ## 📋 Backlog Priorizado
 
 ### 🔴 Prioridad Alta
-1. **Configurar proyecto Next.js con TypeScript**
-   - Inicializar proyecto con configuración optimizada
-   - Establecer estructura de carpetas
-   - Configurar ESLint y Prettier
+1. **Implementar Automerge en cliente Tauri**
+   - Configurar Automerge-rs
+   - Diseñar esquema de documentos para ventas
+   - Implementar persistencia local
    
-2. **Diseñar modelo de datos inicial**
-   - Esquema de productos
-   - Esquema de ventas
-   - Esquema de usuarios y permisos
+2. **Crear servicio de sincronización en Go**
+   - WebSocket server para sincronización
+   - Bridge entre Automerge y PostgreSQL
+   - Manejo de conflictos de negocio
    
-3. **Investigar API del Ministerio de Hacienda**
-   - Obtener documentación técnica
-   - Entender requisitos de integración
-   - Identificar campos obligatorios para DTE
+3. **Diseñar modelo de datos híbrido**
+   - Datos en Automerge (ventas, carrito)
+   - Datos en PostgreSQL (catálogo, reportes)
+   - Estrategia de particionamiento
 
 ### 🟡 Prioridad Media
-4. **Crear prototipo de UI del POS**
-5. **Configurar PostgreSQL y Prisma**
-6. **Implementar autenticación básica**
+4. **Integración con hardware en Tauri**
+   - Impresora de recibos
+   - Lector de códigos de barras
+   - Cajón de dinero
+5. **Sistema de colas offline**
+6. **UI/UX del POS en Tauri**
 
 ### 🟢 Prioridad Baja
-7. **Documentar decisiones de arquitectura**
-8. **Crear tests unitarios iniciales**
-9. **Configurar monitoreo básico**
+7. **Optimización de sincronización P2P**
+8. **Dashboard de métricas en tiempo real**
+9. **Sistema de respaldos automáticos**
 
 ## 🚧 Trabajo en Progreso
 
-### Tarea Actual: Configuración inicial del repositorio
+### Tarea Actual: Configuración de arquitectura local-first
 - **Asignado a**: Marvin Calero
-- **Iniciado**: 31 Mayo 2025
+- **Iniciado**: 5 Junio 2025
 - **Estado**: En progreso
-- **Notas**: Creando estructura de archivos base y documentación inicial
+- **Notas**: Definiendo estrategia de sincronización entre Tauri (Automerge) y backend (PostgreSQL)
+
+### Decisión Arquitectónica Clave en Evaluación:
+- **Automerge para dominio de ventas**: Operación offline-first garantizada
+- **PostgreSQL para datos administrativos**: Reportes y configuraciones
+- **Tauri para POS**: Acceso a hardware y operación local
+- **Web para administración**: Gestión centralizada
 
 ## ⚠️ Riesgos y Mitigaciones
 
 | Riesgo | Probabilidad | Impacto | Mitigación |
 |--------|--------------|---------|------------|
-| Complejidad de integración con Hacienda | Media | Alto | Comenzar investigación temprana, contactar otros desarrolladores |
-| Escalabilidad multi-tenant | Baja | Alto | Diseñar arquitectura correcta desde el inicio |
-| Adopción de búsqueda por voz | Media | Medio | Hacer pruebas de concepto tempranas con usuarios |
+| Complejidad de sincronización Automerge-PostgreSQL | Alta | Alto | Crear capa de abstracción clara, tests exhaustivos |
+| Rendimiento de Automerge con datos grandes | Media | Alto | Implementar estrategia de archivado, limitar ventana de datos |
+| Compatibilidad de hardware con Tauri | Media | Medio | Investigar librerías Rust para hardware POS |
+| Conflictos de negocio en sincronización | Alta | Medio | Definir reglas claras de resolución |
 
 ## 💡 Decisiones Técnicas
 
 ### Decisiones Tomadas:
-1. **Stack Principal**: Next.js + TypeScript + PostgreSQL
-   - *Razón*: Balance entre productividad y escalabilidad
-   - *Fecha*: 31 Mayo 2025
+1. **Stack Principal**: Go (backend) + React (web) + Tauri (desktop)
+   - *Razón*: Mejor arquitectura para local-first
+   - *Fecha*: 5 Junio 2025
+
+2. **Estrategia de datos**: Automerge (ventas) + PostgreSQL (admin)
+   - *Razón*: Operación offline garantizada donde importa
+   - *Fecha*: 5 Junio 2025
+
+3. **Cliente POS**: Tauri en lugar de web app
+   - *Razón*: Acceso a hardware, mejor rendimiento, verdadero offline
+   - *Fecha*: 5 Junio 2025
 
 ### Decisiones Pendientes:
-1. **Proveedor de Cloud**: AWS vs Google Cloud vs Azure
-2. **Estrategia de deployment**: Serverless vs Containers
-3. **Framework de testing**: Jest vs Vitest
+1. **Librería de sincronización**: automerge-go vs implementación custom
+2. **Protocolo de sincronización**: WebSocket vs gRPC
+3. **Estrategia de archivado de Automerge**
 
 ## 📝 Notas del PM
+
+### 5 de Junio, 2025
+- Cambio arquitectónico importante: adoptando arquitectura de 3 clientes
+- Cliente Tauri agregado para operación local-first del POS
+- Decisión de usar Automerge para datos de ventas
+- Necesidad de diseñar cuidadosamente la sincronización
+
+### Recomendaciones Inmediatas:
+1. Definir esquema de Automerge para ventas y carrito
+2. Crear PoC de sincronización Tauri <-> Go
+3. Investigar automerge-rs y su integración con Tauri
+4. Diseñar API de sincronización WebSocket
+5. Establecer estrategia de particionamiento de datos
+
+### Consideraciones Técnicas Críticas:
+- **Identidad de nodos**: Cada POS Tauri necesita UUID único
+- **Ventana de datos**: Definir cuánto historial mantener local
+- **Compactación**: Estrategia para evitar crecimiento infinito
+- **Conflictos de negocio**: Inventario negativo, descuentos, etc.
 
 ### 31 de Mayo, 2025
 - Proyecto iniciado con éxito
 - Estructura base del repositorio creada
-- Documentación inicial preparada
-- Próximo paso crítico: Marvin necesita clonar el repo y comenzar con la configuración técnica
-
-### Recomendaciones Inmediatas:
-1. Crear el repositorio en GitHub usando los archivos proporcionados
-2. Configurar SSH keys si aún no están listas
-3. Clonar el repositorio localmente
-4. Ejecutar `npm init` para inicializar el proyecto Node.js
-5. Comenzar con la instalación de Next.js
 
 ## 🔄 Historial de Cambios
 
 | Fecha | Cambio | Autor |
 |-------|--------|-------|
+| 05/06/2025 | Agregado cliente Tauri, decisión de arquitectura local-first | Marvin + Claude |
 | 31/05/2025 | Creación inicial del documento | Claude (PM) |
 
 ---
@@ -131,4 +161,4 @@
 
 ---
 
-*Este documento se actualiza continuamente. Última revisión por Claude (PM Virtual) el 31 de Mayo de 2025.*
+*Este documento se actualiza continuamente. Última revisión por Claude (PM Virtual) el 5 de Junio de 2025.*
