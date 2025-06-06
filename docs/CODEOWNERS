@@ -1,0 +1,19 @@
+# Global fallback
+* @mcalero11
+
+# Backend Go dependencies
+/backend/ @mcalero11
+
+# Web frontend dependencies
+/web/ @mcalero11
+
+# Desktop app dependencies
+/desktop/ @mcalero11
+
+# Tauri/Rust dependencies
+/desktop/src-tauri/ @mcalero11
+
+# Configuration files
+/.github/ @mcalero11
+/docker-compose.yml @mcalero11
+/.env.example @mcalero11 

@@ -11,10 +11,8 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
-    reviewers:
-      - "mcalero"
     assignees:
-      - "mcalero"
+      - "mcalero11"
 
   # Web frontend dependencies (Node.js/TypeScript)
   - package-ecosystem: "npm"
@@ -22,10 +20,8 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
-    reviewers:
-      - "mcalero"
     assignees:
-      - "mcalero"
+      - "mcalero11"
 
   # Desktop app frontend dependencies (Node.js/TypeScript)
   - package-ecosystem: "npm"
@@ -33,10 +29,8 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
-    reviewers:
-      - "mcalero"
     assignees:
-      - "mcalero"
+      - "mcalero11"
 
   # Desktop app Tauri/Rust dependencies
   - package-ecosystem: "cargo"
@@ -44,10 +38,8 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
-    reviewers:
-      - "mcalero"
     assignees:
-      - "mcalero"
+      - "mcalero11"
 
   # Docker dependencies
   - package-ecosystem: "docker"
