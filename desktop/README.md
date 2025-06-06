@@ -14,7 +14,7 @@ This is the main POS terminal application that cashiers use for daily operations
 
 ## Architecture
 
-```
+```bash
 desktop/
 ├── src/                    # Frontend (Preact + TypeScript)
 │   ├── components/        # UI components
@@ -35,6 +35,7 @@ desktop/
 ### Local-First Data Management
 
 The desktop client uses Automerge for all transactional data:
+
 - **Shopping Cart**: Current sale items and modifications
 - **Daily Transactions**: All sales for the current business day
 - **Cash Register State**: Opening balance, current cash, closing
@@ -43,6 +44,7 @@ The desktop client uses Automerge for all transactional data:
 ### Hardware Support
 
 Native integration with POS hardware through Rust:
+
 - Receipt printers (ESC/POS protocol)
 - Barcode scanners (HID and serial)
 - Cash drawers
@@ -52,6 +54,7 @@ Native integration with POS hardware through Rust:
 ### Synchronization
 
 Three-tier sync strategy:
+
 1. **Local Storage**: Automerge documents persisted to disk
 2. **P2P Sync**: Direct sync with other POS terminals via LAN
 3. **Cloud Sync**: WebSocket connection to backend when online
@@ -103,6 +106,7 @@ pnpm tauri dev
 ```
 
 This will:
+
 - Start the Vite dev server for the frontend
 - Compile and run the Rust backend
 - Open the application window
@@ -161,6 +165,7 @@ pnpm test:integration
 ### POS Settings
 
 Configuration is stored locally and synced across terminals:
+
 - Terminal identification
 - Receipt printer settings
 - Barcode scanner configuration
@@ -170,6 +175,7 @@ Configuration is stored locally and synced across terminals:
 ### Automerge Configuration
 
 The Automerge sync behavior can be configured:
+
 - Sync frequency
 - Document retention period
 - Compaction strategy
@@ -179,17 +185,20 @@ The Automerge sync behavior can be configured:
 
 ### Common Issues
 
-**Application won't start**
+#### Application won't start
+
 - Check Rust is installed: `rustc --version`
 - Verify Node dependencies: `pnpm install`
 - Clear Tauri cache: `pnpm tauri clean`
 
-**Hardware not detected**
+#### Hardware not detected
+
 - Check device connections
 - Verify permissions (may need sudo on Linux)
 - Review hardware configuration in settings
 
-**Sync not working**
+#### Sync not working
+
 - Check network connectivity
 - Verify WebSocket URL in configuration
 - Look for sync errors in console

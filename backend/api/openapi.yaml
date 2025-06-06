@@ -1,0 +1,294 @@
+openapi: 3.0.3
+info:
+  title: POS Inteligente API
+  description: API for POS system with local-first architecture
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@pos-inteligente.sv
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Development server
+  - url: https://api.pos-inteligente.sv/v1
+    description: Production server
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /sync/changes:
+    post:
+      summary: Submit Automerge changes from terminal
+      operationId: submitChanges
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncChangesRequest'
+      responses:
+        '200':
+          description: Changes accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncChangesResponse'
+
+  /products:
+    get:
+      summary: Get product catalog
+      operationId: getProducts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: active
+          in: query
+          schema:
+            type: boolean
+        - name: category_id
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+  /sales/report:
+    post:
+      summary: Report completed sales from terminal
+      operationId: reportSales
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Sale'
+      responses:
+        '200':
+          description: Sales reported successfully
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+
+    Product:
+      type: object
+      required:
+        - id
+        - sku
+        - name
+        - price
+        - tax_rate
+        - category_id
+        - unit
+        - stock_trackable
+        - active
+      properties:
+        id:
+          type: string
+          format: uuid
+        sku:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: double
+        tax_rate:
+          type: number
+          format: double
+        category_id:
+          type: string
+          format: uuid
+        barcode:
+          type: string
+        unit:
+          type: string
+          enum: [UNIT, KG, LB, L]
+        stock_trackable:
+          type: boolean
+        active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Sale:
+      type: object
+      required:
+        - id
+        - terminal_id
+        - cashier_id
+        - items
+        - subtotal
+        - tax_total
+        - discount_total
+        - total
+        - payment_method
+        - status
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        terminal_id:
+          type: string
+        cashier_id:
+          type: string
+        customer_id:
+          type: string
+          format: uuid
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleItem'
+        subtotal:
+          type: number
+          format: double
+        tax_total:
+          type: number
+          format: double
+        discount_total:
+          type: number
+          format: double
+        total:
+          type: number
+          format: double
+        payment_method:
+          type: string
+          enum: [CASH, CARD, TRANSFER, MIXED]
+        status:
+          type: string
+          enum: [PENDING, COMPLETED, VOIDED]
+        invoice_number:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        voided_at:
+          type: string
+          format: date-time
+        void_reason:
+          type: string
+
+    SaleItem:
+      type: object
+      required:
+        - product_id
+        - product_name
+        - quantity
+        - unit_price
+        - discount
+        - tax
+        - subtotal
+        - total
+      properties:
+        product_id:
+          type: string
+          format: uuid
+        product_name:
+          type: string
+        quantity:
+          type: number
+          format: double
+        unit_price:
+          type: number
+          format: double
+        discount:
+          type: number
+          format: double
+        tax:
+          type: number
+          format: double
+        subtotal:
+          type: number
+          format: double
+        total:
+          type: number
+          format: double
+
+    SyncChangesRequest:
+      type: object
+      required:
+        - terminal_id
+        - changes
+        - sequence
+      properties:
+        terminal_id:
+          type: string
+        changes:
+          type: string
+          format: byte
+          description: Base64 encoded Automerge changes
+        sequence:
+          type: integer
+          format: int64
+
+    SyncChangesResponse:
+      type: object
+      required:
+        - accepted
+        - server_changes
+      properties:
+        accepted:
+          type: boolean
+        server_changes:
+          type: string
+          format: byte
+          description: Base64 encoded Automerge changes from server
+        next_sequence:
+          type: integer
+          format: int64

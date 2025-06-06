@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package pos;
+
+option go_package = "github.com/mcalero11/pos-inteligente-sv/backend/pkg/types/proto";
+
+// Messages for real-time synchronization via gRPC
+
+// Main synchronization message
+message SyncMessage {
+  string from_terminal = 1;
+  string to_terminal = 2;  // empty = broadcast
+  bytes automerge_changes = 3;
+  int64 timestamp = 4;
+  int64 sequence = 5;
+  SyncType type = 6;
+}
+
+enum SyncType {
+  SYNC_TYPE_UNSPECIFIED = 0;
+  SYNC_TYPE_FULL = 1;      // Full synchronization
+  SYNC_TYPE_INCREMENTAL = 2; // Changes only
+  SYNC_TYPE_HEARTBEAT = 3;   // Keep-alive
+}
+
+// Terminal status for monitoring
+message TerminalStatus {
+  string terminal_id = 1;
+  bool is_online = 2;
+  int64 last_seen = 3;
+  int32 pending_changes = 4;
+  CashRegisterStatus cash_status = 5;
+}
+
+message CashRegisterStatus {
+  bool is_open = 1;
+  double current_balance = 2;
+  string cashier_id = 3;
+}
+
+// Synchronization request
+message SyncRequest {
+  string terminal_id = 1;
+  int64 last_sync_timestamp = 2;
+  repeated string peer_terminals = 3; // Known terminals in local network
+}
+
+message SyncResponse {
+  bool success = 1;
+  bytes changes = 2;
+  repeated TerminalStatus peer_statuses = 3;
+  string error_message = 4;
+}
+
+// Real-time notifications
+message Notification {
+  string id = 1;
+  NotificationType type = 2;
+  string title = 3;
+  string message = 4;
+  int64 timestamp = 5;
+  map<string, string> data = 6;
+}
+
+enum NotificationType {
+  NOTIFICATION_TYPE_UNSPECIFIED = 0;
+  NOTIFICATION_TYPE_PRICE_UPDATE = 1;
+  NOTIFICATION_TYPE_STOCK_ALERT = 2;
+  NOTIFICATION_TYPE_SYNC_ERROR = 3;
+  NOTIFICATION_TYPE_SYSTEM_MESSAGE = 4;
+}
+
+// Synchronization service
+service SyncService {
+  // Bidirectional stream for real-time synchronization
+  rpc StreamSync(stream SyncMessage) returns (stream SyncMessage);
+  
+  // Request/response synchronization
+  rpc Sync(SyncRequest) returns (SyncResponse);
+  
+  // Terminal statuses
+  rpc GetTerminalStatuses(Empty) returns (TerminalStatusList);
+  
+  // Notification stream
+  rpc StreamNotifications(TerminalId) returns (stream Notification);
+}
+
+message Empty {}
+
+message TerminalId {
+  string id = 1;
+}
+
+message TerminalStatusList {
+  repeated TerminalStatus statuses = 1;
+}
