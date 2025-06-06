@@ -2,7 +2,7 @@
 # Multi-stage build for optimal image size and performance
 
 # Stage 1: Dependencies stage
-FROM node:20-alpine AS dependencies
+FROM node:24-alpine AS dependencies
 
 # Install pnpm globally
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -16,7 +16,7 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # Stage 2: Development stage
-FROM node:20-alpine AS development
+FROM node:24-alpine AS development
 
 # Install pnpm globally
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -37,7 +37,7 @@ EXPOSE 5173
 # Vite dev server will be run via docker-compose command
 
 # Stage 3: Build stage
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 # Install pnpm globally
 RUN corepack enable && corepack prepare pnpm@latest --activate
