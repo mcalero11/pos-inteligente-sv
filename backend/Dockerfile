@@ -2,7 +2,7 @@
 # Multi-stage build for efficient production images
 
 # Stage 1: Build stage
-FROM golang:1.21-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
 # Install build dependencies
 RUN apk add --no-cache git make
@@ -23,7 +23,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o api server.go
 
 # Stage 2: Development stage with hot reload
-FROM golang:1.21-alpine AS development
+FROM golang:1.24-alpine AS development
 
 # Install air for hot reload
 RUN go install github.com/cosmtrek/air@latest
