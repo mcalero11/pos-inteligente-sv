@@ -57,7 +57,7 @@ Three-tier sync strategy:
 
 1. **Local Storage**: Automerge documents persisted to disk
 2. **P2P Sync**: Direct sync with other POS terminals via LAN
-3. **Cloud Sync**: WebSocket connection to backend when online
+3. **Cloud Sync**: gRPC streaming to backend when online
 
 ## Prerequisites
 
@@ -87,7 +87,8 @@ Create a `.env` file in the desktop directory:
 ```env
 # API Configuration
 VITE_API_URL=http://localhost:8080/api/v1
-VITE_WS_URL=ws://localhost:8080/ws
+VITE_GRPC_URL=localhost:50051
+VITE_WS_URL=ws://localhost:8080/events
 
 # POS Configuration
 VITE_TERMINAL_ID=POS-001

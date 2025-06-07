@@ -29,7 +29,8 @@ TypeScript types serve as the primary source of truth for:
 gRPC with Protocol Buffers is used for:
 - Efficient binary serialization
 - Type-safe service communication
-- Real-time synchronization over WebSocket
+- Bidirectional streaming via HTTP/2
+- Native multiplexing and flow control
 
 ### CI/CD Considerations
 This shared package uses TypeScript project references to enable:

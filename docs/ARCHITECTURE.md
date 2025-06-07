@@ -27,6 +27,28 @@ Critical business events are published to a message bus, enabling:
 - Audit logging
 - Integration with external systems
 
+## Communication Architecture
+
+### gRPC (HTTP/2)
+Used for service-to-service communication:
+- **Native HTTP/2**: Multiplexing, flow control, header compression
+- **Bidirectional Streaming**: Real-time data synchronization
+- **Protocol Buffers**: Efficient binary serialization
+- **Strong Typing**: Code generation from proto files
+
+### WebSocket
+Used for event-driven real-time updates:
+- **Browser Compatible**: Works with web clients
+- **Event Broadcasting**: Push notifications to clients
+- **Lightweight**: For simple event messages
+- **Fallback Option**: When gRPC-Web isn't suitable
+
+### REST API
+Used for simple CRUD operations:
+- **Web Admin**: Standard HTTP/JSON for admin panel
+- **Third-party Integration**: Easy external access
+- **Documentation**: OpenAPI/Swagger spec
+
 ## System Components
 
 ### Frontend Layer
@@ -44,7 +66,8 @@ The primary user interface built with modern web technologies:
 #### API Service (Go)
 The core business logic server:
 - **Clean Architecture**: Domain, Application, Infrastructure layers
-- **RESTful API**: All operations exposed via HTTP
+- **gRPC Server**: Service-to-service communication via HTTP/2
+- **REST API**: Client-facing operations via HTTP/JSON
 - **WebSocket Server**: Real-time event broadcasting
 - **JWT Authentication**: Secure, stateless authentication
 

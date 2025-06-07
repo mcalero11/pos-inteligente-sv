@@ -5,6 +5,7 @@ The core API service for the POS Inteligente system, built with Go for high perf
 ## Overview
 
 This service handles all business logic for the point-of-sale system including:
+
 - Transaction processing
 - Inventory management
 - Electronic invoicing integration with El Salvador's Ministry of Finance
@@ -17,15 +18,61 @@ The backend follows a clean architecture pattern with clear separation of concer
 
 ```
 backend/
-├── cmd/              # Application entry points
-├── internal/         # Private application code
-│   ├── domain/      # Business logic and entities
-│   ├── handlers/    # HTTP request handlers
-│   ├── services/    # Business services
-│   └── repository/  # Data access layer
-├── pkg/             # Public packages
-├── migrations/      # Database migrations
-└── config/          # Configuration files
+├── cmd/                          # Application entry points
+│   └── api/
+│       └── main.go              # Public - app executable
+├── pkg/                         # Public packages
+│   ├── logger/                  # Reusable across projects
+│   ├── validator/               # Utilities others can use
+│   ├── http/                    # HTTP utilities
+│   └── errors/                  # Common error handling
+│   └── dte/                     # DTE integration
+├── internal/                    # Private implementation
+│   ├── domain/                  # Business logic (private)
+│   ├── application/             # Use cases (private)
+│   ├── infrastructure/          # External integrations (private)
+│   └── interfaces/              # HTTP handlers (private)
+├── api/                         # Public API specification
+│   └── openapi.yaml
+└── go.mod
+```
+
+## Architecture Diagram
+
+```mermaid
+graph TD
+    A["cmd/"] --> B["server/main.go"]
+    A --> C["migrate/main.go"]
+    
+    D["internal/"] --> E["domain/"]
+    D --> F["application/"]
+    D --> G["infrastructure/"]
+    D --> H["interfaces/"]
+    
+    E --> E1["sales/"]
+    E --> E2["inventory/"]
+    E --> E3["customer/"]
+    E1 --> E1A["order.go<br/>(Aggregate)"]
+    E1 --> E1B["order_item.go<br/>(Entity)"]
+    E1 --> E1C["events.go<br/>(Domain Events)"]
+    
+    F --> F1["commands/"]
+    F --> F2["queries/"]
+    F --> F3["handlers/"]
+    F1 --> F1A["create_order.go"]
+    F2 --> F2A["get_orders.go"]
+    F3 --> F3A["order_handler.go"]
+    
+    G --> G1["persistence/"]
+    G --> G2["messaging/"]
+    G --> G3["external/"]
+    G1 --> G1A["postgres/"]
+    G1 --> G1B["redis/"]
+    
+    H --> H1["http/"]
+    H --> H2["grpc/"]
+    H1 --> H1A["handlers/"]
+    H1 --> H1B["middleware/"]
 ```
 
 ## Prerequisites
@@ -40,17 +87,20 @@ backend/
 ### Local Development
 
 1. **Install dependencies:**
+
    ```bash
    go mod download
    ```
 
 2. **Set up environment variables:**
+
    ```bash
    cp .env.example .env
    # Edit .env with your local configuration
    ```
 
 3. **Run the service:**
+
    ```bash
    go run server.go
    ```
@@ -86,6 +136,7 @@ The API follows RESTful principles and uses OpenAPI 3.0 for documentation.
 The service uses environment variables for configuration. See `.env.example` for all available options.
 
 Key configuration areas:
+
 - **Database**: PostgreSQL connection settings
 - **Redis**: Cache and session storage
 - **Ministry Integration**: Credentials for electronic invoicing
