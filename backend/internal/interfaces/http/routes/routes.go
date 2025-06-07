@@ -1,4 +1,4 @@
-// Package routes efines the HTTP routing configuration
+// Package routes defines the HTTP routing configuration
 package routes
 
 import (
