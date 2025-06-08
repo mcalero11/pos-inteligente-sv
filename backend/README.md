@@ -16,7 +16,7 @@ This service handles all business logic for the point-of-sale system including:
 
 The backend follows a clean architecture pattern with clear separation of concerns:
 
-```
+```bash
 backend/
 ├── cmd/                          # Application entry points
 │   └── api/
