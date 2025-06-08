@@ -1,271 +1,186 @@
 # 📊 PROJECT STATUS - POS Inteligente El Salvador
 
-> **Última Actualización**: 6 de Junio, 2025
-> **PM Virtual**: Claude (Anthropic)
-> **Desarrollador Principal**: Marvin Calero
+> **Last Updated**: June 12, 2025  
+> **Virtual PM**: Claude (Anthropic)  
+> **Lead Developer**: Marvin Calero
 
-## 🎯 Resumen Ejecutivo
+## 🎯 Executive Summary
 
-**Estado General**: 🟢 **PROGRESO SIGNIFICATIVO** - DTE investigado, arquitectura backend mejorada
+**Overall Status**: 🟢 **EXCELLENT PROGRESS** - Architecture established, DTE research complete
 
-**Fase Actual**: Desarrollo inicial - Implementación de facturación electrónica y refinamiento arquitectónico
+**Current Phase**: Core Implementation - DTE service and synchronization
 
-**Próximo Milestone**: Implementar servicios gRPC y WebSocket para sincronización
+**Next Milestone**: Working DTE signing service with offline capabilities
 
-## 📈 Métricas del Proyecto
+## 📈 Project Metrics
 
-| Métrica | Valor | Tendencia |
-|---------|-------|-----------|
-| Velocidad de Desarrollo | Muy Alta | ⬆️ |
-| Tareas Completadas | 10 | ⬆️ |
-| Tareas en Progreso | 3 | ⬆️ |
-| Bloqueos Activos | 0 | ✅ |
-| Riesgo General | Bajo | ✅ |
+| Metric | Value | Trend |
+|--------|-------|-------|
+| Development Velocity | Very High | ⬆️ |
+| Tasks Completed | 10 | ⬆️ |
+| Tasks in Progress | 0 | ➡️ |
+| Active Blockers | 0 | ✅ |
+| Overall Risk | Low | ✅ |
 
-## 🏃‍♂️ Sprint Actual
+## 🏃‍♂️ Current Sprint
 
-### Sprint 1: Arquitectura Multi-Cliente + DTE (5 Junio - 12 Junio)
+### Sprint 2: DTE Implementation & Core Sync (June 12-19, 2025)
 
-**Objetivo**: Establecer arquitectura local-first con soporte para facturación electrónica
+**Goal**: Implement DTE signing service and basic synchronization
 
-**Progreso**: ⬛⬛⬛⬛⬛ 100% ✅
+**Progress**: ⬜⬜⬜⬜⬜ 0%
 
-#### Tareas del Sprint:
+#### Sprint Tasks
 
-- [x] Crear estructura inicial del repositorio
-- [x] Configurar proyecto backend con Go
-- [x] Configurar proyecto web con React + Vite
-- [x] Configurar proyecto desktop con Tauri
-- [x] Estructurar tipos compartidos (TypeScript)
-- [x] Definir protocolo gRPC para sincronización
-- [x] Refactorizar carpeta shared
-- [x] Investigar implementación DTE El Salvador
-- [x] Crear script generación certificados prueba
-- [x] Refinar arquitectura backend
+- [ ] Implement DTE types in Go
+- [ ] Create digital signing service
+- [ ] Design offline queue for DTEs
+- [ ] Implement gRPC server (HTTP/2) in Go
+- [ ] Create WebSocket server for real-time events
+- [ ] Create Automerge client in Tauri
+- [ ] Integrate DTE signing with sales flow
 
-### Sprint 2: Implementación DTE y Sincronización (12 Junio - 19 Junio)
+## 📋 Sprint History
 
-**Objetivo**: Implementar firmado DTE y sincronización básica
+### Sprint 1: Multi-Client Architecture + DTE ✅
 
-**Progreso**: ⬜⬜⬜⬜⬜ 0%
+- **Duration**: June 5-12, 2025
+- **Achievement**: 100% completion, architecture established
+- **Key Deliverables**: 3-client setup, DTE research, type system
+- [📄 Full Sprint Details](./docs/sprints/sprint-01.md)
 
-#### Tareas del Sprint:
+## 📋 Prioritized Backlog
 
-- [ ] Implementar tipos DTE en Go
-- [ ] Crear servicio de firmado digital
-- [ ] Diseñar cola offline para DTEs
-- [ ] Implementar servidor gRPC (HTTP/2) en Go
-- [ ] Crear servidor WebSocket para eventos real-time
-- [ ] Crear cliente Automerge en Tauri
-- [ ] Integrar firmado DTE con flujo de ventas
+### 🔴 High Priority
 
-## 📋 Backlog Priorizado
+1. **DTE Service Implementation**
+   - All fiscal document types
+   - Digital signing capability
+   - MH schema validation
+   - HTTPS transmission client
 
-### 🔴 Prioridad Alta
-1. **Implementar servicio DTE completo**
-   - Tipos para todos los documentos fiscales
-   - Firmado con certificado digital
-   - Validación de esquemas MH
-   - Cliente HTTPS para transmisión
-   
-2. **Sistema de cola offline para DTE**
-   - Generación offline con números provisionales
-   - Cola persistente en Tauri
-   - Sincronización automática cuando hay conexión
-   - Manejo de contingencia
-   
-3. **Integración DTE con Automerge**
-   - DTEs pendientes en documento CRDT
-   - Control de numeración distribuido
-   - Estado de sincronización fiscal
+2. **Offline Queue System**
+   - Local DTE generation
+   - Persistent queue in Tauri
+   - Auto-sync when online
+   - Contingency mode
 
-### 🟡 Prioridad Media
-4. **UI para gestión de DTEs**
-   - Vista de documentos pendientes
-   - Indicadores de estado fiscal
-   - Reintento manual de envío
-5. **Modo contingencia MH**
-6. **Reportes fiscales**
+3. **Automerge Integration**
+   - Sales document schema
+   - Distributed numbering
+   - Sync state tracking
 
-### 🟢 Prioridad Baja
-7. **Integración con contabilidad**
-8. **Exportación de libros fiscales**
-9. **Auditoría de cumplimiento**
+### 🟡 Medium Priority
 
-## 🚧 Trabajo en Progreso
+4. **DTE Management UI**
+5. **Contingency Mode**
+6. **Fiscal Reports**
 
-### Investigación DTE Completada ✅
-- **Hallazgos clave**:
-  - 9 tipos de documentos fiscales identificados
-  - Proceso de firmado digital comprendido
-  - Requisitos de transmisión a MH documentados
-  - Estrategia offline definida
+### 🟢 Low Priority
 
-### Script Certificados Prueba ✅
-- **Logros**:
-  - Generación automatizada de .crt para desarrollo
-  - Preparado para pruebas de firmado
-  - Evita dependencia de certificados reales en dev
+7. **Accounting Integration**
+8. **Fiscal Book Export**
+9. **Compliance Audit**
 
-### Arquitectura Backend Refinada ✅
-- **Mejoras implementadas**:
-  - Estructura modular para servicio DTE
-  - Separación clara de responsabilidades
-  - Preparado para manejo offline/online
+## 🚧 Current Work
 
-### Próxima Tarea: Implementación servicio DTE
-- **Asignado a**: Marvin Calero
-- **Inicio planeado**: 12 Junio 2025
-- **Componentes**:
-  - DTESigner con certificado digital
-  - DTEGenerator para cada tipo documento
-  - DTETransmitter con cola offline
-  - Integración con flujo de ventas
+### Active Task: DTE Service Implementation
 
-## ⚠️ Riesgos y Mitigaciones
+- **Assigned to**: Marvin Calero
+- **Started**: June 12, 2025
+- **Components**:
+  - DTE types matching MH schemas
+  - Digital signing with test certificates
+  - Offline queue with retry logic
+  - Integration with sales workflow
 
-| Riesgo | Probabilidad | Impacto | Mitigación |
-|--------|--------------|---------|------------|
-| Complejidad integración MH | Alta | Crítico | Comenzar con ambiente pruebas, documentar cada paso |
-| Manejo offline de DTEs | Alta | Alto | Cola robusta, números contingencia, reintentos automáticos |
-| Certificados digitales en producción | Media | Alto | Proceso claro de gestión, HSM para claves privadas |
-| Cambios regulatorios DTE | Media | Alto | Diseño flexible, versionado de esquemas |
-| Sincronización fiscal vs operacional | Alta | Medio | Prioridades claras, colas separadas |
+### Technical Focus Areas
 
-## 💡 Decisiones Técnicas
+1. **DTE Generation**: Local signing capability
+2. **Queue System**: Resilient offline operation  
+3. **Sync Protocol**: gRPC streaming implementation
+4. **Automerge Integration**: Sales document structure
 
-### Decisiones Tomadas:
-1. **Stack Principal**: Go (backend) + React (web) + Tauri (desktop)
-   - *Razón*: Mejor arquitectura para local-first
-   - *Fecha*: 5 Junio 2025
+## ⚠️ Risks & Mitigations
 
-2. **Estrategia de datos**: Automerge (ventas) + PostgreSQL (admin)
-   - *Razón*: Operación offline garantizada donde importa
-   - *Fecha*: 5 Junio 2025
+| Risk | Probability | Impact | Mitigation |
+|------|-------------|--------|------------|
+| MH integration complexity | High | Critical | Start with test environment, document thoroughly |
+| Offline DTE handling | High | High | Robust queue, contingency numbers, auto-retry |
+| Production certificates | Medium | High | Clear management process, consider HSM |
+| DTE regulatory changes | Medium | High | Flexible design, schema versioning |
+| Fiscal vs operational sync | High | Medium | Clear priorities, separate queues |
 
-3. **Cliente POS**: Tauri en lugar de web app
-   - *Razón*: Acceso a hardware, mejor rendimiento, verdadero offline
-   - *Fecha*: 5 Junio 2025
+## 💡 Technical Decisions
 
-4. **Comunicación de servicios**: gRPC (HTTP/2) + WebSocket
-   - *Razón*: gRPC para servicios backend, WebSocket para eventos real-time
-   - *Fecha*: 5 Junio 2025
+### Confirmed Decisions
 
-5. **Tipos compartidos**: TypeScript con referencias de proyecto
-   - *Razón*: Mejor integración con CI/CD, no requiere publicación npm
-   - *Fecha*: 5 Junio 2025
+1. **Tech Stack**: Go + React + Tauri (June 5)
+2. **Data Strategy**: Automerge + PostgreSQL hybrid (June 5)
+3. **POS Client**: Tauri for hardware access (June 5)
+4. **Communication**: gRPC + WebSocket + REST (June 5)
+5. **Type Sharing**: TypeScript project references (June 5)
+6. **DTE Implementation**: Local signing service (June 6)
+7. **Dev Certificates**: Automated generation (June 6)
 
-6. **Implementación DTE**: Servicio dedicado con firmado local
-   - *Razón*: Crítico para operación, debe funcionar offline
-   - *Fecha*: 6 Junio 2025
+### Pending Decisions
 
-7. **Certificados desarrollo**: Generación automatizada
-   - *Razón*: Agilizar desarrollo, evitar dependencias externas
-   - *Fecha*: 6 Junio 2025
+1. **gRPC-Web vs WebSocket for Tauri client**
+2. **Automerge archival strategy**
+3. **Fiscal sync frequency**
+4. **Production certificate management (HSM vs software)**
 
-### Decisiones Pendientes:
-1. **gRPC-Web vs WebSocket para clientes**: Evaluar mejor opción para Tauri
-2. **Estrategia de archivado de Automerge**
-3. **Frecuencia de sincronización fiscal**
+## 📝 PM Notes
 
-## 📝 Notas del PM
+### June 12, 2025
 
-### 6 de Junio, 2025 - Tarde
-- Corrección importante: gRPC no va "sobre" WebSocket
-- gRPC usa HTTP/2 nativo con streaming bidireccional
-- WebSocket será canal separado para eventos real-time
-- Aclarada arquitectura de comunicación
+- Sprint 1 completed successfully (100%)
+- Documentation reorganized for clarity
+- Sprint history archived in docs/sprints
 
-### Arquitectura de Comunicación Corregida:
-- **gRPC (HTTP/2)**: Para RPCs entre servicios
-  - Sincronización de datos
-  - Operaciones CRUD
-  - Streaming de cambios
-- **WebSocket**: Para eventos y notificaciones
-  - Updates de estado en tiempo real
-  - Notificaciones push
-  - Heartbeat/keepalive
-- **REST API**: Para operaciones simples web admin
+### Current Architecture Status
 
-### 6 de Junio, 2025
-- Avances significativos en comprensión de DTE
-- Script de certificados creado - acelera desarrollo
-- Arquitectura backend mejorada para soportar DTE
-- Investigación profunda de Tauri completada
+- **Communication**: gRPC + WebSocket + REST clearly separated
+- **Data Strategy**: Automerge (sales) + PostgreSQL (admin) confirmed
+- **DTE Approach**: Local signing with offline queue
 
-### Hallazgos Clave DTE:
-- **9 tipos de documentos**: FCF, CCF, NC, ND, etc.
-- **Firmado digital**: RSA con SHA256, formato específico MH
-- **Transmisión**: HTTPS con autenticación por token
-- **Contingencia**: Números de respaldo para operación offline
+### Immediate Next Steps
 
-### Arquitectura DTE Propuesta:
-```
-dte/
-├── domain/      # Types, signer, validator
-├── generator/   # Factory pattern para cada tipo
-├── transmitter/ # Cliente MH con cola offline
-└── storage/     # Persistencia y caché
-```
+1. Start DTE type definitions in Go
+2. Implement certificate-based signing
+3. Create resilient offline queue
+4. Begin Automerge PoC in Tauri
 
-### Integración con Local-First:
-- DTEs se generan y firman localmente en Tauri
-- Cola de transmisión persiste en Automerge
-- Sincronización prioritaria cuando hay conexión
-- Números provisionales para operación continua
+### Technical Considerations
 
-### Próximos Pasos Críticos:
-1. Implementar DTESigner con certificado de prueba
-2. Crear tipos Go matching esquemas MH
-3. Diseñar cola offline resiliente
-4. Integrar con flujo de venta en Tauri
+- **Node Identity**: UUID strategy for terminals
+- **Data Window**: 7-day local retention
+- **Sync Priority**: DTE > Sales > Inventory
+- **Conflict Resolution**: Last-write-wins with audit trail
 
-### 5 de Junio, 2025 - Tarde
-- Refactorización completa de carpeta shared
-- Movido OpenAPI a backend (mejor encapsulación)
-- Adoptado gRPC sobre WebSocket para sincronización
-- Configurado TypeScript project references para CI/CD
-- Actualizado github username a mcalero11
+## 🔄 Change History
 
-### Recomendaciones Inmediatas:
-1. Definir esquema de Automerge para ventas y carrito
-2. Crear PoC de sincronización Tauri <-> Go
-3. Investigar automerge-rs y su integración con Tauri
-4. Diseñar API de sincronización WebSocket
-5. Establecer estrategia de particionamiento de datos
-
-### Consideraciones Técnicas Críticas:
-- **Identidad de nodos**: Cada POS Tauri necesita UUID único
-- **Ventana de datos**: Definir cuánto historial mantener local
-- **Compactación**: Estrategia para evitar crecimiento infinito
-- **Conflictos de negocio**: Inventario negativo, descuentos, etc.
-
-### 31 de Mayo, 2025
-- Proyecto iniciado con éxito
-- Estructura base del repositorio creada
-
-## 🔄 Historial de Cambios
-
-| Fecha | Cambio | Autor |
-|-------|--------|-------|
-| 06/06/2025 | Investigación DTE completa, script certificados, arquitectura backend refinada | Marvin |
-| 05/06/2025 - Tarde | Refactorización shared: gRPC, TypeScript refs, OpenAPI movido | Marvin + Claude |
-| 05/06/2025 - Mañana | Agregado cliente Tauri, decisión de arquitectura local-first | Marvin + Claude |
-| 31/05/2025 | Creación inicial del documento | Claude (PM) |
+| Date | Change | Author |
+|------|--------|--------|
+| 06/12/2025 | Sprint 1 completed, documentation reorganized | Marvin + Claude |
+| 06/06/2025 | DTE research complete, certificate script, refined backend | Marvin |
+| 05/06/2025 | Added Tauri client, local-first architecture decision | Marvin + Claude |
+| 31/05/2025 | Initial project setup | Claude |
 
 ---
 
-## 📞 Comunicación y Check-ins
+## 📞 Communication & Check-ins
 
-**Próximo Check-in Programado**: Pendiente de definir
+**Next Check-in**: TBD
 
-**Formato de Check-in**:
-1. ¿Qué completaste desde la última vez?
-2. ¿En qué estás trabajando ahora?
-3. ¿Qué obstáculos has encontrado?
+**Check-in Format**:
 
-**Canal de Comunicación**: Conversaciones directas con Claude en Claude.ai
+1. What did you complete?
+2. What are you working on?
+3. Any blockers?
+
+**Channel**: Direct conversations with Claude on Claude.ai
 
 ---
 
-*Este documento se actualiza continuamente. Última revisión por Claude (PM Virtual) el 6 de Junio de 2025.*
+*This document is continuously updated. Last review by Claude (Virtual PM) on June 12, 2025.*
