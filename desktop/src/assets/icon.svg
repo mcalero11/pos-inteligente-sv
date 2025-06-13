@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="64" height="64">
+  <defs>
+    <!-- Main gradient matching your theme colors -->
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF8C42;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF7A28;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E85D04;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Subtle background gradient -->
+    <radialGradient id="backgroundGradient" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" style="stop-color:#FF8C42;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#FF8C42;stop-opacity:0.05" />
+    </radialGradient>
+    
+    <!-- Inner highlight gradient -->
+    <linearGradient id="highlightGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFF8E1;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#FFECB3;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle with subtle gradient -->
+  <circle cx="128" cy="128" r="120" fill="url(#backgroundGradient)"/>
+  
+  <!-- Main geometric shape with enhanced gradient -->
+  <path d="M128 32 L208 80 L208 176 L128 224 L48 176 L48 80 Z" 
+        fill="url(#primaryGradient)" 
+        stroke="#FF8C42" 
+        stroke-width="3"
+        filter="drop-shadow(0 4px 8px rgba(255, 140, 66, 0.3))"/>
+  
+  <!-- Inner accent with gradient -->
+  <circle cx="128" cy="128" r="28" fill="url(#highlightGradient)" opacity="0.9"/>
+  
+  <!-- Center dot with slight glow -->
+  <circle cx="128" cy="128" r="10" fill="#FF8C42" 
+          filter="drop-shadow(0 0 4px rgba(255, 140, 66, 0.5))"/>
+  
+  <!-- Small inner highlight for depth -->
+  <circle cx="128" cy="128" r="4" fill="#FFF8E1" opacity="0.8"/>
+</svg>
