@@ -22,7 +22,7 @@
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-opener": "^2",
     "json-edit-react": "^1.27.0",
-    "lucide-react": "^0.515.0",
+    "lucide-react": "^0.516.0",
     "preact": "^10.25.1"
   },
   "devDependencies": {
