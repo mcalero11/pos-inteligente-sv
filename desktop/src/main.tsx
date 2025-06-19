@@ -1,5 +1,12 @@
 import { render } from "preact";
-import App from "./App";
+import "@/styles/global.css";
+import POS from "@/windows/POS";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
-// eslint-disable-next-line no-undef
-render(<App />, document.getElementById("root")!);
+render(
+  <ThemeProvider>
+    <POS />
+  </ThemeProvider>,
+  // eslint-disable-next-line no-undef
+  document.getElementById("root")!
+);

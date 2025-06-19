@@ -9,9 +9,15 @@ import (
 
 func SetupRoutes(e *echo.Echo) {
 	setupDocsRoutes(e)
+	api := e.Group("/api/v1")
+	setupDteRoutes(api)
 }
 
 func setupDocsRoutes(e *echo.Echo) {
 	e.GET("/", handlers.RootEndpoint)
 	e.GET("/health", handlers.HealthCheck)
+}
+
+func setupDteRoutes(api *echo.Group) {
+	api.POST("/dte", handlers.SignDTE)
 }
