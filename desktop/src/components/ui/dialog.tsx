@@ -1,6 +1,6 @@
 import * as React from "preact/compat";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { XIcon } from "lucide-react";
+import { XIcon } from "lucide-preact";
 
 import { cn } from "@/lib/utils";
 
