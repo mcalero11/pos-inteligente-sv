@@ -24,6 +24,7 @@ export default function DialogManager({
       {/* Modal */}
       <div
         className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background border rounded-lg shadow-lg p-6 z-50 ${sizeClass} w-full mx-4 max-h-[80vh] overflow-y-auto`}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-primary">{config.title}</h2>
