@@ -23,6 +23,11 @@
     "@tauri-apps/plugin-opener": "^2",
     "json-edit-react": "^1.27.0",
     "lucide-react": "^0.515.0",
+    "lucide-preact": "^0.517.0",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tooltip": "^1.2.7",
     "preact": "^10.25.1"
   },
   "devDependencies": {

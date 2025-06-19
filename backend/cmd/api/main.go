@@ -10,6 +10,8 @@ import (
 func main() {
 	e := echo.New()
 
+	// TODO: Add rate limiting middleware and implement a proper IPExtractor
+
 	// Essential middlewares
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())

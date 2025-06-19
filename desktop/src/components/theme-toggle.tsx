@@ -1,52 +1,21 @@
-import { useTheme } from '../hooks/use-theme';
+import { useTheme } from "@/contexts/ThemeContext";
+import { Sun, Moon } from "lucide-preact";
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { darkMode, setDarkMode } = useTheme();
 
   const toggleTheme = () => {
-    if (theme === 'light') {
-      setTheme('dark');
-    } else if (theme === 'dark') {
-      setTheme('system');
-    } else {
-      setTheme('light');
-    }
-  };
-
-  const getThemeIcon = () => {
-    switch (theme) {
-      case 'light':
-        return '☀️';
-      case 'dark':
-        return '🌙';
-      case 'system':
-        return '💻';
-      default:
-        return '💻';
-    }
-  };
-
-  const getThemeLabel = () => {
-    switch (theme) {
-      case 'light':
-        return 'Light';
-      case 'dark':
-        return 'Dark';
-      case 'system':
-        return 'System';
-      default:
-        return 'System';
-    }
+    setDarkMode(!darkMode);
   };
 
   return (
     <button
       onClick={toggleTheme}
-      class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
-      title={`Switch to ${theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light'} mode`}
+      className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md border border-primary/20 bg-primary-light text-primary hover:bg-primary-light/70 hover:text-primary-hover dark:border-primary/30 dark:bg-primary-dark dark:text-primary dark:hover:bg-primary-dark/70 transition-colors"
+      title={`Switch to ${darkMode ? "light" : "dark"} mode`}
     >
-      <span class="text-lg">{getThemeIcon()}</span>
-      <span>{getThemeLabel()}</span>
+      {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      <span>{darkMode ? "Light" : "Dark"}</span>
     </button>
   );
-} 
+}
