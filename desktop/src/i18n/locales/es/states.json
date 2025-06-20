@@ -1,0 +1,25 @@
+{
+  "loading": {
+    "initializing": "Iniciando POS...",
+    "loading": "Cargando...",
+    "subtitle": {
+      "initializing": "Configurando la aplicación y verificando servicios",
+      "loading": "Procesando solicitud",
+      "default": "Por favor espera"
+    }
+  },
+  "maintenance": {
+    "title": "Sistema en Mantenimiento",
+    "message": "El sistema está temporalmente fuera de servicio por mantenimiento.",
+    "please_wait": "Por favor, intenta más tarde."
+  },
+  "offline": {
+    "title": "Sin Conexión",
+    "message": "No se puede conectar a los servicios necesarios.",
+    "check_connection": "Verifica tu conexión a internet e intenta nuevamente.",
+    "retry": "🔄 Reintentar"
+  },
+  "ready": "Listo",
+  "error": "Error",
+  "fatal_error": "Error Fatal"
+}

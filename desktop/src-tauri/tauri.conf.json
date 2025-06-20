@@ -7,14 +7,13 @@
     "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "pnpm build",
-    "frontendDist": "../dist"
+    "frontendDist": "../dist",
+    "removeUnusedCommands": true
   },
   "app": {
     "windows": [
       {
         "title": "Welcome",
-        "width": 1024,
-        "height": 800,
         "minWidth": 1024,
         "minHeight": 768
       }

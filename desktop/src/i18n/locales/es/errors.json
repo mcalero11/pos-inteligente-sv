@@ -1,0 +1,50 @@
+{
+  "titles": {
+    "critical": "Error Crítico",
+    "application": "Error de Aplicación",
+    "network": "Error de Conexión",
+    "database": "Error de Base de Datos",
+    "authentication": "Error de Autenticación",
+    "permission": "Error de Permisos",
+    "validation": "Error de Validación",
+    "unknown": "Error Desconocido",
+    "crash": "Fallo del Sistema"
+  },
+  "messages": {
+    "network_timeout": "No se pudo conectar al servidor",
+    "network_failed": "Error de conexión de red",
+    "database_error": "Error en la base de datos",
+    "database_timeout": "Tiempo de espera de base de datos agotado",
+    "auth_invalid_credentials": "Credenciales inválidas",
+    "auth_session_expired": "La sesión ha expirado",
+    "auth_permission_denied": "Permisos insuficientes",
+    "validation_required_field": "Este campo es obligatorio",
+    "validation_invalid_format": "Formato inválido",
+    "validation_out_of_range": "Valor fuera de rango",
+    "system_crash": "El sistema ha fallado",
+    "unknown_error": "Ha ocurrido un error inesperado"
+  },
+  "actions": {
+    "view_logs": "📋 Ver Logs",
+    "open_log_folder": "📁 Abrir Carpeta de Logs",
+    "restart_app": "🔄 Reiniciar Aplicación",
+    "try_again": "🔄 Reintentar",
+    "dismiss": "✕ Cerrar"
+  },
+  "help": {
+    "what_can_do": "¿Qué puedes hacer?",
+    "recoverable_steps": [
+      "Intenta nuevamente la operación",
+      "Revisa los logs para más información",
+      "Si el problema persiste, contacta soporte técnico"
+    ],
+    "fatal_steps": [
+      "Revisa los logs para información detallada del error",
+      "Reinicia la aplicación",
+      "Si el problema persiste, contacta soporte técnico inmediatamente"
+    ]
+  },
+  "occurred_at": "Ocurrió el {{timestamp}}",
+  "details": "Detalles:",
+  "stack_trace": "Stack Trace:"
+}

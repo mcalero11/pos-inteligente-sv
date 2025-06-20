@@ -1,30 +1,17 @@
-import { useState } from "preact/hooks";
-import { invoke } from "@tauri-apps/api/core";
 import POSHeader from "@/components/pos/pos-header";
 import DialogManager from "@/components/dialogs/DialogManager";
-import { DialogState } from "@/components/dialogs/types";
 import POSFooter from "@/components/pos/pos-footer";
 import POSProducts from "@/components/pos/pos-products";
 import POSCart from "@/components/pos/pos-cart";
+import { useRenderTracker, usePerformanceTracker } from "@/hooks/use-render-tracker";
+import { useDialog } from "@/hooks/use-dialog";
 
 function POS() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [greetMsg, setGreetMsg] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [name, setName] = useState("");
-  const [currentDialog, setCurrentDialog] = useState<DialogState | null>(null);
+  const { currentDialog, openDialog, closeDialog } = useDialog();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
-
-  const openDialog = (dialogType: string, props: any = {}) => {
-    setCurrentDialog({ type: dialogType, props });
-  };
-
-  const closeDialog = () => setCurrentDialog(null);
+  // Track renders for the POS component
+  useRenderTracker('POS', { currentDialog });
+  usePerformanceTracker('POS');
 
   return (
     <div class="h-screen bg-muted text-foreground flex flex-col">

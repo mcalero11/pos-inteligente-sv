@@ -1,0 +1,61 @@
+{
+  "buttons": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "retry": "Reintentar",
+    "confirm": "Confirmar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "remove": "Remover",
+    "complete": "Completar",
+    "continue": "Continuar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "finish": "Finalizar",
+    "logout": "Cerrar Sesión"
+  },
+  "labels": {
+    "name": "Nombre",
+    "price": "Precio",
+    "quantity": "Cantidad",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "tax": "Impuesto",
+    "discount": "Descuento",
+    "date": "Fecha",
+    "time": "Hora",
+    "customer": "Cliente",
+    "cashier": "Cajero",
+    "session": "Sesión",
+    "transaction": "Transacción",
+    "product": "Producto",
+    "category": "Categoría",
+    "barcode": "Código de Barras",
+    "description": "Descripción",
+    "theme": "Tema",
+    "details": "Detalles"
+  },
+  "status": {
+    "loading": "Cargando...",
+    "saving": "Guardando...",
+    "processing": "Procesando...",
+    "complete": "Completado",
+    "failed": "Falló",
+    "success": "Éxito",
+    "error": "Error",
+    "warning": "Advertencia",
+    "info": "Información"
+  },
+  "time": {
+    "session_duration": "Sesión: {{duration}} min",
+    "timestamp": "{{date, datetime}}",
+    "daily_total": "Total Diario: {{amount, currency}}"
+  },
+  "theme": {
+    "switch_to": "Cambiar a modo {{mode}}",
+    "light": "Claro",
+    "dark": "Oscuro"
+  }
+}

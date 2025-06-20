@@ -1,51 +1,48 @@
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-preact";
-import { dialogRegistry } from "./registry";
-import { DialogManagerProps, dialogSizeMap } from "./types";
+import { Dialog } from "@/components/ui/dialog";
+import { getDialogRegistry } from "./registry";
+import { DialogManagerProps } from "./types";
+import { usePOSTranslation } from "@/hooks/use-pos-translation";
+
+// Map dialog sizes to Dialog component sizes
+const sizeMap = {
+  xs: "sm" as const,
+  sm: "sm" as const,
+  md: "md" as const,
+  lg: "lg" as const,
+  xl: "xl" as const,
+  "2xl": "xl" as const,
+  "3xl": "xl" as const,
+  "4xl": "xl" as const,
+};
 
 export default function DialogManager({
   currentDialog,
   onClose,
   openDialog,
 }: DialogManagerProps) {
+  const { t } = usePOSTranslation();
+
   if (!currentDialog) return null;
 
+  const dialogRegistry = getDialogRegistry(t);
   const config = dialogRegistry[currentDialog.type];
   if (!config) return null;
 
   const DialogComponent = config.component;
-  const sizeClass = dialogSizeMap[config.size || "md"];
+  const dialogSize = sizeMap[config.size || "md"];
 
   return (
-    <>
-      {/* Overlay */}
-      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
-
-      {/* Modal */}
-      <div
-        className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background border rounded-lg shadow-lg p-6 z-50 ${sizeClass} w-full mx-4 max-h-[80vh] overflow-y-auto`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-primary">{config.title}</h2>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6 text-primary hover:text-primary-hover hover:bg-primary-light"
-            onClick={onClose}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <div className="dialog-content">
-          <DialogComponent
-            {...currentDialog.props}
-            onClose={onClose}
-            openDialog={openDialog}
-          />
-        </div>
-      </div>
-    </>
+    <Dialog
+      isOpen={true}
+      onClose={onClose}
+      title={config.title}
+      size={dialogSize}
+    >
+      <DialogComponent
+        {...currentDialog.props}
+        onClose={onClose}
+        openDialog={openDialog}
+      />
+    </Dialog>
   );
 }

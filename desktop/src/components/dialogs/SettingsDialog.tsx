@@ -1,28 +1,31 @@
 import { ColorThemePicker } from "../ColorThemePicker";
 import { ThemeToggle } from "../theme-toggle";
 import { Settings, Palette, Volume2, Database } from "lucide-preact";
+import { usePOSTranslation } from "@/hooks/use-pos-translation";
 
 export default function SettingsDialog() {
+  const { t } = usePOSTranslation();
+
   return (
     <div class="space-y-6">
       <div class="flex items-center gap-2 pb-2 border-b">
         <Settings class="w-5 h-5 text-primary" />
-        <h3 class="text-lg font-semibold">System Settings</h3>
+        <h3 class="text-lg font-semibold">{t('dialogs:settings_detailed.system_settings')}</h3>
       </div>
 
       {/* Theme Settings */}
       <div class="space-y-4">
         <div class="flex items-center gap-2">
           <Palette class="w-4 h-4 text-primary" />
-          <h4 class="font-medium">Appearance</h4>
+          <h4 class="font-medium">{t('dialogs:settings_detailed.appearance')}</h4>
         </div>
 
         <div class="pl-6 space-y-4">
           <div class="flex items-center justify-between">
             <div>
-              <label class="text-sm font-medium">Dark Mode</label>
+              <label class="text-sm font-medium">{t('dialogs:settings_detailed.dark_mode')}</label>
               <p class="text-xs text-muted-foreground">
-                Toggle between light and dark themes
+                {t('dialogs:settings_detailed.dark_mode_description')}
               </p>
             </div>
             <ThemeToggle />
@@ -38,24 +41,24 @@ export default function SettingsDialog() {
       <div class="space-y-4">
         <div class="flex items-center gap-2">
           <Volume2 class="w-4 h-4 text-primary" />
-          <h4 class="font-medium">Audio</h4>
+          <h4 class="font-medium">{t('dialogs:settings_detailed.audio')}</h4>
         </div>
 
         <div class="pl-6 space-y-3">
           <div class="flex items-center justify-between p-3 border rounded-lg bg-card">
             <div>
-              <span class="text-sm font-medium">Sound Effects</span>
+              <span class="text-sm font-medium">{t('dialogs:settings_detailed.sound_effects')}</span>
               <p class="text-xs text-muted-foreground">
-                Play sounds for button clicks and notifications
+                {t('dialogs:settings_detailed.sound_effects_description')}
               </p>
             </div>
             <input type="checkbox" class="w-4 h-4" />
           </div>
           <div class="flex items-center justify-between p-3 border rounded-lg bg-card">
             <div>
-              <span class="text-sm font-medium">Transaction Sounds</span>
+              <span class="text-sm font-medium">{t('dialogs:settings_detailed.transaction_sounds')}</span>
               <p class="text-xs text-muted-foreground">
-                Play sounds when completing transactions
+                {t('dialogs:settings_detailed.transaction_sounds_description')}
               </p>
             </div>
             <input type="checkbox" class="w-4 h-4" />
@@ -66,24 +69,24 @@ export default function SettingsDialog() {
       <div class="space-y-4">
         <div class="flex items-center gap-2">
           <Database class="w-4 h-4 text-primary" />
-          <h4 class="font-medium">Data</h4>
+          <h4 class="font-medium">{t('dialogs:settings_detailed.data')}</h4>
         </div>
 
         <div class="pl-6 space-y-3">
           <div class="flex items-center justify-between p-3 border rounded-lg bg-card">
             <div>
-              <span class="text-sm font-medium">Auto Backup</span>
+              <span class="text-sm font-medium">{t('dialogs:settings_detailed.auto_backup')}</span>
               <p class="text-xs text-muted-foreground">
-                Automatically backup data every hour
+                {t('dialogs:settings_detailed.auto_backup_description')}
               </p>
             </div>
             <input type="checkbox" class="w-4 h-4" defaultChecked />
           </div>
           <div class="flex items-center justify-between p-3 border rounded-lg bg-card">
             <div>
-              <span class="text-sm font-medium">Cloud Sync</span>
+              <span class="text-sm font-medium">{t('dialogs:settings_detailed.cloud_sync')}</span>
               <p class="text-xs text-muted-foreground">
-                Sync data with cloud storage
+                {t('dialogs:settings_detailed.cloud_sync_description')}
               </p>
             </div>
             <input type="checkbox" class="w-4 h-4" />

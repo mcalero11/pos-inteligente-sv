@@ -10,61 +10,95 @@ import SystemMenuDialog from "./SystemMenuDialog";
 import EndOfDayDialog from "./EndOfDayDialog";
 import LogoutDialog from "./LogoutDialog";
 import TransactionDialog from "./TransactionDialog";
+import ErrorDialog from "./ErrorDialog";
+import DebugDialog from "./DebugDialog";
 
-export const dialogRegistry: Record<string, DialogConfig> = {
+// Function to get dialog registry with translated titles
+export const getDialogRegistry = (t: (key: string) => string): Record<string, DialogConfig> => ({
   customers: {
-    title: "Customer Management",
+    title: t('dialogs:customer.title'),
     component: CustomerDialog,
     size: "2xl",
   },
   inventory: {
-    title: "Inventory Management",
+    title: t('dialogs:inventory.title'),
     component: InventoryDialog,
     size: "4xl",
   },
   settings: {
-    title: "System Settings",
+    title: t('dialogs:settings.title'),
     component: SettingsDialog,
     size: "lg",
   },
   shifts: {
-    title: "Shift Management",
+    title: t('dialogs:shift.title'),
     component: ShiftDialog,
     size: "xl",
   },
   users: {
-    title: "User Management",
+    title: t('dialogs:system_menu.users.title'),
     component: UserDialog,
     size: "2xl",
   },
   logs: {
-    title: "Activity Logs",
+    title: t('dialogs:logs.title'),
     component: LogsDialog,
     size: "3xl",
   },
   help: {
-    title: "Keyboard Shortcuts",
+    title: t('dialogs:help.title'),
     component: HelpDialog,
     size: "md",
   },
   systemMenu: {
-    title: "System Menu",
+    title: t('dialogs:system_menu.title'),
     component: SystemMenuDialog,
     size: "sm",
   },
   endOfDay: {
-    title: "End of Day Process",
+    title: t('dialogs:end_of_day.title'),
     component: EndOfDayDialog,
     size: "md",
   },
   logout: {
-    title: "Confirm Logout",
+    title: t('dialogs:logout.title'),
     component: LogoutDialog,
     size: "sm",
   },
   transaction: {
-    title: "New Transaction",
+    title: t('dialogs:transaction.title'),
     component: TransactionDialog,
     size: "2xl",
   },
-};
+  error: {
+    title: t('errors:titles.application'),
+    component: ErrorDialog,
+    size: "lg",
+  },
+  debug: {
+    title: t('dialogs:system_menu.debug.title'),
+    component: DebugDialog,
+    size: "2xl",
+  },
+});
+
+// Backwards compatibility - static registry (deprecated)
+export const dialogRegistry: Record<string, DialogConfig> = getDialogRegistry((key: string) => {
+  // Fallback to English if translation system not available
+  const fallbacks: Record<string, string> = {
+    'dialogs:customer.title': 'Customer Management',
+    'dialogs:inventory.title': 'Inventory Management',
+    'dialogs:settings.title': 'System Settings',
+    'dialogs:shift.title': 'Shift Management',
+    'dialogs:system_menu.users.title': 'User Management',
+    'dialogs:logs.title': 'Activity Logs',
+    'dialogs:help.title': 'Keyboard Shortcuts',
+    'dialogs:system_menu.title': 'System Menu',
+    'dialogs:end_of_day.title': 'End of Day Process',
+    'dialogs:logout.title': 'Confirm Logout',
+    'dialogs:transaction.title': 'New Transaction',
+    'errors:titles.application': 'Application Error',
+    'dialogs:system_menu.debug.title': 'Debug Tools',
+  };
+  return fallbacks[key] || key;
+});

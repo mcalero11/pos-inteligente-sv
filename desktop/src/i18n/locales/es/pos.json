@@ -1,0 +1,76 @@
+{
+  "header": {
+    "customer": "Cliente: {{name}}",
+    "cashier": "Cajero: {{name}}",
+    "general_customer": "Cliente General",
+    "partner_customer": "Cliente Socio",
+    "vip_customer": "Cliente VIP",
+    "terminal": "Terminal {{number}}",
+    "customers_button": "Clientes (F7)",
+    "menu_button": "Menú",
+    "performance_button": "Rendimiento",
+    "help_tooltip": "Mostrar/Ocultar Atajos de Teclado (F6)"
+  },
+  "cart": {
+    "title": "Carrito",
+    "title_with_count": "Carrito ({{count}})",
+    "empty": "Carrito vacío",
+    "empty_message": "Agrega productos para comenzar una venta",
+    "items_count": "{{count}} artículo",
+    "items_count_plural": "{{count}} artículos",
+    "clear_button": "Limpiar (F3)",
+    "subtotal": "Subtotal:",
+    "tax": "Impuesto ({{rate}}%):",
+    "total": "Total:",
+    "discount_applied": "{{percent}}% descuento aplicado",
+    "checkout_button": "Facturar (F4)",
+    "payment_method": "Método de Pago",
+    "amount_received": "Monto Recibido",
+    "change": "Cambio: {{amount, currency}}",
+    "complete_sale": "Completar Venta",
+    "process_payment": "Procesar Pago"
+  },
+  "products": {
+    "search_placeholder": "Buscar productos... (F1)",
+    "barcode_placeholder": "Escanear código (F2)",
+    "add_button": "Agregar",
+    "no_results": "No se encontraron productos",
+    "add_to_cart": "Agregar al Carrito",
+    "out_of_stock": "Sin Stock",
+    "low_stock": "Stock Bajo",
+    "in_stock": "{{count}} en stock",
+    "categories": {
+      "all": "Todos",
+      "beverages": "Bebidas",
+      "food": "Comida",
+      "office": "Oficina"
+    }
+  },
+  "payment": {
+    "methods": {
+      "cash": "Efectivo",
+      "card": "Tarjeta de Crédito/Débito",
+      "digital": "Billetera Digital",
+      "transfer": "🏦 Transferencia",
+      "check": "📄 Cheque"
+    },
+    "select_method": "Seleccionar método de pago...",
+    "amount_required": "Monto requerido",
+    "insufficient_amount": "Monto insuficiente",
+    "payment_complete": "Pago completado"
+  },
+  "footer": {
+    "transactions": "Transacciones: {{count}}",
+    "session_time": "Sesión: {{duration}} min",
+    "daily_total": "Total Diario: {{amount, currency}}",
+    "end_day": "Corte de Caja (F5)",
+    "logout": "Cerrar Sesión",
+    "offline": "Sin Conexión"
+  },
+  "customer_types": {
+    "regular": "Regular",
+    "member": "Miembro",
+    "partner": "Socio",
+    "vip": "VIP"
+  }
+}

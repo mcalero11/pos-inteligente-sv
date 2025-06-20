@@ -33,7 +33,10 @@ export type DialogType =
   | "systemMenu"
   | "transaction"
   | "endOfDay"
-  | "logout";
+  | "logout"
+  | "error"
+  | "debug"
+  | "stateDemo";
 
 export interface DialogManagerProps {
   currentDialog: DialogState | null;
@@ -46,14 +49,12 @@ export interface DialogProps {
   [key: string]: any;
 }
 
-// Size mapping for consistent dialog sizing
-export const dialogSizeMap: Record<DialogSize, string> = {
-  xs: "max-w-xs", // ~320px - Very small dialogs (confirmations)
-  sm: "max-w-sm", // ~384px - Small dialogs (simple forms)
-  md: "max-w-md", // ~448px - Medium dialogs (default)
-  lg: "max-w-lg", // ~512px - Large dialogs (help, settings)
-  xl: "max-w-xl", // ~576px - Extra large dialogs
-  "2xl": "max-w-2xl", // ~672px - Customer management
-  "3xl": "max-w-3xl", // ~768px - Activity logs, reports
-  "4xl": "max-w-4xl", // ~896px - Inventory management, complex forms
-};
+// Size mapping comments for reference:
+// xs: ~320px - Very small dialogs (confirmations)
+// sm: ~384px - Small dialogs (simple forms)
+// md: ~448px - Medium dialogs (default)
+// lg: ~512px - Large dialogs (help, settings)
+// xl: ~576px - Extra large dialogs
+// 2xl: ~672px - Customer management
+// 3xl: ~768px - Activity logs, reports
+// 4xl: ~896px - Inventory management, complex forms

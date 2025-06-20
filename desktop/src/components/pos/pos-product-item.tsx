@@ -1,5 +1,6 @@
 import { Package } from "lucide-preact";
 import { Card, CardContent } from "@/components/ui/card";
+import { usePOSTranslation } from "@/hooks/use-pos-translation";
 
 interface Product {
   id: number;
@@ -26,6 +27,7 @@ function ProductItem({
   originalPrice,
   viewMode,
 }: ProductItemProps) {
+  const { t } = usePOSTranslation();
   if (viewMode === "list") {
     return (
       <Card
@@ -54,8 +56,8 @@ function ProductItem({
                       className={`text-xs font-medium ${product.stock > 10 ? "text-green-600" : product.stock > 0 ? "text-orange-500" : "text-red-500"}`}
                     >
                       {product.stock > 0
-                        ? `${product.stock} in stock`
-                        : "Out of stock"}
+                        ? t('pos:products.in_stock', { count: product.stock })
+                        : t('pos:products.out_of_stock')}
                     </span>
                   </div>
                 </div>
@@ -112,7 +114,9 @@ function ProductItem({
             <span
               className={`font-medium ${product.stock > 10 ? "text-green-600" : product.stock > 0 ? "text-orange-500" : "text-red-500"}`}
             >
-              {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
+              {product.stock > 0
+                ? t('pos:products.in_stock', { count: product.stock })
+                : t('pos:products.out_of_stock')}
             </span>
             <span className="text-muted-foreground text-xs bg-muted px-2 py-1 rounded-full">
               {product.category}
