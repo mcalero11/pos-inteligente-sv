@@ -30,7 +30,7 @@
     "@tauri-apps/plugin-shell": "^2.2.2",
     "@tauri-apps/plugin-stronghold": "^2.2.1",
     "i18next": "^25.2.1",
-    "json-edit-react": "^1.27.0",
+    "json-edit-react": "^1.27.2",
     "lucide-preact": "^0.518.0",
     "preact": "^10.26.9",
     "react-i18next": "^15.5.3"
