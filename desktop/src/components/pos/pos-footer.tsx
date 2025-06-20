@@ -9,7 +9,7 @@ interface POSFooterProps {
 
 function POSFooter({ openDialog }: POSFooterProps) {
   const { state } = useAppState();
-  const { t, formatCurrency } = usePOSTranslation();
+  const { t } = usePOSTranslation();
   const isOffline = state === AppState.OFFLINE;
 
   // Static data for now - in a real app these would come from props or context
@@ -75,7 +75,7 @@ function POSFooter({ openDialog }: POSFooterProps) {
           <span>{t('pos:footer.transactions', { count: transactionCount })}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span>{t('pos:footer.daily_total', { amount: formatCurrency(dailyTotal) })}</span>
+          <span>{t('pos:footer.daily_total', { amount: dailyTotal })}</span>
         </div>
       </div>
 
