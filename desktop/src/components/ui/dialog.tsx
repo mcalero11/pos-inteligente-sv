@@ -127,8 +127,68 @@ function DialogDescription({
   );
 }
 
+// Custom Dialog wrapper component for simpler usage
+interface CustomDialogProps {
+  isOpen: boolean;
+  onClose?: () => void;
+  title?: string;
+  size?: "sm" | "md" | "lg" | "xl";
+  children: any;
+}
+
+function CustomDialog({ isOpen, onClose, title, size = "md", children }: CustomDialogProps) {
+  const sizeClasses = {
+    sm: "sm:max-w-sm",
+    md: "sm:max-w-md",
+    lg: "sm:max-w-lg",
+    xl: "sm:max-w-xl"
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Overlay */}
+      <div
+        className="fixed inset-0 bg-black/50"
+        onClick={onClose}
+      />
+
+      {/* Dialog Content */}
+      <div
+        className={`relative bg-background rounded-lg shadow-xl border w-full max-h-[90vh] overflow-hidden ${sizeClasses[size]}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        {title && (
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {title}
+              </h2>
+              {onClose && (
+                <button
+                  onClick={onClose}
+                  className="h-8 w-8 p-0 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center"
+                >
+                  <XIcon className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Content */}
+        <div className="p-6 overflow-auto max-h-[calc(90vh-120px)]">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export {
-  Dialog,
+  Dialog as RadixDialog,
   DialogClose,
   DialogContent,
   DialogDescription,
@@ -138,4 +198,5 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
+  CustomDialog as Dialog, // Export CustomDialog as Dialog for the custom usage pattern
 };

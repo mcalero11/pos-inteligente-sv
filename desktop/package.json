@@ -19,15 +19,21 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-opener": "^2",
-    "json-edit-react": "^1.27.0",
-    "lucide-preact": "^0.518.0",
     "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.7",
-    "preact": "^10.26.9"
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-log": "^2.5.0",
+    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-shell": "^2.2.2",
+    "@tauri-apps/plugin-stronghold": "^2.2.1",
+    "i18next": "^25.2.1",
+    "json-edit-react": "^1.27.0",
+    "lucide-preact": "^0.518.0",
+    "preact": "^10.26.9",
+    "react-i18next": "^15.5.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
@@ -37,6 +43,7 @@
     "@types/node": "^24.0.1",
     "@typescript-eslint/eslint-plugin": "^8.34.0",
     "@typescript-eslint/parser": "^8.34.1",
+    "@welldone-software/why-did-you-render": "^10.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "eslint": "^9.29.0",

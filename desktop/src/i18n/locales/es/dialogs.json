@@ -1,0 +1,146 @@
+{
+  "system_menu": {
+    "title": "Menú del Sistema",
+    "inventory": {
+      "title": "Inventario",
+      "description": "Administrar productos y stock"
+    },
+    "shifts": {
+      "title": "Turnos",
+      "description": "Administrar turnos de trabajo"
+    },
+    "users": {
+      "title": "Usuarios",
+      "description": "Administrar cuentas de usuario"
+    },
+    "logs": {
+      "title": "Logs de Actividad",
+      "description": "Ver actividad del sistema"
+    },
+    "settings": {
+      "title": "Configuración",
+      "description": "Configuración del sistema"
+    },
+    "debug": {
+      "title": "Herramientas de Debug"
+    },
+    "help": {
+      "title": "Atajos de Teclado"
+    }
+  },
+  "transaction": {
+    "title": "Completar Transacción",
+    "customer": "Cliente: {{name}}",
+    "no_items": "No hay artículos en la transacción",
+    "payment_method": "Método de Pago",
+    "select_payment": "Seleccionar método de pago...",
+    "summary": "Resumen de Transacción",
+    "complete": "Completar Transacción"
+  },
+  "end_of_day": {
+    "title": "Fin de Día",
+    "confirm": "Confirmar Fin de Día",
+    "cashier": "Cajero:",
+    "total_transactions": "Total de Transacciones:",
+    "daily_total": "Total Diario:",
+    "session_duration": "Duración de Sesión:",
+    "generate_report": "Esto generará el reporte de cardex y cerrará el día actual. Asegúrate de que todas las transacciones estén completas.",
+    "generate_cardex": "Generar Cardex"
+  },
+  "logout": {
+    "title": "Confirmar Cierre de Sesión",
+    "message": "¿Estás seguro de que quieres cerrar sesión, {{name}}?",
+    "unsaved_work": "Trabajo Sin Guardar",
+    "unsaved_message": "Tienes transacciones o cambios sin guardar. Asegúrate de completar o guardar tu trabajo antes de cerrar sesión.",
+    "session_end": "Esto terminará tu sesión actual y te llevará a la pantalla de inicio de sesión."
+  },
+  "customer": {
+    "title": "Gestión de Clientes",
+    "description": "La interfaz de gestión de clientes iría aquí.",
+    "add_customer": "Agregar Cliente",
+    "add_description": "Crear nueva cuenta de cliente",
+    "search_customers": "Buscar Clientes",
+    "search_description": "Encontrar clientes existentes",
+    "customer_history": "Historial de Cliente",
+    "history_description": "Ver historial de compras"
+  },
+  "inventory": {
+    "title": "Gestión de Inventario",
+    "add_product": "Agregar Producto",
+    "add_description": "Agregar nuevo producto al inventario",
+    "stock_management": "Gestión de Stock",
+    "stock_description": "Administrar niveles de inventario"
+  },
+  "settings": {
+    "title": "Configuración",
+    "general": "General",
+    "general_description": "Configuración general del sistema",
+    "receipt": "Recibos",
+    "receipt_description": "Configurar formato de recibos",
+    "tax": "Impuestos",
+    "tax_description": "Configurar tasas de impuestos"
+  },
+  "help": {
+    "title": "Ayuda",
+    "user_guide": "Guía de Usuario",
+    "guide_description": "Manual de usuario completo",
+    "shortcuts": "Atajos de Teclado",
+    "shortcuts_description": "Lista de atajos de teclado",
+    "support": "Soporte Técnico",
+    "support_description": "Contactar soporte técnico"
+  },
+  "logs": {
+    "title": "Logs del Sistema",
+    "description": "La interfaz de logs de actividad iría aquí.",
+    "sample_entries": [
+      "Inicio de sesión de usuario: admin",
+      "Venta completada: $45.99",
+      "Inventario actualizado: Producto XYZ"
+    ]
+  },
+  "shift": {
+    "title": "Gestión de Turnos",
+    "description": "La interfaz de gestión de turnos iría aquí.",
+    "start_shift": "Iniciar Turno",
+    "start_description": "Comenzar turno de trabajo",
+    "end_shift": "Finalizar Turno",
+    "end_description": "Cerrar turno de trabajo"
+  },
+  "users": {
+    "user_permissions": "Permisos de Usuario",
+    "manage_roles": "Administrar roles de usuario"
+  },
+  "help_shortcuts": {
+    "keyboard_shortcuts": "Atajos de Teclado",
+    "toggle_help": "Alternar Ayuda",
+    "customer_management": "Gestión de Clientes",
+    "inventory": "Inventario",
+    "settings": "Configuración"
+  },
+  "settings_detailed": {
+    "system_settings": "Configuración del Sistema",
+    "appearance": "Apariencia",
+    "dark_mode": "Modo Oscuro",
+    "dark_mode_description": "Alternar entre temas claro y oscuro",
+    "audio": "Audio",
+    "sound_effects": "Efectos de Sonido",
+    "sound_effects_description": "Reproducir sonidos para clics de botones y notificaciones",
+    "transaction_sounds": "Sonidos de Transacción",
+    "transaction_sounds_description": "Reproducir sonidos al completar transacciones",
+    "data": "Datos",
+    "auto_backup": "Respaldo Automático",
+    "auto_backup_description": "Respaldar datos automáticamente cada hora",
+    "cloud_sync": "Sincronización en la Nube",
+    "cloud_sync_description": "Sincronizar datos con almacenamiento en la nube"
+  },
+  "transaction_detailed": {
+    "item": "Artículo",
+    "price": "Precio",
+    "qty": "Cant",
+    "total": "Total",
+    "subtotal": "Subtotal:",
+    "tax": "Impuesto (13%):",
+    "method": "Método:",
+    "no_items": "No hay artículos en la transacción"
+  }
+}

@@ -2,6 +2,7 @@ import { Search, Scan, Grid3X3, List } from "lucide-preact";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useRef } from "preact/hooks";
+import { usePOSTranslation } from "@/hooks/use-pos-translation";
 import ProductItem from "./pos-product-item";
 
 // Mock data - you can replace this with actual data later
@@ -54,8 +55,6 @@ const mockProducts = [
   },
 ];
 
-const categories = ["All", "Beverages", "Food", "Office"];
-
 // Mock customer data
 const selectedCustomer = { type: "regular", name: "General Customer" };
 
@@ -63,8 +62,17 @@ const selectedCustomer = { type: "regular", name: "General Customer" };
 function POSProducts() {
   const [searchTerm, setSearchTerm] = useState("");
   const [barcodeInput, setBarcodeInput] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const { t } = usePOSTranslation();
+
+  // Categories with translations
+  const categories = [
+    { key: "all", label: t('pos:products.categories.all') },
+    { key: "beverages", label: t('pos:products.categories.beverages') },
+    { key: "food", label: t('pos:products.categories.food') },
+    { key: "office", label: t('pos:products.categories.office') }
+  ];
 
   const searchInputRef = useRef(null);
   const barcodeInputRef = useRef(null);
@@ -75,7 +83,8 @@ function POSProducts() {
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesCategory =
-      selectedCategory === "All" || product.category === selectedCategory;
+      selectedCategory === "all" ||
+      product.category.toLowerCase() === selectedCategory.toLowerCase();
     return matchesSearch && matchesCategory;
   });
 
@@ -112,7 +121,7 @@ function POSProducts() {
               <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <Input
                 ref={searchInputRef}
-                placeholder="Search products... (F1)"
+                placeholder={t('pos:products.search_placeholder')}
                 value={searchTerm}
                 onInput={(e: any) => setSearchTerm(e.target.value)}
                 className="pl-10 h-12 text-lg focus:ring-primary focus:border-primary"
@@ -123,7 +132,7 @@ function POSProducts() {
                 <Scan className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                 <Input
                   ref={barcodeInputRef}
-                  placeholder="Scan barcode (F2)"
+                  placeholder={t('pos:products.barcode_placeholder')}
                   value={barcodeInput}
                   onInput={(e: any) => setBarcodeInput(e.target.value)}
                   className="pl-10 h-12 w-48 focus:ring-primary focus:border-primary"
@@ -134,7 +143,7 @@ function POSProducts() {
                 size="lg"
                 className="bg-primary hover:bg-primary-hover text-primary-foreground"
               >
-                Add
+                {t('pos:products.add_button')}
               </Button>
             </form>
           </div>
@@ -144,18 +153,17 @@ function POSProducts() {
             <div className="flex gap-2 flex-wrap">
               {categories.map((category) => (
                 <Button
-                  key={category}
+                  key={category.key}
                   variant={
-                    selectedCategory === category ? "default" : "outline"
+                    selectedCategory === category.key ? "default" : "outline"
                   }
-                  onClick={() => setSelectedCategory(category)}
-                  className={`h-10 ${
-                    selectedCategory === category
-                      ? "bg-primary hover:bg-primary-hover text-primary-foreground"
-                      : "border-primary/20 text-primary hover:bg-primary-light"
-                  }`}
+                  onClick={() => setSelectedCategory(category.key)}
+                  className={`h-10 ${selectedCategory === category.key
+                    ? "bg-primary hover:bg-primary-hover text-primary-foreground"
+                    : "border-primary/20 text-primary hover:bg-primary-light"
+                    }`}
                 >
-                  {category}
+                  {category.label}
                 </Button>
               ))}
             </div>
@@ -166,11 +174,10 @@ function POSProducts() {
                 variant={viewMode === "grid" ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setViewMode("grid")}
-                className={`h-8 px-3 ${
-                  viewMode === "grid"
-                    ? "bg-primary text-primary-foreground hover:bg-primary-hover"
-                    : "hover:bg-muted text-muted-foreground"
-                }`}
+                className={`h-8 px-3 ${viewMode === "grid"
+                  ? "bg-primary text-primary-foreground hover:bg-primary-hover"
+                  : "hover:bg-muted text-muted-foreground"
+                  }`}
               >
                 <Grid3X3 className="w-4 h-4" />
               </Button>
@@ -178,11 +185,10 @@ function POSProducts() {
                 variant={viewMode === "list" ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setViewMode("list")}
-                className={`h-8 px-3 ${
-                  viewMode === "list"
-                    ? "bg-primary text-primary-foreground hover:bg-primary-hover"
-                    : "hover:bg-muted text-muted-foreground"
-                }`}
+                className={`h-8 px-3 ${viewMode === "list"
+                  ? "bg-primary text-primary-foreground hover:bg-primary-hover"
+                  : "hover:bg-muted text-muted-foreground"
+                  }`}
               >
                 <List className="w-4 h-4" />
               </Button>

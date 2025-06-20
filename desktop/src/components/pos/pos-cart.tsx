@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { useState } from "preact/hooks";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useRenderTracker } from "@/hooks/use-render-tracker";
+import { usePOSTranslation } from "@/hooks/use-pos-translation";
 
 // Mock data - you can replace this with actual data later
 const mockCart = [
@@ -13,14 +16,7 @@ const mockCart = [
 // Mock customer data
 const selectedCustomer = { type: "regular", name: "General Customer" };
 
-const getCustomerTypeInfo = (type: string) => {
-  const types = {
-    regular: { name: "Regular", discount: 0 },
-    member: { name: "Member", discount: 5 },
-    vip: { name: "VIP", discount: 10 },
-  };
-  return types[type as keyof typeof types] || types.regular;
-};
+
 
 /// Right panel - Cart
 function POSCart() {
@@ -28,6 +24,10 @@ function POSCart() {
   const [showPayment, setShowPayment] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [amountReceived, setAmountReceived] = useState("");
+  const { t, formatCurrency, getCustomerTypeLabel, getPaymentMethodLabel } = usePOSTranslation();
+
+  // Track renders for the cart component
+  useRenderTracker('POSCart', { cart, showPayment, paymentMethod, amountReceived });
 
   // Calculate totals
   const subtotal = cart.reduce(
@@ -67,11 +67,11 @@ function POSCart() {
   return (
     <div className="w-96 bg-card border-l border-border flex flex-col h-full">
       {/* Cart Header - Fixed */}
-      <div className="p-6 border-b border-border shrink-0">
-        <div className="flex items-center justify-between mb-4">
+      <div className="px-6 py-4 border-b border-border shrink-0">
+        <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold flex items-center gap-2 text-card-foreground">
             <ShoppingCart className="w-5 h-5 text-primary" />
-            Cart ({cart.reduce((sum, item) => sum + item.quantity, 0)})
+            {t('pos:cart.title_with_count', { count: cart.reduce((sum, item) => sum + item.quantity, 0) })}
           </h2>
           <Button
             variant="outline"
@@ -80,7 +80,7 @@ function POSCart() {
             disabled={cart.length === 0}
           >
             <Trash2 className="w-4 h-4 mr-2" />
-            Clear (F3)
+            {t('pos:cart.clear_button')}
           </Button>
         </div>
       </div>
@@ -90,8 +90,8 @@ function POSCart() {
         {cart.length === 0 ? (
           <div className="text-center text-muted-foreground mt-8">
             <ShoppingCart className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-            <p>Cart is empty</p>
-            <p className="text-sm">Add items to get started</p>
+            <p>{t('pos:cart.empty')}</p>
+            <p className="text-sm">{t('pos:cart.empty_message')}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -145,22 +145,21 @@ function POSCart() {
         <div className="p-6 border-t border-border bg-muted shrink-0">
           <div className="space-y-2 mb-4 text-card-foreground">
             <div className="flex justify-between">
-              <span>Subtotal:</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>{t('pos:cart.subtotal')}</span>
+              <span>{formatCurrency(subtotal)}</span>
             </div>
             <div className="flex justify-between">
-              <span>Tax (8%):</span>
-              <span>${tax.toFixed(2)}</span>
+              <span>{t('pos:cart.tax', { rate: 8 })}</span>
+              <span>{formatCurrency(tax)}</span>
             </div>
             <Separator />
             <div className="flex justify-between text-lg font-bold">
-              <span>Total:</span>
-              <span>${total.toFixed(2)}</span>
+              <span>{t('pos:cart.total')}</span>
+              <span>{formatCurrency(total)}</span>
             </div>
             {selectedCustomer.type !== "regular" && (
               <div className="text-xs text-primary">
-                {getCustomerTypeInfo(selectedCustomer.type).discount}% discount
-                applied
+                {t('pos:cart.discount_applied', { percent: 5 })}
               </div>
             )}
           </div>
@@ -171,7 +170,7 @@ function POSCart() {
             onClick={() => setShowPayment(true)}
           >
             <CreditCard className="w-5 h-5 mr-2" />
-            Checkout (F4)
+            {t('pos:cart.checkout_button')}
           </Button>
 
           {/* Simple Payment Modal */}
@@ -179,40 +178,41 @@ function POSCart() {
             <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
               <div className="bg-card rounded-lg p-6 max-w-md w-full mx-4 border border-border">
                 <h3 className="text-lg font-semibold mb-4 text-card-foreground">
-                  Process Payment
+                  {t('pos:cart.process_payment')}
                 </h3>
 
                 <div className="space-y-4">
                   <div className="text-center">
                     <p className="text-2xl font-bold text-primary">
-                      ${total.toFixed(2)}
+                      {formatCurrency(total)}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Customer: {selectedCustomer.name}
+                      {t('pos:header.customer', { name: selectedCustomer.name })}
                       {selectedCustomer.type !== "regular" &&
-                        ` (${getCustomerTypeInfo(selectedCustomer.type).name})`}
+                        ` (${getCustomerTypeLabel(selectedCustomer.type as "general" | "partner" | "vip")})`}
                     </p>
                   </div>
 
                   <div>
                     <label className="text-sm font-medium mb-2 block text-card-foreground">
-                      Payment Method
+                      {t('pos:cart.payment_method')}
                     </label>
-                    <select
-                      value={paymentMethod}
-                      onChange={(e: any) => setPaymentMethod(e.target.value)}
-                      className="w-full p-2 border border-border rounded bg-card text-card-foreground"
-                    >
-                      <option value="cash">Cash</option>
-                      <option value="card">Credit/Debit Card</option>
-                      <option value="digital">Digital Wallet</option>
-                    </select>
+                    <Select value={paymentMethod} onValueChange={(value: string) => setPaymentMethod(value)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cash">{getPaymentMethodLabel('cash')}</SelectItem>
+                        <SelectItem value="card">{getPaymentMethodLabel('card')}</SelectItem>
+                        <SelectItem value="digital">{getPaymentMethodLabel('digital')}</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   {paymentMethod === "cash" && (
                     <div>
                       <label className="text-sm font-medium mb-2 block text-card-foreground">
-                        Amount Received
+                        {t('pos:cart.amount_received')}
                       </label>
                       <Input
                         type="number"
@@ -225,10 +225,9 @@ function POSCart() {
                       {amountReceived &&
                         Number.parseFloat(amountReceived) >= total && (
                           <p className="text-sm text-primary mt-1">
-                            Change: $
-                            {(
-                              Number.parseFloat(amountReceived) - total
-                            ).toFixed(2)}
+                            {t('pos:cart.change', {
+                              amount: formatCurrency(Number.parseFloat(amountReceived) - total)
+                            })}
                           </p>
                         )}
                     </div>
@@ -240,7 +239,7 @@ function POSCart() {
                       className="flex-1"
                       onClick={() => setShowPayment(false)}
                     >
-                      Cancel
+                      {t('common:buttons.cancel')}
                     </Button>
                     <Button
                       className="flex-1 bg-primary hover:bg-primary-hover text-primary-foreground"
@@ -251,7 +250,7 @@ function POSCart() {
                           Number.parseFloat(amountReceived) < total)
                       }
                     >
-                      Complete Sale
+                      {t('pos:cart.complete_sale')}
                     </Button>
                   </div>
                 </div>
