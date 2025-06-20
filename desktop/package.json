@@ -40,7 +40,7 @@
     "@preact/preset-vite": "^2.9.3",
     "@tailwindcss/vite": "^4.1.10",
     "@tauri-apps/cli": "^2",
-    "@types/node": "^24.0.1",
+    "@types/node": "^24.0.3",
     "@typescript-eslint/eslint-plugin": "^8.34.0",
     "@typescript-eslint/parser": "^8.34.1",
     "@welldone-software/why-did-you-render": "^10.0.1",
