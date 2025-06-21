@@ -157,6 +157,16 @@ export function useCompanyInfo() {
   };
 }
 
+export function useCustomerDefaults() {
+  const { settings } = useSettings();
+  if (!settings) return null;
+
+  return {
+    defaultCustomerName: settings.defaultCustomerName,
+    defaultCustomerType: settings.defaultCustomerType,
+  };
+}
+
 export function useFinancialSettings() {
   const { settings } = useSettings();
   if (!settings) return null;

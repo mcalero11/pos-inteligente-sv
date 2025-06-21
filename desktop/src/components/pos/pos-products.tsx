@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useRef } from "preact/hooks";
 import { usePOSTranslation } from "@/hooks/use-pos-translation";
 import ProductItem from "./pos-product-item";
-import { useSetting } from "@/contexts/SettingsContext";
+import { useCustomerDefaults } from "@/contexts/SettingsContext";
 
 // Mock data - you can replace this with actual data later
 const mockProducts = [
@@ -63,13 +63,12 @@ function POSProducts() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const { t } = usePOSTranslation();
-  const defaultCustomerName = useSetting('defaultCustomerName');
-  const defaultCustomerType = useSetting('defaultCustomerType');
+  const customerDefaults = useCustomerDefaults();
 
   // Use settings-based customer data
   const selectedCustomer = {
-    type: defaultCustomerType || "regular",
-    name: defaultCustomerName || "Cliente General"
+    type: customerDefaults?.defaultCustomerType || "regular",
+    name: customerDefaults?.defaultCustomerName || "Cliente General"
   };
 
   // Categories with translations

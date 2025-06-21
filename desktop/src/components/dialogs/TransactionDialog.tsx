@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "preact/hooks";
 import { usePOSTranslation } from "@/hooks/use-pos-translation";
-import { useFinancialSettings, useSetting } from "@/contexts/SettingsContext";
+import { useFinancialSettings, useCustomerDefaults } from "@/contexts/SettingsContext";
 
 interface TransactionItem {
   id: string;
@@ -29,7 +29,7 @@ function TransactionDialog({
 }: TransactionDialogProps) {
   const { t, formatCurrency, getPaymentMethodLabel } = usePOSTranslation();
   const financialSettings = useFinancialSettings();
-  const defaultCustomerName = useSetting('defaultCustomerName');
+  const customerDefaults = useCustomerDefaults();
   const [items, setItems] = useState<TransactionItem[]>([
     // Sample items for demo
     { id: "1", name: "Coffee", price: 2.5, quantity: 2, total: 5.0 },
@@ -69,7 +69,7 @@ function TransactionDialog({
   };
 
   // Use settings-based values with fallbacks
-  const displayCustomerName = customerName || defaultCustomerName || 'Cliente General';
+  const displayCustomerName = customerName || customerDefaults?.defaultCustomerName || 'Cliente General';
   const taxRate = financialSettings?.taxRate || 13;
 
   const subtotal = items.reduce((sum, item) => sum + item.total, 0);

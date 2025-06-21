@@ -6,7 +6,7 @@ import { useState } from "preact/hooks";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRenderTracker } from "@/hooks/use-render-tracker";
 import { usePOSTranslation } from "@/hooks/use-pos-translation";
-import { useFinancialSettings, useSetting } from "@/contexts/SettingsContext";
+import { useFinancialSettings, useCustomerDefaults } from "@/contexts/SettingsContext";
 
 // Mock data - you can replace this with actual data later
 const mockCart = [
@@ -22,16 +22,15 @@ function POSCart() {
   const [amountReceived, setAmountReceived] = useState("");
   const { t, formatCurrency, getCustomerTypeLabel, getPaymentMethodLabel } = usePOSTranslation();
   const financialSettings = useFinancialSettings();
-  const defaultCustomerName = useSetting('defaultCustomerName');
-  const defaultCustomerType = useSetting('defaultCustomerType');
+  const customerDefaults = useCustomerDefaults();
 
   // Track renders for the cart component
   useRenderTracker('POSCart', { cart, showPayment, paymentMethod, amountReceived });
 
   // Use settings-based customer data
   const selectedCustomer = {
-    type: defaultCustomerType || "regular",
-    name: defaultCustomerName || "Cliente General"
+    type: customerDefaults?.defaultCustomerType || "regular",
+    name: customerDefaults?.defaultCustomerName || "Cliente General"
   };
 
   // Calculate totals
