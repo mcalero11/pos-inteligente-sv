@@ -1,49 +1,50 @@
 # 📊 PROJECT STATUS - POS Inteligente El Salvador
 
-> **Last Updated**: June 12, 2025  
+> **Last Updated**: June 13, 2025  
 > **Virtual PM**: Claude (Anthropic)  
 > **Lead Developer**: Marvin Calero
 
 ## 🎯 Executive Summary
 
-**Overall Status**: 🟢 **EXCELLENT PROGRESS** - Architecture established, DTE research complete
+**Overall Status**: 🟢 **EXCELLENT PROGRESS** - Core features being implemented
 
-**Current Phase**: Core Implementation - DTE service and synchronization
+**Current Phase**: Sprint 2 - Building POS foundation with new architecture
 
-**Next Milestone**: Working DTE signing service with offline capabilities
+**Next Milestone**: Complete sales flow with local SQLite storage
 
 ## 📈 Project Metrics
 
 | Metric | Value | Trend |
 |--------|-------|-------|
 | Development Velocity | Very High | ⬆️ |
-| Tasks Completed | 10 | ⬆️ |
-| Tasks in Progress | 0 | ➡️ |
+| Tasks Completed | 13 | ⬆️ |
+| Tasks in Progress | 3 | ⬆️ |
 | Active Blockers | 0 | ✅ |
 | Overall Risk | Low | ✅ |
 
 ## 🏃‍♂️ Current Sprint
 
-### Sprint 2: DTE Implementation & Core Sync (June 12-19, 2025)
+### Sprint 2: Basic Sales Flow + Sync Foundation (June 12-19, 2025)
 
-**Goal**: Implement DTE signing service and basic synchronization
+**Goal**: Implement minimal working POS with basic sync
 
-**Progress**: ⬜⬜⬜⬜⬜ 0%
+**Progress**: ⬛⬛⬜⬜⬜ 40%
 
-#### Sprint Tasks
+#### Sprint Tasks:
 
-- [ ] Implement DTE types in Go
-- [ ] Create digital signing service
-- [ ] Design offline queue for DTEs
-- [ ] Implement gRPC server (HTTP/2) in Go
-- [ ] Create WebSocket server for real-time events
-- [ ] Create Automerge client in Tauri
-- [ ] Integrate DTE signing with sales flow
+- [x] Create minimal POS UI in Tauri (product grid + cart)
+- [x] Create UI dialog components (customer, inventory, transactions)
+- [x] Implement theme system with color picker
+- [ ] Implement SQLite database for local storage
+- [ ] Complete sale flow (add items → checkout → save)
+- [ ] Simple sync service with polling
+- [x] Create DTE signing endpoint
+- [ ] Sign FCF with test certificate
+- [ ] Display generated DTE in UI
 
 ## 📋 Sprint History
 
 ### Sprint 1: Multi-Client Architecture + DTE ✅
-
 - **Duration**: June 5-12, 2025
 - **Achievement**: 100% completion, architecture established
 - **Key Deliverables**: 3-client setup, DTE research, type system
@@ -52,116 +53,114 @@
 ## 📋 Prioritized Backlog
 
 ### 🔴 High Priority
-
-1. **DTE Service Implementation**
-   - All fiscal document types
-   - Digital signing capability
-   - MH schema validation
-   - HTTPS transmission client
-
-2. **Offline Queue System**
-   - Local DTE generation
-   - Persistent queue in Tauri
-   - Auto-sync when online
-   - Contingency mode
-
-3. **Automerge Integration**
-   - Sales document schema
-   - Distributed numbering
-   - Sync state tracking
+1. **Complete Sales Flow**
+   - SQLite schema implementation
+   - Shopping cart persistence
+   - Payment processing (cash)
+   - Sale completion with DTE
+   
+2. **Sync Implementation**
+   - Change log tracking
+   - HTTP polling service
+   - Conflict resolution
+   - Batch uploads
+   
+3. **DTE Integration**
+   - FCF generation from sales
+   - Digital signing with cert
+   - Queue for offline DTEs
+   - Display signed documents
 
 ### 🟡 Medium Priority
-
-4. **DTE Management UI**
-5. **Contingency Mode**
-6. **Fiscal Reports**
+4. **Extended DTE Support** (remaining 8 types)
+5. **Advanced UI Features**
+6. **Real MH Integration**
 
 ### 🟢 Low Priority
-
-7. **Accounting Integration**
-8. **Fiscal Book Export**
-9. **Compliance Audit**
+7. **Multiple Payment Methods**
+8. **Advanced Analytics**
+9. **Multi-location Support**
 
 ## 🚧 Current Work
 
-### Active Task: DTE Service Implementation
-
+### Active Task: Building Core POS Features
 - **Assigned to**: Marvin Calero
 - **Started**: June 12, 2025
-- **Components**:
-  - DTE types matching MH schemas
-  - Digital signing with test certificates
-  - Offline queue with retry logic
-  - Integration with sales workflow
-
-### Technical Focus Areas
-
-1. **DTE Generation**: Local signing capability
-2. **Queue System**: Resilient offline operation  
-3. **Sync Protocol**: gRPC streaming implementation
-4. **Automerge Integration**: Sales document structure
+- **Components Completed**:
+  - DTE signing endpoint implementation
+  - Dialog system for customer/inventory management
+  - Theme system with color customization
+  - Basic UI components for transactions
+  
+### Technical Focus Areas:
+1. **UI Development**: Dialog components and theme system ✅
+2. **DTE Integration**: Signing endpoint ready ✅
+3. **Database Setup**: SQLite schema implementation (next)
+4. **Sync Architecture**: HTTP polling strategy (in progress)
 
 ## ⚠️ Risks & Mitigations
 
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|------------|
-| MH integration complexity | High | Critical | Start with test environment, document thoroughly |
-| Offline DTE handling | High | High | Robust queue, contingency numbers, auto-retry |
-| Production certificates | Medium | High | Clear management process, consider HSM |
-| DTE regulatory changes | Medium | High | Flexible design, schema versioning |
-| Fiscal vs operational sync | High | Medium | Clear priorities, separate queues |
+| SQLite sync complexity | Medium | Medium | Use proven change log pattern |
+| UI complexity in Tauri | Low | Medium | Leveraging existing component libraries |
+| DTE format compliance | Medium | High | Following MH documentation closely |
+| Offline queue handling | Low | Medium | Simple SQLite-based queue |
 
 ## 💡 Technical Decisions
 
-### Confirmed Decisions
-
+### Confirmed Decisions:
 1. **Tech Stack**: Go + React + Tauri (June 5)
-2. **Data Strategy**: Automerge + PostgreSQL hybrid (June 5)
+2. **Data Strategy**: SQLite local + PostgreSQL central (June 13)
 3. **POS Client**: Tauri for hardware access (June 5)
-4. **Communication**: gRPC + WebSocket + REST (June 5)
+4. **Communication**: HTTP/REST with smart polling (June 13)
 5. **Type Sharing**: TypeScript project references (June 5)
 6. **DTE Implementation**: Local signing service (June 6)
 7. **Dev Certificates**: Automated generation (June 6)
+8. **Sprint 2 Focus**: Working skeleton over components (June 12)
+9. **Sync Architecture**: Change log pattern over Automerge (June 13)
+10. **Auth Strategy**: Passwordless with WhatsApp/Email (June 13)
 
-### Pending Decisions
-
-1. **gRPC-Web vs WebSocket for Tauri client**
-2. **Automerge archival strategy**
-3. **Fiscal sync frequency**
-4. **Production certificate management (HSM vs software)**
+### Pending Decisions:
+1. **UI Component Library**: Final selection for Tauri
+2. **Sync Frequency**: Adaptive polling intervals
+3. **DTE Queue Strategy**: Priority and retry logic
+4. **Production deployment**: Cloud provider selection
 
 ## 📝 PM Notes
 
-### June 12, 2025
+### June 13, 2025
+- Major architecture decision: Dropped Automerge for simpler approach
+- Implemented SQLite + PostgreSQL with change log sync
+- HTTP polling instead of complex CRDT sync
+- DTE signing endpoint completed
+- UI dialog system implemented
+- Theme customization added
 
+### Architecture Decisions Made:
+- **SQLite Local**: Full SQL capabilities, excellent Tauri support
+- **Change Log Pattern**: Complete audit trail, easy conflict detection
+- **Smart Polling**: Adaptive intervals based on activity
+- **Passwordless Auth**: WhatsApp OTP + Email magic links
+
+### Progress Update:
+- DTE signing handler implemented (`SignDTE`)
+- Dialog components created (customer, inventory, transactions)
+- Centralized dialog management system
+- Theme toggle and color picker functionality
+- 40% sprint completion
+
+### June 12, 2025
 - Sprint 1 completed successfully (100%)
 - Documentation reorganized for clarity
 - Sprint history archived in docs/sprints
-
-### Current Architecture Status
-
-- **Communication**: gRPC + WebSocket + REST clearly separated
-- **Data Strategy**: Automerge (sales) + PostgreSQL (admin) confirmed
-- **DTE Approach**: Local signing with offline queue
-
-### Immediate Next Steps
-
-1. Start DTE type definitions in Go
-2. Implement certificate-based signing
-3. Create resilient offline queue
-4. Begin Automerge PoC in Tauri
-
-### Technical Considerations
-
-- **Node Identity**: UUID strategy for terminals
-- **Data Window**: 7-day local retention
-- **Sync Priority**: DTE > Sales > Inventory
-- **Conflict Resolution**: Last-write-wins with audit trail
 
 ## 🔄 Change History
 
 | Date | Change | Author |
 |------|--------|--------|
+| 06/13/2025 | DTE signing endpoint, UI dialogs, dropped Automerge for SQLite | Marvin |
+| 06/12/2025 PM | Sprint 2 scope revised for iterative approach | Marvin + Claude |
 | 06/12/2025 | Sprint 1 completed, documentation reorganized | Marvin + Claude |
 | 06/06/2025 | DTE research complete, certificate script, refined backend | Marvin |
 | 05/06/2025 | Added Tauri client, local-first architecture decision | Marvin + Claude |
@@ -174,7 +173,6 @@
 **Next Check-in**: TBD
 
 **Check-in Format**:
-
 1. What did you complete?
 2. What are you working on?
 3. Any blockers?
@@ -183,4 +181,4 @@
 
 ---
 
-*This document is continuously updated. Last review by Claude (Virtual PM) on June 12, 2025.*
+*This document is continuously updated. Last review by Claude (Virtual PM) on June 13, 2025.*

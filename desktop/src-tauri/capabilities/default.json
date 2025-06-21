@@ -15,6 +15,11 @@
     "log:default",
     "log:allow-log",
     "shell:allow-open",
-    "stronghold:default"
+    "stronghold:default",
+    "sql:default",
+    "sql:allow-load",
+    "sql:allow-select",
+    "sql:allow-execute",
+    "sql:allow-close"
   ]
 }

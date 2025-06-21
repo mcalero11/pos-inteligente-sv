@@ -1,30 +1,13 @@
 mod commands;
-mod dte_signer;
-mod secure_storage;
+mod plugins;
+mod services;
 
 use commands::*;
-use secure_storage::SecureStorageManager;
+use services::secure_storage::SecureStorageManager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
-        .plugin(tauri_plugin_opener::init())
-        .plugin(tauri_plugin_shell::init())
-        .plugin(tauri_plugin_stronghold::Builder::new(|_| vec![]).build())
-        .plugin(
-            tauri_plugin_log::Builder::new()
-                .targets([
-                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout),
-                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::LogDir {
-                        file_name: Some("pos-app".to_string()),
-                    }),
-                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Webview),
-                ])
-                .level(log::LevelFilter::Debug)
-                .rotation_strategy(tauri_plugin_log::RotationStrategy::KeepAll)
-                .max_file_size(50_000_000) // 50MB max file size
-                .build(),
-        )
+    plugins::configure_plugins(tauri::Builder::default())
         .manage(SecureStorageManager::new())
         .invoke_handler(tauri::generate_handler![
             // Secure Storage
@@ -41,6 +24,9 @@ pub fn run() {
             // System Commands
             open_log_folder,
             generate_test_logs,
+            // PIN Management
+            hash_pin,
+            verify_pin,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

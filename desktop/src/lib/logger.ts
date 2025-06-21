@@ -27,40 +27,49 @@ export class Logger {
     return new Logger(context);
   }
 
-  private formatMessage(message: string): string {
-    return `[${this.context}] ${message}`;
+  private formatMessage(message: string, level: LogLevel): string {
+    const timestamp = new Date().toISOString().replace('T', ' ').replace('Z', '');
+    return `[${timestamp}] [${level.toUpperCase()}] [${this.context}] ${message}`;
+  }
+
+  private formatData(data: any): string {
+    if (data === null || data === undefined) {
+      return '';
+    }
+
+    try {
+      return JSON.stringify(data, null, 2);
+    } catch {
+      return String(data);
+    }
   }
 
   async trace(message: string, data?: any): Promise<void> {
-    const logMessage = data
-      ? `${this.formatMessage(message)} ${JSON.stringify(data)}`
-      : this.formatMessage(message);
+    const formattedData = data ? `\n${this.formatData(data)}` : '';
+    const logMessage = `${this.formatMessage(message, LogLevel.TRACE)}${formattedData}`;
     await trace(logMessage);
   }
 
   async debug(message: string, data?: any): Promise<void> {
-    const logMessage = data
-      ? `${this.formatMessage(message)} ${JSON.stringify(data)}`
-      : this.formatMessage(message);
+    const formattedData = data ? `\n${this.formatData(data)}` : '';
+    const logMessage = `${this.formatMessage(message, LogLevel.DEBUG)}${formattedData}`;
     await debug(logMessage);
   }
 
   async info(message: string, data?: any): Promise<void> {
-    const logMessage = data
-      ? `${this.formatMessage(message)} ${JSON.stringify(data)}`
-      : this.formatMessage(message);
+    const formattedData = data ? `\n${this.formatData(data)}` : '';
+    const logMessage = `${this.formatMessage(message, LogLevel.INFO)}${formattedData}`;
     await info(logMessage);
   }
 
   async warn(message: string, data?: any): Promise<void> {
-    const logMessage = data
-      ? `${this.formatMessage(message)} ${JSON.stringify(data)}`
-      : this.formatMessage(message);
+    const formattedData = data ? `\n${this.formatData(data)}` : '';
+    const logMessage = `${this.formatMessage(message, LogLevel.WARN)}${formattedData}`;
     await warn(logMessage);
   }
 
   async error(message: string, error?: Error | any): Promise<void> {
-    let logMessage = this.formatMessage(message);
+    let logMessage = this.formatMessage(message, LogLevel.ERROR);
 
     if (error) {
       if (error instanceof Error) {

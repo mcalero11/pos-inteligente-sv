@@ -1,5 +1,6 @@
 import { createContext } from "preact";
 import { useContext, useState, useEffect } from "preact/hooks";
+import { themeStorage } from "@/lib/local-storage";
 
 export type ColorTheme =
   | "orange"
@@ -26,29 +27,21 @@ export function ThemeProvider({ children }: { children: any }) {
 
   // Load from localStorage on mount
   useEffect(() => {
-    try {
-      const savedTheme = globalThis.localStorage?.getItem("pos-color-theme");
-      const savedDark = globalThis.localStorage?.getItem("pos-dark-mode");
+    const savedTheme = themeStorage.getColorTheme();
+    const savedDark = themeStorage.getDarkMode();
 
-      if (savedTheme) {
-        setColorTheme(savedTheme as ColorTheme);
-      }
-      if (savedDark) {
-        setDarkMode(savedDark === "true");
-      }
-    } catch {
-      // Ignore localStorage errors
+    if (savedTheme) {
+      setColorTheme(savedTheme as ColorTheme);
+    }
+    if (savedDark !== null) {
+      setDarkMode(savedDark);
     }
   }, []);
 
   useEffect(() => {
-    try {
-      // Save to localStorage
-      globalThis.localStorage?.setItem("pos-color-theme", colorTheme);
-      globalThis.localStorage?.setItem("pos-dark-mode", darkMode.toString());
-    } catch {
-      // Ignore localStorage errors
-    }
+    // Save to localStorage using the service
+    themeStorage.setColorTheme(colorTheme);
+    themeStorage.setDarkMode(darkMode);
 
     // Apply theme classes to document
     const themeClass = `theme-${colorTheme}`;
@@ -70,7 +63,7 @@ export function ThemeProvider({ children }: { children: any }) {
         globalThis.document.documentElement.className = newClasses;
       }
     } catch {
-      // Ignore document errors
+      // Ignore document errors in non-browser environments
     }
   }, [colorTheme, darkMode]);
 

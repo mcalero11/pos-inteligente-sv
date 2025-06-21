@@ -1,129 +1,8 @@
-use crate::dte_signer::{DteSigningError, DteSigningService, SignedDte};
-use crate::secure_storage::{SecureStorageError, SecureStorageManager};
-use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Manager, State};
+use chrono;
+use tauri::{AppHandle, Manager};
 use tauri_plugin_shell::ShellExt;
 
-#[derive(Serialize, Deserialize)]
-pub struct SecretMetadata {
-    pub key: String,
-    pub exists: bool,
-}
-
-// === SECURE STORAGE COMMANDS ===
-
-#[tauri::command]
-pub async fn initialize_secure_storage(
-    password_hash: Vec<u8>,
-    app_handle: AppHandle,
-    storage: State<'_, SecureStorageManager>,
-) -> Result<(), SecureStorageError> {
-    log::info!("Initializing secure storage");
-
-    let app_data_dir = app_handle
-        .path()
-        .app_data_dir()
-        .map_err(|e| SecureStorageError::from(format!("Failed to get app data dir: {}", e)))?;
-
-    log::debug!("App data directory: {:?}", app_data_dir);
-
-    std::fs::create_dir_all(&app_data_dir)
-        .map_err(|e| SecureStorageError::from(format!("Failed to create app data dir: {}", e)))?;
-
-    let vault_path = app_data_dir.join("secure-storage.stronghold");
-    let vault_path_str = vault_path
-        .to_str()
-        .ok_or_else(|| SecureStorageError::from("Invalid vault path"))?;
-
-    log::debug!("Vault path: {}", vault_path_str);
-
-    let result = storage.initialize(password_hash, vault_path_str).await;
-    match &result {
-        Ok(_) => log::info!("Secure storage initialized successfully"),
-        Err(e) => log::error!("Failed to initialize secure storage: {}", e),
-    }
-
-    result
-}
-
-#[tauri::command]
-pub async fn store_secret(
-    key: String,
-    secret_data: Vec<u8>,
-    storage: State<'_, SecureStorageManager>,
-) -> Result<(), SecureStorageError> {
-    storage.store_secret(&key, &secret_data).await
-}
-
-#[tauri::command]
-pub async fn has_secret(
-    key: String,
-    storage: State<'_, SecureStorageManager>,
-) -> Result<bool, SecureStorageError> {
-    storage.has_secret(&key).await
-}
-
-#[tauri::command]
-pub async fn remove_secret(
-    key: String,
-    storage: State<'_, SecureStorageManager>,
-) -> Result<(), SecureStorageError> {
-    storage.remove_secret(&key).await
-}
-
-#[tauri::command]
-pub async fn clear_secure_storage(
-    storage: State<'_, SecureStorageManager>,
-) -> Result<(), SecureStorageError> {
-    storage.clear().await?;
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn is_secure_storage_initialized(
-    storage: State<'_, SecureStorageManager>,
-) -> Result<bool, SecureStorageError> {
-    Ok(storage.is_initialized().await)
-}
-
-// === DTE SIGNING COMMANDS ===
-
-#[tauri::command]
-pub async fn sign_dte_document(
-    document_xml: String,
-    private_key_id: String,
-    storage: State<'_, SecureStorageManager>,
-) -> Result<SignedDte, DteSigningError> {
-    DteSigningService::sign_dte(&storage, &document_xml, &private_key_id).await
-}
-
-#[tauri::command]
-pub async fn can_sign_dte(
-    private_key_id: String,
-    storage: State<'_, SecureStorageManager>,
-) -> Result<bool, DteSigningError> {
-    DteSigningService::can_sign(&storage, &private_key_id).await
-}
-
-// === UTILITY COMMANDS ===
-
-#[tauri::command]
-pub async fn get_secret_metadata(
-    keys: Vec<String>,
-    storage: State<'_, SecureStorageManager>,
-) -> Result<Vec<SecretMetadata>, SecureStorageError> {
-    let mut metadata = Vec::new();
-
-    for key in keys {
-        let exists = storage.has_secret(&key).await?;
-        metadata.push(SecretMetadata { key, exists });
-    }
-
-    Ok(metadata)
-}
-
-// === SYSTEM COMMANDS ===
-
+/// Open the application log folder in the system file explorer
 #[tauri::command]
 pub async fn open_log_folder(app_handle: AppHandle) -> Result<(), String> {
     log::info!("Opening log folder");
@@ -208,6 +87,7 @@ pub async fn open_log_folder(app_handle: AppHandle) -> Result<(), String> {
     Ok(())
 }
 
+/// Generate test logs for debugging purposes
 #[tauri::command]
 pub async fn generate_test_logs(app_handle: AppHandle) -> Result<(), String> {
     log::info!("Generating test logs for debugging purposes");

@@ -101,7 +101,7 @@ function ErrorHandlingExample() {
 
 // Example 7: Currency and date formatting
 function FormattingExample() {
-  const { t } = useTranslation('common');
+  const { formatCurrency, formatDateTime, formatDate, formatTime } = usePOSTranslation();
 
   const amount = 1250.75;
   const date = new Date();
@@ -109,12 +109,12 @@ function FormattingExample() {
   return (
     <div>
       {/* Currency formatting */}
-      <p>{t('{{amount, currency}}', { amount })}</p>
+      <p>{formatCurrency(amount)}</p>
 
       {/* Date formatting */}
-      <p>{t('{{date, datetime}}', { date })}</p>
-      <p>{t('{{date, date}}', { date })}</p>
-      <p>{t('{{date, time}}', { date })}</p>
+      <p>{formatDateTime(date)}</p>
+      <p>{formatDate(date)}</p>
+      <p>{formatTime(date)}</p>
     </div>
   );
 }

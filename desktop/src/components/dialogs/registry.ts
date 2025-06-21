@@ -28,7 +28,7 @@ export const getDialogRegistry = (t: (key: string) => string): Record<string, Di
   settings: {
     title: t('dialogs:settings.title'),
     component: SettingsDialog,
-    size: "lg",
+    size: "2xl",
   },
   shifts: {
     title: t('dialogs:shift.title'),
