@@ -1,13 +1,41 @@
 import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'preact/hooks';
+import { settingsService } from '../lib/settings-service';
+import { logger } from '../lib/logger';
 
 export function usePOSTranslation() {
   const { t, i18n } = useTranslation(['pos', 'common', 'errors', 'dialogs', 'states']);
+  const [currency, setCurrency] = useState<string>('USD'); // Default fallback
+
+  // Load currency setting on mount and subscribe to changes
+  useEffect(() => {
+    const loadCurrency = async () => {
+      try {
+        const currentCurrency = await settingsService.getSetting('currency');
+        setCurrency(currentCurrency);
+      } catch (error) {
+        logger.warn('Failed to load currency setting, using default:', error);
+        setCurrency('USD');
+      }
+    };
+
+    loadCurrency();
+
+    // Subscribe to currency changes
+    const unsubscribe = settingsService.subscribeToChanges((key, value) => {
+      if (key === 'currency') {
+        setCurrency(value as string);
+      }
+    });
+
+    return unsubscribe;
+  }, []);
 
   // Utility function for currency formatting
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat(i18n.language || 'es-SV', {
       style: 'currency',
-      currency: 'USD',
+      currency: currency,
       minimumFractionDigits: 2
     }).format(amount);
   };
@@ -56,6 +84,7 @@ export function usePOSTranslation() {
   return {
     t,
     i18n,
+    currency,
     formatCurrency,
     formatDateTime,
     formatDate,

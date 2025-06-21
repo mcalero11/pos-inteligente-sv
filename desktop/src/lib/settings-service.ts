@@ -26,7 +26,7 @@ export interface AppSettings {
 }
 
 // Default fallback values
-const DEFAULT_SETTINGS: AppSettings = {
+export const DEFAULT_SETTINGS: AppSettings = {
   taxRate: 13.0,
   currency: 'USD',
   companyName: 'Mi Empresa',

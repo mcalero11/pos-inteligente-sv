@@ -76,8 +76,7 @@ fn seed_system_settings(conn: &Connection) -> Result<()> {
 
     for (key, value, description, category, is_system) in settings.iter() {
         conn.execute(
-            "INSERT OR IGNORE INTO system_settings (key, value, description, category, is_system) 
-             VALUES (?1, ?2, ?3, ?4, ?5)",
+            "INSERT OR IGNORE INTO system_settings (key, value, description, category, is_system) VALUES (?1, ?2, ?3, ?4, ?5)",
             params![key, value, description, category, *is_system],
         )?;
     }
@@ -150,8 +149,7 @@ fn seed_users(conn: &Connection) -> Result<()> {
         let pin_hash = hash_pin(pin);
 
         conn.execute(
-            "INSERT OR IGNORE INTO users (username, pin_hash, role, full_name, is_active, permissions) 
-             VALUES (?1, ?2, ?3, ?4, 1, ?5)",
+            "INSERT OR IGNORE INTO users (username, pin_hash, role, full_name, is_active, permissions) VALUES (?1, ?2, ?3, ?4, 1, ?5)",
             params![username, pin_hash, role, full_name, permissions],
         )?;
 
