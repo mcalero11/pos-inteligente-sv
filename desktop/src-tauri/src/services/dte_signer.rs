@@ -1,4 +1,4 @@
-use crate::secure_storage::{SecureStorageError, SecureStorageManager};
+use crate::services::secure_storage::{SecureStorageError, SecureStorageManager};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
