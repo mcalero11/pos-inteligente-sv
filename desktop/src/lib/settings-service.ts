@@ -242,11 +242,11 @@ export class SettingsService {
       const dbSettings = await databaseService.getAllSystemSettings();
 
       // Map database settings to app settings
-      for (const [appKey, dbKey] of Object.entries(SETTINGS_MAPPING)) {
+      for (const appKey of Object.keys(SETTINGS_MAPPING) as Array<keyof AppSettings>) {
+        const dbKey = SETTINGS_MAPPING[appKey];
         const dbSetting = dbSettings.find(s => s.key === dbKey);
         if (dbSetting) {
-          const key = appKey as keyof AppSettings;
-          settings[key] = this.deserializeValue(key, dbSetting.value);
+          (settings as any)[appKey] = this.deserializeValue(appKey, dbSetting.value);
         }
       }
 
