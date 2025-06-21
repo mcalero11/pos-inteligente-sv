@@ -6,17 +6,13 @@ import { useState } from "preact/hooks";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRenderTracker } from "@/hooks/use-render-tracker";
 import { usePOSTranslation } from "@/hooks/use-pos-translation";
+import { useFinancialSettings, useSetting } from "@/contexts/SettingsContext";
 
 // Mock data - you can replace this with actual data later
 const mockCart = [
   { id: 1, name: "Coffee - Medium Roast", price: 12.99, quantity: 2 },
   { id: 2, name: "Sandwich - Turkey Club", price: 8.5, quantity: 1 },
 ];
-
-// Mock customer data
-const selectedCustomer = { type: "regular", name: "General Customer" };
-
-
 
 /// Right panel - Cart
 function POSCart() {
@@ -25,16 +21,26 @@ function POSCart() {
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [amountReceived, setAmountReceived] = useState("");
   const { t, formatCurrency, getCustomerTypeLabel, getPaymentMethodLabel } = usePOSTranslation();
+  const financialSettings = useFinancialSettings();
+  const defaultCustomerName = useSetting('defaultCustomerName');
+  const defaultCustomerType = useSetting('defaultCustomerType');
 
   // Track renders for the cart component
   useRenderTracker('POSCart', { cart, showPayment, paymentMethod, amountReceived });
+
+  // Use settings-based customer data
+  const selectedCustomer = {
+    type: defaultCustomerType || "regular",
+    name: defaultCustomerName || "Cliente General"
+  };
 
   // Calculate totals
   const subtotal = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  const tax = subtotal * 0.08; // 8% tax
+  const taxRate = financialSettings?.taxRate || 13;
+  const tax = subtotal * (taxRate / 100);
   const total = subtotal + tax;
 
   const updateQuantity = (itemId: number, newQuantity: number) => {
@@ -149,7 +155,7 @@ function POSCart() {
               <span>{formatCurrency(subtotal)}</span>
             </div>
             <div className="flex justify-between">
-              <span>{t('pos:cart.tax', { rate: 8 })}</span>
+              <span>{t('pos:cart.tax', { rate: taxRate })}</span>
               <span>{formatCurrency(tax)}</span>
             </div>
             <Separator />

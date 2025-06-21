@@ -1,10 +1,10 @@
 {
   "loading": {
     "initializing": "Iniciando POS...",
-    "loading": "Cargando...",
+    "loading": "Cargando sistema...",
     "subtitle": {
       "initializing": "Configurando la aplicación y verificando servicios",
-      "loading": "Procesando solicitud",
+      "loading": "Conectando base de datos y cargando configuración",
       "default": "Por favor espera"
     }
   },

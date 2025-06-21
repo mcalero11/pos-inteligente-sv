@@ -1,6 +1,7 @@
 use crate::dte_signer::{DteSigningError, DteSigningService, SignedDte};
 use crate::secure_storage::{SecureStorageError, SecureStorageManager};
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use tauri::{AppHandle, Manager, State};
 use tauri_plugin_shell::ShellExt;
 
@@ -254,4 +255,17 @@ pub async fn generate_test_logs(app_handle: AppHandle) -> Result<(), String> {
     log::info!("Manual test log file created: {:?}", test_log_path);
 
     Ok(())
+}
+
+#[tauri::command]
+pub fn hash_pin(pin: String) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(pin.as_bytes());
+    format!("{:x}", hasher.finalize())
+}
+
+#[tauri::command]
+pub fn verify_pin(pin: String, hash: String) -> bool {
+    let pin_hash = hash_pin(pin);
+    pin_hash == hash
 }

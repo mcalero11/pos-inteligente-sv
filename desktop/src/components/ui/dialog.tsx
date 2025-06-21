@@ -132,7 +132,7 @@ interface CustomDialogProps {
   isOpen: boolean;
   onClose?: () => void;
   title?: string;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
   children: any;
 }
 
@@ -141,7 +141,10 @@ function CustomDialog({ isOpen, onClose, title, size = "md", children }: CustomD
     sm: "sm:max-w-sm",
     md: "sm:max-w-md",
     lg: "sm:max-w-lg",
-    xl: "sm:max-w-xl"
+    xl: "sm:max-w-xl",
+    "2xl": "sm:max-w-2xl",
+    "3xl": "sm:max-w-3xl",
+    "4xl": "sm:max-w-4xl"
   };
 
   if (!isOpen) return null;

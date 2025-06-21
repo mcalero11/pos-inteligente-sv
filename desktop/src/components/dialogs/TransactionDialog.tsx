@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "preact/hooks";
 import { usePOSTranslation } from "@/hooks/use-pos-translation";
+import { useFinancialSettings, useSetting } from "@/contexts/SettingsContext";
 
 interface TransactionItem {
   id: string;
@@ -24,9 +25,11 @@ interface TransactionDialogProps {
 function TransactionDialog({
   onClose,
   onComplete,
-  customerName = "General Customer",
+  customerName,
 }: TransactionDialogProps) {
   const { t, formatCurrency, getPaymentMethodLabel } = usePOSTranslation();
+  const financialSettings = useFinancialSettings();
+  const defaultCustomerName = useSetting('defaultCustomerName');
   const [items, setItems] = useState<TransactionItem[]>([
     // Sample items for demo
     { id: "1", name: "Coffee", price: 2.5, quantity: 2, total: 5.0 },
@@ -65,8 +68,12 @@ function TransactionDialog({
     setItems((prev) => prev.filter((item) => item.id !== id));
   };
 
+  // Use settings-based values with fallbacks
+  const displayCustomerName = customerName || defaultCustomerName || 'Cliente General';
+  const taxRate = financialSettings?.taxRate || 13;
+
   const subtotal = items.reduce((sum, item) => sum + item.total, 0);
-  const tax = subtotal * 0.13; // 13% tax
+  const tax = subtotal * (taxRate / 100);
   const total = subtotal + tax;
 
   const handleComplete = () => {
@@ -81,7 +88,7 @@ function TransactionDialog({
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <ShoppingCart class="w-5 h-5 text-primary dark:text-primary" />
-          <span class="font-medium">{t('dialogs:transaction.customer')} {customerName}</span>
+          <span class="font-medium">{t('dialogs:transaction.customer')} {displayCustomerName}</span>
         </div>
         <div class="text-sm text-muted-foreground">
           {t('dialogs:transaction.transaction_number', { number: Date.now().toString().slice(-6) })}

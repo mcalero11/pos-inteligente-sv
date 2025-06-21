@@ -5,23 +5,34 @@ export function usePOSTranslation() {
 
   // Utility function for currency formatting
   const formatCurrency = (amount: number) => {
-    return t('{{amount, currency}}', { amount });
+    return new Intl.NumberFormat(i18n.language || 'es-SV', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2
+    }).format(amount);
   };
 
   // Utility function for date/time formatting
   const formatDateTime = (date: Date | string) => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return t('{{date, datetime}}', { date: dateObj });
+    return dateObj.toLocaleString(i18n.language || 'es-SV', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
   };
 
   const formatDate = (date: Date | string) => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return t('{{date, date}}', { date: dateObj });
+    return dateObj.toLocaleDateString(i18n.language || 'es-SV');
   };
 
   const formatTime = (date: Date | string) => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return t('{{date, time}}', { date: dateObj });
+    return dateObj.toLocaleTimeString(i18n.language || 'es-SV');
   };
 
   // POS-specific translation helpers

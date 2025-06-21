@@ -1,110 +1,161 @@
 # POS Inteligente El Salvador 🚀
 
-Sistema de punto de venta (POS) impulsado por inteligencia artificial diseñado específicamente para el mercado salvadoreño. Integra facturación electrónica con el Ministerio de Hacienda, análisis predictivo de ventas y búsqueda de productos por voz.
+Sistema de punto de venta (POS) offline-first diseñado específicamente para el mercado salvadoreño. Arquitectura multi-cliente con sincronización inteligente usando tecnologías modernas.
 
 ## 🎯 Visión del Producto
 
-Crear una solución POS moderna que democratice el acceso a tecnología avanzada para comercios de todos los tamaños en El Salvador, desde pequeños negocios hasta grandes cadenas con múltiples sucursales.
+Crear una solución POS resiliente que funcione sin internet, sincronice automáticamente cuando hay conexión, y democratice el acceso a tecnología avanzada para comercios de todos los tamaños en El Salvador.
+
+## 🏗️ Arquitectura Multi-Cliente
+
+El sistema consta de tres aplicaciones especializadas:
+
+### 1. **Desktop POS (Tauri)** - Operación Offline-First
+- Cliente principal para punto de venta
+- SQLite para almacenamiento local rápido
+- Sincronización automática con polling inteligente
+- Acceso directo a hardware (impresoras, lectores)
+
+### 2. **Web Admin (React)** - Gestión Centralizada
+- Panel de administración y configuración
+- Reportes y análisis de datos en tiempo real
+- Gestión de usuarios y permisos
+- Configuración de productos y precios
+
+### 3. **Backend API (Go)** - Núcleo del Sistema
+- PostgreSQL con change log para sincronización
+- Integración con Ministerio de Hacienda (DTE)
+- Autenticación passwordless (WhatsApp/Email)
+- API REST con polling adaptativo
 
 ## ✨ Características Principales
 
-- **Facturación Electrónica**: Integración completa con el sistema DTE del Ministerio de Hacienda
-- **Búsqueda por Voz**: Convierte comandos de voz en búsquedas de productos y acciones del sistema
-- **Análisis Inteligente**: Reportes automáticos con insights sobre patrones de venta y predicciones
-- **Multi-sucursal**: Arquitectura escalable que soporta desde un solo punto de venta hasta cadenas completas
-- **Tiempo Real**: Sincronización instantánea de inventario y ventas entre ubicaciones
-- **Offline First**: Funciona sin conexión y sincroniza cuando hay internet disponible
+- **100% Offline-First**: Vende sin internet, sincroniza cuando hay conexión
+- **Sincronización Inteligente**: Change log pattern con resolución de conflictos
+- **Facturación Electrónica**: Integración completa con el sistema DTE
+- **UI Moderna**: Sistema de temas con personalización de colores
+- **Multi-sucursal**: Sincronización entre terminales y con la nube
+- **Hardware Nativo**: Soporte para impresoras, cajones, lectores
+- **Autenticación Segura**: Sin contraseñas, usa WhatsApp o email
 
-## 🏗️ Arquitectura Técnica
+## 🚀 Tecnologías Clave
 
-### Stack Principal
+### Cliente Desktop (Tauri)
+- **Tauri + Rust**: Framework nativo multiplataforma
+- **React + TypeScript**: Interfaz de usuario moderna
+- **SQLite**: Base de datos local ultrarrápida
+- **Tailwind CSS**: Diseño responsive y temas
 
-- **Frontend**: Next.js 14+ con TypeScript, Tailwind CSS
-- **Backend**: Node.js con Express/Fastify, Prisma ORM
-- **Base de Datos**: PostgreSQL (principal), Redis (caché)
-- **IA/ML**: OpenAI API, Whisper (speech-to-text), modelos personalizados
-- **Infraestructura**: AWS/Google Cloud, Docker, Kubernetes
+### Cliente Web Admin
+- **React 18 + TypeScript**: UI moderna y type-safe
+- **Vite**: Build tool ultra-rápido
+- **TanStack Query**: Gestión de estado del servidor
+- **Tailwind CSS**: Diseño consistente
 
-### Servicios Clave
+### Backend
+- **Go**: Alto rendimiento y concurrencia
+- **PostgreSQL**: Base de datos principal con change log
+- **Redis**: Cache y gestión de sesiones
+- **JWT**: Autenticación stateless
 
-- Servicio de Facturación Electrónica
-- Motor de Análisis y Reportes
-- Pipeline de Procesamiento de Voz
-- Sistema de Sincronización Multi-tenant
+## 📋 Estado del Desarrollo
 
-## 📋 Roadmap de Desarrollo
+### ✅ Completado
+- Arquitectura de 3 clientes establecida
+- Investigación completa de DTE
+- Sistema de tipos compartidos
+- Endpoint de firmado DTE
+- Componentes UI principales (diálogos, temas)
+- Decisión de arquitectura SQLite + PostgreSQL
 
-### Fase 1: MVP Funcional (8-10 semanas)
+### 🚧 En Progreso (Sprint 2: 40%)
+- Flujo completo de ventas
+- Integración SQLite local
+- Servicio de sincronización
+- Generación de facturas (FCF)
 
-- [ ] Setup inicial del proyecto y arquitectura base
-- [ ] Modelo de datos para productos, ventas y clientes
-- [ ] UI/UX del punto de venta básico
-- [ ] Integración con API del Ministerio de Hacienda
-- [ ] Sistema de autenticación y autorización
-- [ ] Funcionalidades básicas de venta y facturación
-
-### Fase 2: Inteligencia Básica (6-8 semanas)
-
-- [ ] Dashboard de analytics con insights automáticos
-- [ ] Integración de speech-to-text con Whisper
-- [ ] Procesamiento de lenguaje natural para comandos
-- [ ] Reportes inteligentes de ventas y tendencias
-
-### Fase 3: Multi-tenant y Escalabilidad (10-12 semanas)
-
-- [ ] Arquitectura de microservicios
-- [ ] Sistema de gestión de múltiples sucursales
-- [ ] Sincronización de inventario en tiempo real
-- [ ] APIs para integraciones externas
-
-### Fase 4: IA Avanzada (8-10 semanas)
-
-- [ ] Predicción de demanda con ML
-- [ ] Sistema de recomendaciones
-- [ ] Detección de anomalías
-- [ ] Asistente conversacional para análisis de negocio
+### 📅 Próximamente
+- Soporte para todos los tipos de DTE
+- Integración con hardware POS
+- Sincronización en tiempo real
+- Panel de analytics avanzado
 
 ## 🚀 Comenzando
 
 ### Prerequisitos
-
 - Node.js 18+
+- Go 1.21+
+- Rust 1.70+
 - PostgreSQL 14+
-- Redis 6+
-- Git
+- Docker & Docker Compose
 
-### Instalación Local
+### Instalación Rápida
 
 ```bash
 # Clonar el repositorio
 git clone git@github.com:mcalero11/pos-inteligente-sv.git
 cd pos-inteligente-sv
 
-# Instalar dependencias
-npm install
-
-# Configurar variables de entorno
+# Copiar variables de entorno
 cp .env.example .env
-# Editar .env con tus configuraciones
 
-# Inicializar base de datos
-npm run db:migrate
-npm run db:seed
+# Iniciar servicios con Docker
+docker-compose up
 
-# Iniciar en modo desarrollo
-npm run dev
+# En otra terminal, iniciar el cliente Tauri
+cd desktop
+pnpm install
+pnpm tauri dev
 ```
+
+### Acceso a las Aplicaciones
+
+- **Desktop POS**: Se abre automáticamente con `pnpm tauri dev`
+- **Web Admin**: http://localhost:5173
+- **API Backend**: http://localhost:8080
+- **API Docs**: http://localhost:8080/swagger
 
 ## 📖 Documentación
 
 - [Arquitectura del Sistema](./docs/ARCHITECTURE.md)
-- [Guía de Contribución](./docs/CONTRIBUTING.md)
+- [Estado del Proyecto](./PROJECT_STATUS.md)
+- [Decisiones Técnicas](./docs/decisions/)
 - [API Reference](./docs/API.md)
-- [Guía de Deployment](./docs/DEPLOYMENT.md)
+- [Guía de Desarrollo](./docs/DEVELOPMENT.md)
 
-## 🤝 Contribuyendo
+## 🛠️ Desarrollo
 
-Este es un proyecto showcase abierto a contribuciones. Por favor lee [CONTRIBUTING.md](./docs/CONTRIBUTING.md) para detalles sobre nuestro código de conducta y el proceso para enviar pull requests.
+### Estructura del Monorepo
+
+```
+pos-inteligente-sv/
+├── backend/          # API en Go
+├── desktop/          # Cliente Tauri (POS)
+├── web/              # Cliente React (Admin)
+├── shared/           # Tipos TypeScript compartidos
+├── docs/             # Documentación
+└── docker/           # Configuraciones Docker
+```
+
+### Comandos Útiles
+
+```bash
+# Backend
+cd backend && go run server.go
+
+# Desktop (Tauri)
+cd desktop && pnpm tauri dev
+
+# Web Admin
+cd web && pnpm dev
+
+# Todos con Docker
+docker-compose up
+```
+
+## 📊 Estado del Proyecto
+
+Para información detallada sobre el progreso actual del desarrollo, consulta [PROJECT_STATUS.md](PROJECT_STATUS.md).
 
 ## 📝 Licencia
 
@@ -114,14 +165,6 @@ Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](L
 
 - **Marvin Calero** - *Desarrollador Principal* - [@mcalero11](https://github.com/mcalero11)
 
-## 🙏 Agradecimientos
-
-- Comunidad de desarrolladores de El Salvador
-- Ministerio de Hacienda por la documentación de la API DTE
-- Contribuidores de código abierto
-
 ---
 
-**Estado del Proyecto**: 🟡 En Desarrollo Activo
-
-Para más información sobre el progreso actual del desarrollo, consulta [PROJECT_STATUS.md](PROJECT_STATUS.md).
+**Estado del Proyecto**: 🟢 En Desarrollo Activo | **Sprint 2**: 40% Completo

@@ -10,9 +10,9 @@ const sizeMap = {
   md: "md" as const,
   lg: "lg" as const,
   xl: "xl" as const,
-  "2xl": "xl" as const,
-  "3xl": "xl" as const,
-  "4xl": "xl" as const,
+  "2xl": "2xl" as const,
+  "3xl": "3xl" as const,
+  "4xl": "4xl" as const,
 };
 
 export default function DialogManager({

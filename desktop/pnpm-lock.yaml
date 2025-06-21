@@ -35,6 +35,9 @@ importers:
       '@tauri-apps/plugin-shell':
         specifier: ^2.2.2
         version: 2.2.2
+      '@tauri-apps/plugin-sql':
+        specifier: ^2.2.1
+        version: 2.2.1
       '@tauri-apps/plugin-stronghold':
         specifier: ^2.2.1
         version: 2.2.1
@@ -1082,6 +1085,9 @@ packages:
 
   '@tauri-apps/plugin-shell@2.2.2':
     resolution: {integrity: sha512-fg9XKWfzRQsN8p+Zrk82WeHvXFvGVnG0/mTlujQdLWNnO5cM6WD9qCrHbFytScVS+WhmRAkuypQPcxeKKl3VBg==}
+
+  '@tauri-apps/plugin-sql@2.2.1':
+    resolution: {integrity: sha512-+pUl3uNRcIWWhU42bJVf8IUrQ2dCGyi6XUI+RZqyr0xer8BoVc1Gj7WpVvjniL73a5lpXCzs0WYdJuiPUm9gCA==}
 
   '@tauri-apps/plugin-stronghold@2.2.1':
     resolution: {integrity: sha512-udDth65eSYFK8MUZoc78oIu3dlg3QnFky5O9/BKmX6suuq/CgzQJQK4t71yhBmO4Ch4C2DW/Lg5CgoCLDHx6Cw==}
@@ -2816,6 +2822,10 @@ snapshots:
       '@tauri-apps/api': 2.5.0
 
   '@tauri-apps/plugin-shell@2.2.2':
+    dependencies:
+      '@tauri-apps/api': 2.5.0
+
+  '@tauri-apps/plugin-sql@2.2.1':
     dependencies:
       '@tauri-apps/api': 2.5.0
 

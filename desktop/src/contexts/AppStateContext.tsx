@@ -2,7 +2,9 @@ import { createContext } from "preact";
 import { useContext, useState, useEffect, useCallback, useMemo } from "preact/hooks";
 import { ComponentChildren } from "preact";
 import { logger } from "@/lib/logger";
-import { useRenderTracker } from "@/hooks/use-render-tracker";
+import { useRenderTracker, setPerformanceTracking } from "@/hooks/use-render-tracker";
+import { databaseService } from "@/lib/database";
+import { settingsService } from "@/lib/settings-service";
 
 /**
  * AppState is a state machine for the POS application.
@@ -138,25 +140,63 @@ export function AppStateProvider({ children }: AppStateProviderProps) {
 
   const initializeApp = useCallback(async () => {
     try {
+      // Temporarily reduce performance tracking sensitivity during initialization
+      setPerformanceTracking(false);
+
       setState(AppState.LOADING);
-      // Fire and forget logging to avoid blocking UI
       logger.info('Initializing POS application').catch(globalThis.console.error);
 
-      // TODO: remove the timeout once we have implemented the initialization process
-      // Use requestAnimationFrame to avoid blocking UI
-      await new Promise(resolve => {
-        globalThis.requestAnimationFrame(() => {
-          globalThis.setTimeout(resolve, 100);
-        });
-      });
+      // Step 1: Initialize database
+      logger.info('Connecting to database...').catch(globalThis.console.error);
+      await databaseService.connect();
 
+      // Allow UI to breathe
+      await new Promise(resolve => globalThis.setTimeout(resolve, 50));
+
+      // Step 2: Test basic database operations
+      logger.info('Testing database operations...').catch(globalThis.console.error);
+      const categories = await databaseService.getAllCategories();
+      const users = await databaseService.getAllUsers();
+      const settings = await databaseService.getAllSystemSettings();
+
+      logger.info(`Database ready: ${categories.length} categories, ${users.length} users, ${settings.length} settings`).catch(globalThis.console.error);
+
+      if (users.length === 0) {
+        logger.warn('No users found - database seeder needs to be run').catch(globalThis.console.error);
+      }
+
+      // Allow UI to update
+      await new Promise(resolve => globalThis.setTimeout(resolve, 50));
+
+      // Step 3: Initialize settings service (loads and caches settings)
+      logger.info('Loading application settings...').catch(globalThis.console.error);
+      await settingsService.getSettings();
+
+      // Final UI update delay
+      await new Promise(resolve => globalThis.setTimeout(resolve, 100));
+
+      // Step 4: Application ready
       setState(AppState.READY);
       logger.info('POS application ready').catch(globalThis.console.error);
+
+      // Re-enable performance tracking after initialization
+      globalThis.setTimeout(() => setPerformanceTracking(true), 1000);
     } catch (err) {
       logger.error('Failed to initialize application', err as Error).catch(globalThis.console.error);
-      handleFatalError(err as Error, 'Application initialization failed');
+
+      // Determine error type based on the error
+      let errorType = ErrorType.UNKNOWN;
+      if (err instanceof Error) {
+        if (err.message.includes('database') || err.message.includes('Database')) {
+          errorType = ErrorType.DATABASE;
+        } else if (err.message.includes('network') || err.message.includes('connection')) {
+          errorType = ErrorType.NETWORK;
+        }
+      }
+
+      handleError(err as Error, errorType, true); // Mark as recoverable so user can retry
     }
-  }, [handleFatalError]);
+  }, [handleFatalError, handleError]);
 
   const retry = useCallback(() => {
     if (error) {

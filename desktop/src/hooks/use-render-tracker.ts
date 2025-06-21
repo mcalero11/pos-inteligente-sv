@@ -11,6 +11,7 @@ interface RenderInfo {
 // Global render tracking - only active when debugging is enabled
 const renderStats = new Map<string, RenderInfo>();
 let isDebuggingEnabled = import.meta.env.DEV; // Enable by default in development
+let isPerformanceTrackingEnabled = import.meta.env.DEV; // Separate flag for performance tracking
 
 // Function to enable/disable debugging
 export function setRenderDebugging(enabled: boolean) {
@@ -18,6 +19,11 @@ export function setRenderDebugging(enabled: boolean) {
   if (!enabled) {
     renderStats.clear();
   }
+}
+
+// Function to enable/disable performance tracking specifically
+export function setPerformanceTracking(enabled: boolean) {
+  isPerformanceTrackingEnabled = enabled;
 }
 
 export function useRenderTracker(componentName: string, props?: any) {
@@ -119,24 +125,42 @@ export function logRenderStats() {
 if (import.meta.env.DEV) {
   (globalThis as any).logRenderStats = logRenderStats;
   (globalThis as any).getRenderStats = getRenderStats;
+  (globalThis as any).setRenderDebugging = setRenderDebugging;
+  (globalThis as any).setPerformanceTracking = setPerformanceTracking;
 }
 
 // Hook to detect expensive renders
 export function usePerformanceTracker(componentName: string, threshold = 16) {
-  // Early return if debugging is not enabled
-  if (!isDebuggingEnabled) {
+  // Early return if debugging or performance tracking is not enabled
+  if (!isDebuggingEnabled || !isPerformanceTrackingEnabled) {
     return;
   }
 
   const startTime = useRef(Date.now());
+  const renderCount = useRef(0);
+  const appStartTime = useRef(Date.now());
 
   useEffect(() => {
     const endTime = Date.now();
     const renderTime = endTime - startTime.current;
+    const timeSinceAppStart = endTime - appStartTime.current;
 
-    if (renderTime > threshold && import.meta.env.DEV) {
+    renderCount.current += 1;
+
+    // Be more lenient during app initialization (first 3 seconds)
+    const isInitializing = timeSinceAppStart < 3000;
+    const adjustedThreshold = isInitializing ? Math.max(threshold * 4, 100) : threshold;
+
+    // Also be more lenient for the first few renders of each component
+    const isEarlyRender = renderCount.current <= 3;
+    const finalThreshold = isEarlyRender ? Math.max(adjustedThreshold * 2, 50) : adjustedThreshold;
+
+    if (renderTime > finalThreshold && import.meta.env.DEV) {
+      const context = isInitializing ? ' (during initialization)' : '';
+      const severity = renderTime > finalThreshold * 2 ? '🚨' : '🐌';
+
       globalThis.console.warn(
-        `🐌 Slow render detected in ${componentName}: ${renderTime}ms (threshold: ${threshold}ms)`
+        `${severity} Slow render detected in ${componentName}: ${renderTime}ms (threshold: ${finalThreshold}ms)${context}`
       );
     }
 

@@ -6,12 +6,7 @@ import { Settings, User, HelpCircle, Users, Activity } from "lucide-preact";
 import { useRenderTracker } from "@/hooks/use-render-tracker";
 import { usePOSTranslation } from "@/hooks/use-pos-translation";
 import PerformanceDialog from "@/components/dialogs/PerformanceDialog";
-
-// Hardcoded placeholder data and functions
-const selectedCustomer = {
-  name: "General Customer",
-  type: "general" as "general" | "partner" | "vip",
-};
+import { useSetting } from "@/contexts/SettingsContext";
 
 // Placeholder function - return true for all permissions for now
 // const hasPermission = (_permission: string) => {
@@ -25,9 +20,17 @@ interface POSHeaderProps {
 function POSHeader({ openDialog }: POSHeaderProps) {
   const [isPerformanceDialogOpen, setIsPerformanceDialogOpen] = useState(false);
   const { t, getCustomerTypeLabel } = usePOSTranslation();
+  const defaultCustomerName = useSetting('defaultCustomerName');
+  const defaultCustomerType = useSetting('defaultCustomerType');
 
   // Track renders for the header component
   useRenderTracker('POSHeader', { openDialog });
+
+  // Use settings-based customer data
+  const selectedCustomer = {
+    name: defaultCustomerName || "Cliente General",
+    type: (defaultCustomerType || "general") as "general" | "partner" | "vip",
+  };
 
   return (
     <>
