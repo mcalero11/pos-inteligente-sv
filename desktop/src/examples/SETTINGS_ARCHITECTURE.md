@@ -14,7 +14,7 @@ The Settings Service provides a **reactive, cached, and type-safe** way to manag
 - **Type-safe** operations with TypeScript interfaces
 - **Automatic fallbacks** to default values
 
-### 2. Settings Context (`src/contexts/SettingsContext.tsx`)
+### 2. Settings Context (`src/presentation/providers/SettingsContext.tsx`)
 
 - **React Context** for component access
 - **Loading states** and error handling
@@ -115,7 +115,7 @@ CREATE TABLE system_settings (
 ### 1. Component Usage with Hooks
 
 ```typescript
-import { useSettings, useSetting, useFinancialSettings } from '@/contexts/SettingsContext';
+import { useSettings, useSetting, useFinancialSettings } from '@/presentation/providers';
 
 function MyComponent() {
   // Get all settings
@@ -200,7 +200,7 @@ function calculateTotal(subtotal: number) {
 
 ```typescript
 // ✅ Dynamic values from database
-import { useFinancialSettings, useSetting } from '@/contexts/SettingsContext';
+import { useFinancialSettings, useSetting } from '@/presentation/providers';
 
 function MyComponent() {
   const { taxRate } = useFinancialSettings() || {};
@@ -223,22 +223,22 @@ function MyComponent() {
 
 ## 🎨 Components Updated
 
-### 1. POS Header (`src/components/pos/pos-header.tsx`)
+### 1. POS Header (`src/domains/sales/components/pos-header.tsx`)
 
 - **Before**: `name: "General Customer"`
 - **After**: `name: defaultCustomerName || "Cliente General"`
 
-### 2. Transaction Dialog (`src/components/dialogs/TransactionDialog.tsx`)
+### 2. Transaction Dialog (`src/presentation/dialogs/TransactionDialog.tsx`)
 
 - **Before**: `const tax = subtotal * 0.13;`
 - **After**: `const tax = subtotal * (taxRate / 100);`
 
-### 3. POS Cart (`src/components/pos/pos-cart.tsx`)
+### 3. POS Cart (`src/domains/sales/components/pos-cart.tsx`)
 
 - **Before**: `const tax = subtotal * 0.08;`
 - **After**: `const tax = subtotal * (taxRate / 100);`
 
-### 4. Settings Dialog (`src/components/dialogs/SettingsDialog.tsx`)
+### 4. Settings Dialog (`src/presentation/dialogs/SettingsDialog.tsx`)
 
 - **Complete rewrite** with real settings management
 - **Form validation** and change tracking
@@ -336,7 +336,7 @@ describe('Settings Service', () => {
 
 ```typescript
 import { render, screen } from '@testing-library/preact';
-import { SettingsProvider } from '@/contexts/SettingsContext';
+import { SettingsProvider } from '@/presentation/providers';
 
 test('components use settings correctly', async () => {
   render(

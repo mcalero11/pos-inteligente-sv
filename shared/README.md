@@ -118,12 +118,6 @@ Core business entities used across all services:
 - Payment and inventory types
 - Configuration types
 
-### Automerge Types (`automerge.ts`)
-CRDT document schemas for local-first operation:
-- TerminalDocument structure
-- Sync state management
-- Conflict-free data types
-
 ### Protocol Types (`proto/sync.proto`)
 Service communication protocols:
 - Sync messages

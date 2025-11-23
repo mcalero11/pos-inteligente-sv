@@ -25,7 +25,7 @@ El sistema consta de tres aplicaciones especializadas:
 ### 3. **Backend API (Go)** - Núcleo del Sistema
 - PostgreSQL con change log para sincronización
 - Integración con Ministerio de Hacienda (DTE)
-- Autenticación passwordless (WhatsApp/Email)
+- Autenticación passwordless (WhatsApp/Email/Google)
 - API REST con polling adaptativo
 
 ## ✨ Características Principales
@@ -159,7 +159,7 @@ Para información detallada sobre el progreso actual del desarrollo, consulta [P
 
 ## 📝 Licencia
 
-Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+Este proyecto está licenciado bajo la Elastic License 2.0 - ver el archivo [LICENSE](LICENSE) para más detalles.
 
 ## 👥 Equipo
 

@@ -1,176 +1,222 @@
 # Tauri Backend Architecture
 
-This document describes the organized architecture of the Tauri backend for the POS application.
+This document describes the architecture of the Tauri backend for the POS application.
 
 ## Directory Structure
 
 ```
 src/
-├── commands/           # Tauri command handlers organized by domain
-│   ├── mod.rs         # Main commands module
-│   ├── auth.rs        # Authentication commands
-│   ├── dte.rs         # DTE signing commands
+├── commands/              # Shared infrastructure commands
+│   ├── mod.rs             # Commands module
+│   ├── auth.rs            # Authentication commands (PIN hash/verify)
 │   ├── secure_storage.rs  # Secure storage commands
-│   ├── system.rs      # System utility commands
-│   ├── utils.rs       # General utility commands
-│   └── README.md      # Commands documentation
-├── plugins/           # Plugin configurations organized by type
-│   ├── mod.rs         # Main plugins orchestrator
-│   ├── log_config.rs  # Logging plugin configuration
-│   ├── sql_config.rs  # Database plugin configuration
+│   ├── system.rs          # System utility commands
+│   ├── utils.rs           # General utilities
+│   └── README.md          # Commands documentation
+├── domains/               # Domain-driven business logic
+│   ├── mod.rs             # Domains module
+│   ├── customers/         # Customer domain
+│   │   ├── commands.rs    # Customer Tauri commands
+│   │   ├── repository.rs  # Customer data access
+│   │   └── mod.rs
+│   ├── dte/               # DTE (electronic invoicing) domain
+│   │   ├── commands.rs    # DTE signing commands
+│   │   ├── service.rs     # DTE signer service
+│   │   └── mod.rs
+│   ├── products/          # Products domain
+│   │   ├── commands.rs    # Product Tauri commands
+│   │   ├── repository.rs  # Product data access
+│   │   └── mod.rs
+│   ├── sales/             # Sales domain
+│   │   ├── commands.rs    # Sales Tauri commands
+│   │   ├── repository.rs  # Sales data access
+│   │   └── mod.rs
+│   ├── settings/          # Settings domain
+│   │   ├── commands.rs    # Settings Tauri commands
+│   │   ├── repository.rs  # Settings data access
+│   │   └── mod.rs
+│   └── users/             # Users domain
+│       ├── commands.rs    # User Tauri commands
+│       ├── repository.rs  # User data access
+│       └── mod.rs
+├── infrastructure/        # Infrastructure layer
+│   ├── mod.rs
+│   └── database.rs        # Database initialization
+├── plugins/               # Plugin configurations
+│   ├── mod.rs             # Plugin orchestrator
+│   ├── log_config.rs      # Logging plugin configuration
+│   ├── sql_config.rs      # Database plugin configuration
 │   ├── storage_config.rs  # Secure storage plugin configuration
-│   └── README.md      # Plugins documentation
-├── services/          # Business logic services
-│   ├── mod.rs         # Main services module
-│   ├── database.rs    # Database configuration and migrations
-│   ├── dte_signer.rs  # DTE signing service
+│   └── README.md          # Plugins documentation
+├── services/              # Shared services
+│   ├── mod.rs             # Services module
+│   ├── database.rs        # Database utilities
+│   ├── dte_signer.rs      # DTE signing utilities
 │   ├── secure_storage.rs  # Secure storage service
-│   └── README.md      # Services documentation
-├── lib.rs            # Main library entry point
-├── main.rs           # Application entry point
-└── ARCHITECTURE.md   # This file
+│   └── README.md          # Services documentation
+├── lib.rs                 # Main library entry point
+├── main.rs                # Application entry point
+└── ARCHITECTURE.md        # This file
 ```
 
 ## Architecture Layers
 
-### 1. **Entry Point Layer** (`lib.rs`, `main.rs`)
+### 1. Entry Point (`lib.rs`, `main.rs`)
 
 - **lib.rs**: Main library configuration, plugin setup, and command registration
 - **main.rs**: Application entry point that calls the library
 
-### 2. **Plugin Layer** (`plugins/`)
+### 2. Domains Layer (`domains/`)
 
-- Configures all Tauri plugins (logging, database, secure storage)
-- Environment-specific configurations (dev, prod, test)
-- Centralized plugin management
+Business logic organized by domain (DDD pattern):
+- **customers/**: Customer management
+- **dte/**: Electronic invoicing (DTE signing, certificates)
+- **products/**: Product catalog and inventory
+- **sales/**: Sales transactions
+- **settings/**: System settings
+- **users/**: User management and authentication
 
-### 3. **Command Layer** (`commands/`)
+Each domain contains:
+- `commands.rs`: Tauri IPC handlers
+- `repository.rs`: Data access layer
+- `mod.rs`: Module exports
 
-- Tauri command handlers that expose functionality to the frontend
-- Organized by domain (auth, DTE, storage, system)
-- Thin layer that delegates to services
+### 3. Commands Layer (`commands/`)
 
-### 4. **Service Layer** (`services/`)
+Shared infrastructure commands that don't belong to a specific domain:
+- **auth.rs**: PIN hashing and verification
+- **secure_storage.rs**: Secure key/value storage
+- **system.rs**: System utilities (logs, debugging)
 
-- Business logic implementation
-- Database operations and migrations
-- Secure storage management
-- DTE signing functionality
+### 4. Services Layer (`services/`)
+
+Shared business logic services used across domains:
+- **database.rs**: Database configuration and migrations
+- **dte_signer.rs**: DTE signing service
+- **secure_storage.rs**: Secure storage management
+
+### 5. Plugins Layer (`plugins/`)
+
+Infrastructure plugin configurations:
+- **log_config.rs**: Logging (tauri-plugin-log)
+- **sql_config.rs**: SQLite database (tauri-plugin-sql)
+- **storage_config.rs**: Secure storage (tauri-plugin-stronghold)
 
 ## Data Flow
 
 ```
-Frontend (React/TypeScript)
+Frontend (Preact/TypeScript)
          │
          ▼
-┌─────────────────┐
-│   Tauri IPC     │
-└─────────────────┘
+┌─────────────────────────────────────┐
+│           Tauri IPC                 │
+└─────────────────────────────────────┘
+         │
+         ├──────────────┬──────────────┐
+         ▼              ▼              ▼
+┌─────────────┐  ┌────────────┐  ┌────────────┐
+│   Domains   │  │  Commands  │  │  Services  │
+│ - products  │  │ - auth     │  │ - storage  │
+│ - sales     │  │ - storage  │  │ - dte      │
+│ - customers │  │ - system   │  └────────────┘
+│ - users     │  └────────────┘
+│ - dte       │
+│ - settings  │
+└─────────────┘
          │
          ▼
-┌─────────────────┐
-│   Commands      │  ◄── Handles frontend requests
-│   - auth.rs     │
-│   - dte.rs      │
-│   - system.rs   │
-│   - storage.rs  │
-└─────────────────┘
-         │
-         ▼
-┌─────────────────┐
-│   Services      │  ◄── Business logic
-│   - database    │
-│   - dte_signer  │
-│   - storage     │
-└─────────────────┘
-         │
-         ▼
-┌─────────────────┐
-│   Plugins       │  ◄── Infrastructure
-│   - SQL         │
-│   - Stronghold  │
-│   - Logging     │
-└─────────────────┘
+┌─────────────────────────────────────┐
+│           Plugins                   │
+│   SQL (SQLite) │ Stronghold │ Log  │
+└─────────────────────────────────────┘
 ```
 
 ## Key Design Principles
 
-### 1. **Separation of Concerns**
+### 1. Domain-Driven Design
 
-- **Commands**: Handle Tauri IPC and parameter validation
-- **Services**: Contain business logic and data operations
-- **Plugins**: Manage infrastructure and external dependencies
+- Business logic organized by bounded context
+- Each domain is self-contained with commands and repository
+- Clear boundaries between domains
 
-### 2. **Domain Organization**
+### 2. Separation of Concerns
 
-- Code is organized by functional domains (auth, DTE, storage, system)
-- Each domain has its own files and clear boundaries
-- Easy to locate and modify domain-specific functionality
+- **Domains**: Business logic for specific contexts
+- **Commands**: Shared infrastructure functionality
+- **Services**: Cross-cutting concerns
+- **Plugins**: External infrastructure
 
-### 3. **Dependency Direction**
+### 3. Dependency Direction
 
 ```
+Domains ──► Services ──► Plugins
 Commands ──► Services ──► Plugins
 ```
 
-- Commands depend on services
-- Services depend on plugins/external libraries
+- Domains/Commands depend on services
+- Services depend on plugins
 - No circular dependencies
-
-### 4. **Error Handling**
-
-- Each service defines its own error types
-- Errors are properly propagated through the layers
-- Meaningful error messages for debugging
-
-### 5. **Configuration Management**
-
-- Environment-specific configurations for plugins
-- Centralized configuration in plugin modules
-- Easy to switch between dev/prod settings
 
 ## Module Responsibilities
 
+### Domains Module
+
+Each domain contains:
+- **commands.rs**: Tauri IPC handlers with `#[tauri::command]`
+- **repository.rs**: Database queries and data mapping
+- **Types**: Domain-specific structs and enums
+
 ### Commands Module
 
-- **Purpose**: Expose functionality to the frontend via Tauri IPC
-- **Responsibilities**:
-  - Parameter validation and deserialization
-  - Calling appropriate service methods
-  - Error handling and response serialization
-  - Logging command execution
+- Infrastructure commands not tied to business domains
+- Authentication utilities (PIN management)
+- System utilities (log access, debugging)
+- Secure storage management
 
 ### Services Module
 
-- **Purpose**: Implement business logic and data operations
-- **Responsibilities**:
-  - Database operations and queries
-  - Business rule enforcement
-  - Data transformation and validation
-  - Integration with external services
+- Business logic shared across domains
+- External service integrations
+- Complex operations requiring multiple repositories
 
 ### Plugins Module
 
-- **Purpose**: Configure and manage infrastructure plugins
-- **Responsibilities**:
-  - Database connection and migration setup
-  - Logging configuration and formatting
-  - Secure storage initialization
-  - Environment-specific optimizations
+- Environment-specific configurations (dev/prod/test)
+- Plugin initialization and setup
+- Centralized infrastructure management
 
 ## Adding New Functionality
 
-### 1. Adding a New Command
+### Adding a New Domain Command
 
 ```rust
-// 1. Add to appropriate command module (e.g., commands/your_domain.rs)
+// 1. Create in domains/your_domain/commands.rs
 #[tauri::command]
-pub async fn your_command(param: String) -> Result<String, YourError> {
-    your_service::process(param).await
+pub async fn your_command(param: String) -> Result<YourType, String> {
+    // Implementation
 }
 
-// 2. Re-export in commands/mod.rs
-pub use your_domain::*;
+// 2. Export in domains/your_domain/mod.rs
+pub use commands::your_command;
+
+// 3. Register in lib.rs invoke_handler
+.invoke_handler(tauri::generate_handler![
+    domains::your_domain::your_command,
+])
+```
+
+### Adding a Shared Command
+
+```rust
+// 1. Add to commands/your_module.rs
+#[tauri::command]
+pub fn your_command() -> Result<String, String> {
+    // Implementation
+}
+
+// 2. Export in commands/mod.rs
+pub mod your_module;
+pub use your_module::*;
 
 // 3. Register in lib.rs
 .invoke_handler(tauri::generate_handler![
@@ -178,145 +224,36 @@ pub use your_domain::*;
 ])
 ```
 
-### 2. Adding a New Service
-
-```rust
-// 1. Create services/your_service.rs
-pub struct YourService;
-impl YourService {
-    pub async fn process(input: String) -> Result<String, YourError> {
-        // Implementation
-    }
-}
-
-// 2. Add to services/mod.rs
-pub mod your_service;
-```
-
-### 3. Adding a New Plugin Configuration
-
-```rust
-// 1. Create plugins/your_plugin_config.rs
-pub fn build() -> your_plugin::Builder {
-    your_plugin::Builder::new()
-        .with_config(...)
-}
-
-// 2. Add to plugins/mod.rs
-pub mod your_plugin_config;
-
-// 3. Add to configure_plugins function
-.plugin(your_plugin_config::build().build())
-```
-
 ## Testing Strategy
 
 ### Unit Tests
 
-- Each service should have comprehensive unit tests
-- Mock external dependencies
-- Test error conditions and edge cases
+- Repository methods with mock data
+- Service logic with mocked dependencies
+- Command handlers with stubbed services
 
 ### Integration Tests
 
-- Test command-to-service integration
-- Test database operations with test database
-- Test plugin configurations
-
-### Example Test Structure
-
-```rust
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[tokio::test]
-    async fn test_service_method() {
-        // Arrange
-        let service = YourService::new();
-        
-        // Act
-        let result = service.method("test").await;
-        
-        // Assert
-        assert!(result.is_ok());
-    }
-}
-```
-
-## Performance Considerations
-
-### Database
-
-- Use connection pooling (handled by tauri-plugin-sql)
-- Implement proper indexing in migrations
-- Use prepared statements for repeated queries
-
-### Logging
-
-- Configure appropriate log levels for different environments
-- Use structured logging for better searchability
-- Implement log rotation to manage disk space
-
-### Secure Storage
-
-- Minimize the number of vault operations
-- Cache frequently accessed data appropriately
-- Use async operations to avoid blocking
+- Full command-to-database flow
+- Plugin configurations
+- Error propagation
 
 ## Security Best Practices
 
 ### Secure Storage
 
+- Use Stronghold for sensitive data (certificates, keys)
+- Proper password hashing (Argon2)
 - Never log sensitive data
-- Use proper password hashing
-- Implement secure key derivation
-
-### Error Handling
-
-- Don't expose internal system details in error messages
-- Log security-relevant events
-- Implement proper input validation
 
 ### Database
 
-- Use parameterized queries (automatic with tauri-plugin-sql)
-- Implement proper access controls
-- Regular security updates
+- Parameterized queries (automatic with tauri-plugin-sql)
+- Input validation in commands
+- Proper error handling without exposing internals
 
-## Migration Guide
+### DTE Signing
 
-This architecture represents a migration from a monolithic structure to a well-organized, modular system:
-
-### Before
-
-```
-src/
-├── lib.rs (everything mixed together)
-├── commands.rs (all commands in one file)
-├── database.rs
-├── dte_signer.rs
-└── secure_storage.rs
-```
-
-### After
-
-```
-src/
-├── commands/ (organized by domain)
-├── services/ (business logic)
-├── plugins/ (infrastructure)
-└── lib.rs (clean orchestration)
-```
-
-### Benefits of Migration
-
-1. **Better Organization** - Easy to find and modify code
-2. **Improved Maintainability** - Changes are isolated to specific domains
-3. **Enhanced Testability** - Each module can be tested independently
-4. **Clearer Dependencies** - Explicit dependency relationships
-5. **Scalability** - Easy to add new functionality without conflicts
-6. **Documentation** - Each module is well-documented
-7. **Team Development** - Multiple developers can work on different domains
-
-This architecture provides a solid foundation for the POS application that can scale and evolve with the project's needs.
+- Certificates stored securely in memory
+- Password-protected certificate loading
+- Audit logging for signing operations
