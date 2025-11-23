@@ -11,7 +11,7 @@ The seeder script populates the database with initial data required for the appl
 From the `src-tauri` directory, run:
 
 ```bash
-# Use default database path (pos.db)
+# Use default database path (pos_database.db)
 ./scripts/run_seeder.sh
 
 # Or specify a custom database path

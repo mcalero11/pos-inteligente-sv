@@ -1,6 +1,6 @@
 // Example file showing how to use the i18n system in your POS application
 import { useTranslation } from 'react-i18next';
-import { usePOSTranslation } from '@/hooks/use-pos-translation';
+import { usePOSTranslation } from '@/presentation/hooks/use-pos-translation';
 
 // Example 1: Basic translation usage
 function BasicExample() {

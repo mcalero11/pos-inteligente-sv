@@ -1,5 +1,5 @@
-import { databaseService } from './database';
-import { logger } from './logger';
+import { DatabaseAdapter } from '@/infrastructure/database';
+import { logger } from '@/infrastructure/logging';
 
 // Settings types for better type safety
 export interface AppSettings {
@@ -125,7 +125,10 @@ export class SettingsService {
       const dbKey = SETTINGS_MAPPING[key];
       const dbValue = this.serializeValue(value);
 
-      await databaseService.setSystemSetting(dbKey, dbValue);
+      await DatabaseAdapter.execute(
+        'INSERT OR REPLACE INTO system_settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)',
+        [dbKey, dbValue]
+      );
 
       // Update cache
       if (this.cachedSettings) {
@@ -150,7 +153,10 @@ export class SettingsService {
       const promises = Object.entries(updates).map(([key, value]) => {
         const dbKey = SETTINGS_MAPPING[key as keyof AppSettings];
         const dbValue = this.serializeValue(value as string | number | boolean);
-        return databaseService.setSystemSetting(dbKey, dbValue);
+        return DatabaseAdapter.execute(
+          'INSERT OR REPLACE INTO system_settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)',
+          [dbKey, dbValue]
+        );
       });
 
       await Promise.all(promises);
@@ -239,7 +245,8 @@ export class SettingsService {
       const settings = { ...DEFAULT_SETTINGS };
 
       // Load all settings from database
-      const dbSettings = await databaseService.getAllSystemSettings();
+      const dbSettings = await DatabaseAdapter.query<{ key: string, value: string }>('SELECT key, value FROM system_settings');
+
 
       // Map database settings to app settings
       for (const appKey of Object.keys(SETTINGS_MAPPING) as Array<keyof AppSettings>) {

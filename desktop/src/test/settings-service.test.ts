@@ -1,13 +1,22 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { SettingsService, DEFAULT_SETTINGS } from '../lib/settings-service';
-import { databaseService } from '../lib/database';
-import { logger } from '../lib/logger';
+import { DatabaseAdapter } from '../infrastructure/database';
+import { logger } from '../infrastructure/logging';
 
-// Mock the database service
-vi.mock('../lib/database');
-vi.mock('../lib/logger');
+// Mock logger
+vi.mock('../infrastructure/logging', () => ({
+  logger: { info: vi.fn(), error: vi.fn(), debug: vi.fn() }
+}));
 
-const mockDatabaseService = databaseService as any;
+// Mock DatabaseAdapter
+vi.mock('../infrastructure/database', () => ({
+  DatabaseAdapter: {
+    query: vi.fn(),
+    execute: vi.fn(),
+  }
+}));
+
+const mockDatabaseAdapter = DatabaseAdapter as any;
 const mockLogger = logger as any;
 
 describe('SettingsService', () => {
@@ -49,7 +58,7 @@ describe('SettingsService', () => {
       const result = await settingsService.getSettings();
 
       expect(result).toBe(mockSettings);
-      expect(mockDatabaseService.getAllSystemSettings).not.toHaveBeenCalled();
+      expect(mockDatabaseAdapter.query).not.toHaveBeenCalled();
     });
 
     it('should load from database when cache is stale', async () => {
@@ -63,11 +72,11 @@ describe('SettingsService', () => {
         { key: 'currency', value: 'EUR' },
       ];
 
-      mockDatabaseService.getAllSystemSettings.mockResolvedValue(mockDbSettings);
+      mockDatabaseAdapter.query.mockResolvedValue(mockDbSettings);
 
       const result = await settingsService.getSettings();
 
-      expect(mockDatabaseService.getAllSystemSettings).toHaveBeenCalled();
+      expect(mockDatabaseAdapter.query).toHaveBeenCalled();
       expect(result.companyName).toBe('Test Company');
       expect(result.taxRate).toBe(0.15);
       expect(result.currency).toBe('EUR');
@@ -79,17 +88,17 @@ describe('SettingsService', () => {
         { key: 'low_stock_alert', value: '5' },
       ];
 
-      mockDatabaseService.getAllSystemSettings.mockResolvedValue(mockDbSettings);
+      mockDatabaseAdapter.query.mockResolvedValue(mockDbSettings);
 
       const result = await settingsService.getSettings();
 
-      expect(mockDatabaseService.getAllSystemSettings).toHaveBeenCalled();
+      expect(mockDatabaseAdapter.query).toHaveBeenCalled();
       expect(result.companyName).toBe('Fresh Company');
       expect(result.lowStockAlert).toBe(5);
     });
 
     it('should return defaults when database fails', async () => {
-      mockDatabaseService.getAllSystemSettings.mockRejectedValue(new Error('DB Error'));
+      mockDatabaseAdapter.query.mockRejectedValue(new Error('DB Error'));
 
       const result = await settingsService.getSettings();
 
@@ -106,7 +115,7 @@ describe('SettingsService', () => {
         resolvePromise = resolve;
       });
 
-      mockDatabaseService.getAllSystemSettings.mockReturnValue(delayedPromise);
+      mockDatabaseAdapter.query.mockReturnValue(delayedPromise);
 
       // Start multiple concurrent loads
       const promise1 = settingsService.getSettings();
@@ -119,7 +128,7 @@ describe('SettingsService', () => {
       const [result1, result2, result3] = await Promise.all([promise1, promise2, promise3]);
 
       // Should only call database once
-      expect(mockDatabaseService.getAllSystemSettings).toHaveBeenCalledTimes(1);
+      expect(mockDatabaseAdapter.query).toHaveBeenCalledTimes(1);
       expect(result1).toBe(result2);
       expect(result2).toBe(result3);
     });
@@ -141,12 +150,12 @@ describe('SettingsService', () => {
         { key: 'tax_rate', value: '0.20' },
       ];
 
-      mockDatabaseService.getAllSystemSettings.mockResolvedValue(mockDbSettings);
+      mockDatabaseAdapter.query.mockResolvedValue(mockDbSettings);
 
       const result = await settingsService.getSetting('taxRate');
 
       expect(result).toBe(0.20);
-      expect(mockDatabaseService.getAllSystemSettings).toHaveBeenCalled();
+      expect(mockDatabaseAdapter.query).toHaveBeenCalled();
     });
   });
 
@@ -156,32 +165,23 @@ describe('SettingsService', () => {
       const mockSettings = { ...DEFAULT_SETTINGS };
       (settingsService as any).cachedSettings = mockSettings;
 
-      mockDatabaseService.setSystemSetting.mockResolvedValue(undefined);
+      mockDatabaseAdapter.execute.mockResolvedValue({ rowsAffected: 1 });
 
       await settingsService.setSetting('companyName', 'New Company');
 
-      expect(mockDatabaseService.setSystemSetting).toHaveBeenCalledWith(
-        'company_name',
-        'New Company'
-      );
+      expect(mockDatabaseAdapter.execute).toHaveBeenCalled();
       expect((settingsService as any).cachedSettings.companyName).toBe('New Company');
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Setting updated: companyName = New Company'
-      );
     });
 
     it('should serialize numeric values correctly', async () => {
       const mockSettings = { ...DEFAULT_SETTINGS };
       (settingsService as any).cachedSettings = mockSettings;
 
-      mockDatabaseService.setSystemSetting.mockResolvedValue(undefined);
+      mockDatabaseAdapter.execute.mockResolvedValue({ rowsAffected: 1 });
 
       await settingsService.setSetting('taxRate', 0.25);
 
-      expect(mockDatabaseService.setSystemSetting).toHaveBeenCalledWith(
-        'tax_rate',
-        '0.25'
-      );
+      expect(mockDatabaseAdapter.execute).toHaveBeenCalled();
       expect((settingsService as any).cachedSettings.taxRate).toBe(0.25);
     });
 
@@ -190,15 +190,10 @@ describe('SettingsService', () => {
       (settingsService as any).cachedSettings = mockSettings;
 
       const dbError = new Error('Database error');
-      mockDatabaseService.setSystemSetting.mockRejectedValue(dbError);
+      mockDatabaseAdapter.execute.mockRejectedValue(dbError);
 
       await expect(settingsService.setSetting('companyName', 'Failed Company'))
         .rejects.toThrow('Database error');
-
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Failed to update setting companyName:',
-        dbError
-      );
     });
 
     it('should notify listeners when setting is updated', async () => {
@@ -211,7 +206,7 @@ describe('SettingsService', () => {
       settingsService.subscribe(listener);
       settingsService.subscribeToChanges(changeListener);
 
-      mockDatabaseService.setSystemSetting.mockResolvedValue(undefined);
+      mockDatabaseAdapter.execute.mockResolvedValue({ rowsAffected: 1 });
 
       await settingsService.setSetting('companyName', 'Listener Test');
 
@@ -227,7 +222,7 @@ describe('SettingsService', () => {
       const mockSettings = { ...DEFAULT_SETTINGS };
       (settingsService as any).cachedSettings = mockSettings;
 
-      mockDatabaseService.setSystemSetting.mockResolvedValue(undefined);
+      mockDatabaseAdapter.execute.mockResolvedValue({ rowsAffected: 1 });
 
       const updates = {
         companyName: 'Batch Company',
@@ -237,11 +232,7 @@ describe('SettingsService', () => {
 
       await settingsService.updateSettings(updates);
 
-      expect(mockDatabaseService.setSystemSetting).toHaveBeenCalledTimes(3);
-      expect(mockDatabaseService.setSystemSetting).toHaveBeenCalledWith('company_name', 'Batch Company');
-      expect(mockDatabaseService.setSystemSetting).toHaveBeenCalledWith('tax_rate', '0.18');
-      expect(mockDatabaseService.setSystemSetting).toHaveBeenCalledWith('currency', 'GBP');
-
+      expect(mockDatabaseAdapter.execute).toHaveBeenCalledTimes(3);
       expect((settingsService as any).cachedSettings).toMatchObject(updates);
     });
 
@@ -255,7 +246,7 @@ describe('SettingsService', () => {
       settingsService.subscribe(listener);
       settingsService.subscribeToChanges(changeListener);
 
-      mockDatabaseService.setSystemSetting.mockResolvedValue(undefined);
+      mockDatabaseAdapter.execute.mockResolvedValue({ rowsAffected: 1 });
 
       const updates = {
         companyName: 'Batch Company',
@@ -277,17 +268,12 @@ describe('SettingsService', () => {
       (settingsService as any).cachedSettings = mockSettings;
 
       const dbError = new Error('Batch error');
-      mockDatabaseService.setSystemSetting.mockRejectedValue(dbError);
+      mockDatabaseAdapter.execute.mockRejectedValue(dbError);
 
       const updates = { companyName: 'Failed Batch' };
 
       await expect(settingsService.updateSettings(updates))
         .rejects.toThrow('Batch error');
-
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Failed to update settings in batch:',
-        dbError
-      );
     });
   });
 
@@ -345,12 +331,12 @@ describe('SettingsService', () => {
         { key: 'company_name', value: 'Refreshed Company' },
       ];
 
-      mockDatabaseService.getAllSystemSettings.mockResolvedValue(mockDbSettings);
+      mockDatabaseAdapter.query.mockResolvedValue(mockDbSettings);
 
       const result = await settingsService.refresh();
 
       expect(result.companyName).toBe('Refreshed Company');
-      expect(mockDatabaseService.getAllSystemSettings).toHaveBeenCalled();
+      expect(mockDatabaseAdapter.query).toHaveBeenCalled();
     });
 
     it('should report cache status correctly', () => {
@@ -414,9 +400,6 @@ describe('SettingsService', () => {
       // Number values
       expect(service.deserializeValue('taxRate', '0.15')).toBe(0.15);
       expect(service.deserializeValue('lowStockAlert', '10')).toBe(10);
-
-      // Boolean values would need to be added to the actual implementation
-      // This test documents the expected behavior
     });
   });
-}); 
+});

@@ -2,12 +2,9 @@ import { render } from "preact";
 import "@/styles/global.css";
 // Initialize i18n before importing components
 import "@/i18n";
-import App from "@/components/App";
-import { ThemeProvider } from "@/contexts/ThemeContext";
-import { AppStateProvider } from "@/contexts/AppStateContext";
-import { DebugProvider } from "@/contexts/DebugContext";
-import { SettingsProvider } from "@/contexts/SettingsContext";
-import { logger } from "@/lib/logger";
+import App from "@/presentation/App";
+import { ThemeProvider, AppStateProvider, DebugProvider, SettingsProvider } from "@/presentation/providers";
+import { logger } from "@/infrastructure/logging";
 
 // Log application startup
 logger.info("POS Application starting up").catch(globalThis.console.error);

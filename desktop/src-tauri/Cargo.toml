@@ -40,6 +40,8 @@ tauri-plugin-log = "2.5.0"
 log = "0.4"
 tauri-plugin-sql = { version = "2.0.0", features = ["sqlite"] }
 rusqlite = { version = "0.32", features = ["bundled"] }
+lazy_static = "1.4"
+rand = "0.8"
 
 [profile.dev]
 incremental = true # Compile your binary in smaller steps.

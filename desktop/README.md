@@ -4,44 +4,101 @@ The primary point-of-sale client built with Tauri for true offline-first operati
 
 ## Overview
 
-This is the main POS terminal application that cashiers use for daily operations. Built with Tauri, it provides:
+This is the main POS terminal application that cashiers use for daily operations. Built with Tauri 2.x, it provides:
 
-- **100% Offline Operation**: Uses Automerge CRDTs for conflict-free local-first data
+- **100% Offline Operation**: Uses SQLite for local-first data with change log sync
 - **Native Performance**: Rust backend with minimal resource usage
 - **Hardware Integration**: Direct access to POS peripherals
-- **P2P Sync**: Synchronize with other terminals on the same network
-- **Automatic Cloud Sync**: Pushes changes to the server when online
+- **DTE Integration**: Electronic invoicing for El Salvador tax compliance
+- **Automatic Cloud Sync**: HTTP polling with adaptive intervals when online
+
+## Technology Stack
+
+| Component | Technology | Version |
+|-----------|------------|---------|
+| Frontend | Preact | 10.26.9 |
+| Backend | Tauri/Rust | 2.5 |
+| Database | SQLite | via rusqlite 0.32 |
+| Build Tool | Vite | 6.x |
+| CSS | Tailwind CSS | 4.x |
+| Testing | Vitest | 3.2.4 |
+| UI Components | shadcn/ui | - |
 
 ## Architecture
 
-```bash
+The frontend follows Domain-Driven Design (DDD):
+
+```
 desktop/
-├── src/                    # Frontend (Preact + TypeScript)
-│   ├── components/        # UI components
-│   ├── stores/           # State management with Automerge
-│   ├── hooks/            # Custom Preact hooks
-│   └── services/         # Business logic
-├── src-tauri/            # Backend (Rust)
+├── src/                        # Frontend (Preact + TypeScript)
+│   ├── domains/                # Business logic by bounded context
+│   │   ├── sales/              # Sales domain (cart, transactions)
+│   │   │   ├── components/     # POS components (cart, header, footer)
+│   │   │   ├── entities/       # Sale, SaleItem, Cart
+│   │   │   ├── services/       # SalesService
+│   │   │   └── hooks/          # useSales, useCart
+│   │   ├── products/           # Products domain
+│   │   │   ├── components/     # Product grid, search
+│   │   │   ├── entities/       # Product, Category
+│   │   │   └── services/       # ProductService
+│   │   ├── customers/          # Customers domain
+│   │   ├── users/              # Users/Auth domain
+│   │   ├── settings/           # Settings domain
+│   │   ├── dte/                # Electronic invoicing domain
+│   │   │   └── services/       # DTEService, DTESigningService
+│   │   └── audit/              # Audit/logging domain
+│   ├── infrastructure/         # Technical concerns
+│   │   ├── database/           # DatabaseAdapter (SQLite facade)
+│   │   ├── logging/            # Logger service
+│   │   ├── storage/            # Secure & local storage
+│   │   └── tauri/              # Tauri IPC command wrappers
+│   ├── presentation/           # UI layer
+│   │   ├── providers/          # React contexts (AppState, Settings, Theme)
+│   │   ├── hooks/              # Presentation hooks (useDialog, etc.)
+│   │   ├── screens/            # Full-page screens (POS, Loading, Error)
+│   │   ├── dialogs/            # Modal dialogs
+│   │   └── layouts/            # Layout components
+│   ├── shared/                 # Cross-cutting concerns
+│   │   ├── ui/                 # UI components (shadcn/ui)
+│   │   ├── utils/              # Utilities (cn, formatters)
+│   │   └── components/         # Shared components
+│   ├── lib/                    # Application services
+│   │   ├── settings-service.ts # App settings with caching
+│   │   ├── secure-storage.ts   # Secure key storage
+│   │   └── crypto.ts           # Crypto utilities
+│   └── i18n/                   # Internationalization (Spanish)
+├── src-tauri/                  # Backend (Rust)
 │   ├── src/
-│   │   ├── hardware/     # Hardware integrations
-│   │   ├── sync/         # Automerge sync engine
-│   │   └── storage/      # Local persistence
-│   └── Cargo.toml        # Rust dependencies
-└── public/               # Static assets
+│   │   ├── commands/           # Tauri IPC handlers
+│   │   ├── services/           # Business logic
+│   │   └── plugins/            # Plugin configuration
+│   ├── migrations/             # SQLite migrations
+│   └── Cargo.toml              # Rust dependencies
+└── public/                     # Static assets
 ```
 
 ## Key Features
 
 ### Local-First Data Management
 
-The desktop client uses Automerge for all transactional data:
+The desktop client uses SQLite for all data with change log synchronization:
 
 - **Shopping Cart**: Current sale items and modifications
-- **Daily Transactions**: All sales for the current business day
+- **Daily Transactions**: All sales stored locally
 - **Cash Register State**: Opening balance, current cash, closing
 - **Local Inventory**: Product quantities and availability
+- **System Settings**: Cached configuration with reactive updates
 
-### Hardware Support
+### DTE (Electronic Invoicing)
+
+Integration with El Salvador's Ministry of Finance:
+
+- FCF (Factura de Consumidor Final) generation
+- RSA-based document signing
+- Secure certificate storage via Stronghold
+- Offline queue with automatic retry
+
+### Hardware Support (Planned)
 
 Native integration with POS hardware through Rust:
 
@@ -49,21 +106,19 @@ Native integration with POS hardware through Rust:
 - Barcode scanners (HID and serial)
 - Cash drawers
 - Customer displays
-- Payment terminals (future)
 
 ### Synchronization
 
-Three-tier sync strategy:
+Two-tier sync strategy:
 
-1. **Local Storage**: Automerge documents persisted to disk
-2. **P2P Sync**: Direct sync with other POS terminals via LAN
-3. **Cloud Sync**: gRPC streaming to backend when online
+1. **Local Storage**: SQLite database persisted locally
+2. **Cloud Sync**: HTTP polling to backend with adaptive intervals
 
 ## Prerequisites
 
-- Node.js 18+
-- Rust 1.70+
-- pnpm 8+
+- **Node.js 22+** (enforced in package.json)
+- **Rust 1.70+** (stable)
+- **pnpm 8+**
 - Platform-specific requirements:
   - **Windows**: WebView2 (included in Windows 11)
   - **macOS**: Xcode Command Line Tools
@@ -77,26 +132,7 @@ Three-tier sync strategy:
 # Install JavaScript dependencies
 pnpm install
 
-# The Rust dependencies will be installed automatically by Cargo
-```
-
-### Configure Environment
-
-Create a `.env` file in the desktop directory:
-
-```env
-# API Configuration
-VITE_API_URL=http://localhost:8080/api/v1
-VITE_GRPC_URL=localhost:50051
-VITE_WS_URL=ws://localhost:8080/events
-
-# POS Configuration
-VITE_TERMINAL_ID=POS-001
-VITE_STORE_ID=STORE-001
-
-# Feature Flags
-VITE_ENABLE_P2P_SYNC=true
-VITE_ENABLE_VOICE_COMMANDS=true
+# Rust dependencies are installed automatically by Cargo
 ```
 
 ### Run Development Mode
@@ -107,22 +143,46 @@ pnpm tauri dev
 ```
 
 This will:
-
 - Start the Vite dev server for the frontend
 - Compile and run the Rust backend
 - Open the application window
 - Enable hot module replacement for frontend changes
 
-### Hardware Testing
-
-For hardware testing in development:
+### Code Quality
 
 ```bash
-# Run with mock hardware
-MOCK_HARDWARE=true pnpm tauri dev
+# TypeScript type checking
+pnpm type-check
 
-# Run with real hardware (requires devices connected)
-pnpm tauri dev
+# ESLint
+pnpm lint
+pnpm lint:fix
+
+# Prettier formatting
+pnpm format
+pnpm format:check
+
+# Run all checks
+pnpm type-check && pnpm lint && pnpm format:check
+```
+
+### Testing
+
+```bash
+# Run tests with Vitest
+pnpm test
+
+# Run tests once (CI mode)
+pnpm test:run
+
+# Run tests with UI
+pnpm test:ui
+
+# Run with coverage
+pnpm test:coverage
+
+# Run Rust tests
+cd src-tauri && cargo test
 ```
 
 ## Building for Production
@@ -130,7 +190,10 @@ pnpm tauri dev
 ### Build for Current Platform
 
 ```bash
-# Create optimized build
+# Build TypeScript first
+pnpm build
+
+# Create native installer
 pnpm tauri build
 ```
 
@@ -139,48 +202,61 @@ The installer will be in `src-tauri/target/release/bundle/`
 ### Cross-Platform Builds
 
 ```bash
-# Build for all platforms (requires CI/CD)
-pnpm tauri build --target all
-
 # Build for specific platform
 pnpm tauri build --target x86_64-pc-windows-msvc
 pnpm tauri build --target x86_64-apple-darwin
 pnpm tauri build --target x86_64-unknown-linux-gnu
 ```
 
-## Testing
+## Database
+
+### Schema
+
+SQLite database with migrations in `src-tauri/migrations/`:
+
+| Table | Purpose |
+|-------|---------|
+| users | System users with role-based access |
+| categories | Product categories |
+| products | Inventory items with pricing |
+| customers | Customer info with NIT/DUI |
+| transactions | Sales transactions |
+| transaction_items | Individual line items |
+| dte | Electronic invoice documents |
+| system_settings | App configuration |
+| audit_logs | Activity tracking |
+
+### Seed Data
 
 ```bash
-# Run frontend tests
-pnpm test
-
-# Run Rust tests
-cd src-tauri && cargo test
-
-# Run integration tests
-pnpm test:integration
+# From src-tauri directory
+cargo run --bin seed
 ```
 
 ## Configuration
 
-### POS Settings
+### shadcn/ui Aliases
 
-Configuration is stored locally and synced across terminals:
+The project uses custom path aliases (see `components.json`):
 
-- Terminal identification
-- Receipt printer settings
-- Barcode scanner configuration
-- Cash drawer port
-- Sync preferences
+```json
+{
+  "aliases": {
+    "components": "@/shared/ui",
+    "utils": "@/shared/utils",
+    "ui": "@/shared/ui",
+    "lib": "@/lib",
+    "hooks": "@/presentation/hooks"
+  }
+}
+```
 
-### Automerge Configuration
+### TypeScript Paths
 
-The Automerge sync behavior can be configured:
+Path aliases are configured in `tsconfig.json`:
 
-- Sync frequency
-- Document retention period
-- Compaction strategy
-- Conflict resolution rules
+- `@/*` → `src/*`
+- `@shared/*` → `../../shared/*` (monorepo shared types)
 
 ## Troubleshooting
 
@@ -189,20 +265,20 @@ The Automerge sync behavior can be configured:
 #### Application won't start
 
 - Check Rust is installed: `rustc --version`
-- Verify Node dependencies: `pnpm install`
-- Clear Tauri cache: `pnpm tauri clean`
+- Verify Node.js version: `node --version` (must be 22+)
+- Verify dependencies: `pnpm install`
+- Clear build cache: `rm -rf dist node_modules/.vite`
 
-#### Hardware not detected
+#### TypeScript errors
 
-- Check device connections
-- Verify permissions (may need sudo on Linux)
-- Review hardware configuration in settings
+- Run `pnpm type-check` to see detailed errors
+- Check import paths use correct aliases (`@/domains/`, `@/infrastructure/`, etc.)
 
-#### Sync not working
+#### Database issues
 
-- Check network connectivity
-- Verify WebSocket URL in configuration
-- Look for sync errors in console
+- SQLite database is created automatically on first run
+- Check migrations in `src-tauri/migrations/`
+- Seed data: `cd src-tauri && cargo run --bin seed`
 
 ### Debug Mode
 
@@ -216,21 +292,38 @@ RUST_LOG=debug pnpm tauri dev
 RUST_LOG=trace pnpm tauri dev
 ```
 
-## Performance Optimization
+## Import Conventions
 
-- Automerge documents are compacted daily
-- Old transactions are archived to the cloud
-- Local SQLite cache for read-heavy operations
-- Lazy loading of UI components
-- Virtual scrolling for large lists
+When adding new code, follow these import patterns:
 
-## Security Considerations
+```typescript
+// Infrastructure
+import { DatabaseAdapter } from '@/infrastructure/database';
+import { logger } from '@/infrastructure/logging';
 
-- All local data is encrypted at rest
-- Terminal-specific encryption keys
-- Secure communication with backend
-- Hardware access requires authentication
+// Presentation
+import { useSettings, useTheme } from '@/presentation/providers';
+import { useDialog } from '@/presentation/hooks';
+
+// Shared UI
+import { Button, Input } from '@/shared/ui';
+import { cn } from '@/shared/utils';
+
+// Domain services
+import { salesService } from '@/domains/sales/services';
+import { productService } from '@/domains/products/services';
+
+// Application services
+import { settingsService } from '@/lib/settings-service';
+```
+
+## Security
+
+- Local data encrypted at rest via Tauri Stronghold
+- DTE certificates stored securely
+- Password hashing with Argon2
 - Automatic session timeout
+- Audit logging for sensitive operations
 
 ## License
 
