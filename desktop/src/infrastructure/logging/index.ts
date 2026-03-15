@@ -1,1 +1,9 @@
-export { Logger, logger, posLogger, authLogger, dteLogger, storageLogger, LogLevel } from './Logger';
+export {
+  Logger,
+  logger,
+  posLogger,
+  authLogger,
+  dteLogger,
+  storageLogger,
+  LogLevel,
+} from "./Logger";

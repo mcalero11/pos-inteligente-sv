@@ -1,11 +1,17 @@
-import { info, warn, error as logError, debug, trace } from '@tauri-apps/plugin-log';
+import {
+  info,
+  warn,
+  error as logError,
+  debug,
+  trace,
+} from "@tauri-apps/plugin-log";
 
 export enum LogLevel {
-  TRACE = 'trace',
-  DEBUG = 'debug',
-  INFO = 'info',
-  WARN = 'warn',
-  ERROR = 'error',
+  TRACE = "trace",
+  DEBUG = "debug",
+  INFO = "info",
+  WARN = "warn",
+  ERROR = "error",
 }
 
 /**
@@ -18,7 +24,7 @@ export class Logger {
   private static instance: Logger;
   private context: string;
 
-  private constructor(context: string = 'App') {
+  private constructor(context: string = "App") {
     this.context = context;
   }
 
@@ -34,13 +40,16 @@ export class Logger {
   }
 
   private formatMessage(message: string, level: LogLevel): string {
-    const timestamp = new Date().toISOString().replace('T', ' ').replace('Z', '');
+    const timestamp = new Date()
+      .toISOString()
+      .replace("T", " ")
+      .replace("Z", "");
     return `[${timestamp}] [${level.toUpperCase()}] [${this.context}] ${message}`;
   }
 
   private formatData(data: unknown): string {
     if (data === null || data === undefined) {
-      return '';
+      return "";
     }
 
     try {
@@ -51,7 +60,7 @@ export class Logger {
   }
 
   async trace(message: string, data?: unknown): Promise<void> {
-    const formattedData = data ? `\n${this.formatData(data)}` : '';
+    const formattedData = data ? `\n${this.formatData(data)}` : "";
     const logMessage = `${this.formatMessage(message, LogLevel.TRACE)}${formattedData}`;
     await trace(logMessage);
     if (import.meta.env.DEV) {
@@ -60,7 +69,7 @@ export class Logger {
   }
 
   async debug(message: string, data?: unknown): Promise<void> {
-    const formattedData = data ? `\n${this.formatData(data)}` : '';
+    const formattedData = data ? `\n${this.formatData(data)}` : "";
     const logMessage = `${this.formatMessage(message, LogLevel.DEBUG)}${formattedData}`;
     await debug(logMessage);
     if (import.meta.env.DEV) {
@@ -69,7 +78,7 @@ export class Logger {
   }
 
   async info(message: string, data?: unknown): Promise<void> {
-    const formattedData = data ? `\n${this.formatData(data)}` : '';
+    const formattedData = data ? `\n${this.formatData(data)}` : "";
     const logMessage = `${this.formatMessage(message, LogLevel.INFO)}${formattedData}`;
     await info(logMessage);
     if (import.meta.env.DEV) {
@@ -78,7 +87,7 @@ export class Logger {
   }
 
   async warn(message: string, data?: unknown): Promise<void> {
-    const formattedData = data ? `\n${this.formatData(data)}` : '';
+    const formattedData = data ? `\n${this.formatData(data)}` : "";
     const logMessage = `${this.formatMessage(message, LogLevel.WARN)}${formattedData}`;
     await warn(logMessage);
     console.warn(`[WARN] ${logMessage}`);
@@ -104,7 +113,11 @@ export class Logger {
     await this.info(`User Action: ${action}`, details);
   }
 
-  async logApiCall(endpoint: string, method: string, duration?: number): Promise<void> {
+  async logApiCall(
+    endpoint: string,
+    method: string,
+    duration?: number
+  ): Promise<void> {
     const message = `API Call: ${method} ${endpoint}`;
     const data = duration ? { duration_ms: duration } : undefined;
     await this.info(message, data);
@@ -123,7 +136,7 @@ export class Logger {
 export const logger = Logger.getInstance();
 
 // Specialized loggers for different parts of the app
-export const posLogger = Logger.createLogger('POS');
-export const authLogger = Logger.createLogger('Auth');
-export const dteLogger = Logger.createLogger('DTE');
-export const storageLogger = Logger.createLogger('Storage');
+export const posLogger = Logger.createLogger("POS");
+export const authLogger = Logger.createLogger("Auth");
+export const dteLogger = Logger.createLogger("DTE");
+export const storageLogger = Logger.createLogger("Storage");

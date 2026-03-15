@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef } from "preact/hooks";
 
 interface RenderInfo {
   component: string;
@@ -32,7 +32,7 @@ export function useRenderTracker(componentName: string, props?: any) {
     return {
       renderCount: 0,
       timeSinceLastRender: 0,
-      reasons: []
+      reasons: [],
     };
   }
   const renderCount = useRef(0);
@@ -47,7 +47,7 @@ export function useRenderTracker(componentName: string, props?: any) {
   const reasons: string[] = [];
 
   if (props && prevProps.current) {
-    Object.keys(props).forEach(key => {
+    Object.keys(props).forEach((key) => {
       if (props[key] !== prevProps.current[key]) {
         reasons.push(`${key} changed`);
       }
@@ -60,32 +60,48 @@ export function useRenderTracker(componentName: string, props?: any) {
     renderCount: renderCount.current,
     lastRender: new Date(),
     props,
-    reasons
+    reasons,
   };
   renderStats.set(componentName, statsInfo);
 
   // Debug log to verify tracking is working
-  if (import.meta.env.DEV && renderCount.current && !isNaN(renderCount.current)) {
-    globalThis.console.debug(`📊 Render tracked: ${componentName} (${renderCount.current} renders)`);
+  if (
+    import.meta.env.DEV &&
+    renderCount.current &&
+    !isNaN(renderCount.current)
+  ) {
+    globalThis.console.debug(
+      `📊 Render tracked: ${componentName} (${renderCount.current} renders)`
+    );
   }
 
   useEffect(() => {
-    if (import.meta.env.DEV && renderCount.current > 5) { // Only log if more than 5 renders
-      const logStyle = 'background: #ff6b6b; color: white; padding: 2px 5px; border-radius: 3px;';
+    if (import.meta.env.DEV && renderCount.current > 5) {
+      // Only log if more than 5 renders
+      const logStyle =
+        "background: #ff6b6b; color: white; padding: 2px 5px; border-radius: 3px;";
 
-      globalThis.console.group(`%c🔄 ${componentName} Render #${renderCount.current}`, logStyle);
-      globalThis.console.log('⏱️ Time since last render:', `${timeSinceLastRender}ms`);
+      globalThis.console.group(
+        `%c🔄 ${componentName} Render #${renderCount.current}`,
+        logStyle
+      );
+      globalThis.console.log(
+        "⏱️ Time since last render:",
+        `${timeSinceLastRender}ms`
+      );
 
       if (reasons.length > 0) {
-        globalThis.console.log('📝 Render reasons:', reasons);
+        globalThis.console.log("📝 Render reasons:", reasons);
       }
 
       if (props) {
-        globalThis.console.log('📦 Props:', props);
+        globalThis.console.log("📦 Props:", props);
       }
 
       if (renderCount.current > 10) {
-        globalThis.console.warn(`⚠️ ${componentName} has rendered ${renderCount.current} times! Check for unnecessary re-renders.`);
+        globalThis.console.warn(
+          `⚠️ ${componentName} has rendered ${renderCount.current} times! Check for unnecessary re-renders.`
+        );
       }
 
       globalThis.console.groupEnd();
@@ -98,7 +114,7 @@ export function useRenderTracker(componentName: string, props?: any) {
   return {
     renderCount: renderCount.current,
     timeSinceLastRender,
-    reasons
+    reasons,
   };
 }
 
@@ -115,9 +131,12 @@ export function getRenderStats() {
 // Debug function to log current render stats
 export function logRenderStats() {
   const stats = getRenderStats();
-  globalThis.console.log('📊 Current Render Stats:', stats);
-  globalThis.console.log('📈 Total components tracked:', stats.length);
-  globalThis.console.log('🔥 High render components:', stats.filter(s => s.renderCount > 5));
+  globalThis.console.log("📊 Current Render Stats:", stats);
+  globalThis.console.log("📈 Total components tracked:", stats.length);
+  globalThis.console.log(
+    "🔥 High render components:",
+    stats.filter((s) => s.renderCount > 5)
+  );
   return stats;
 }
 
@@ -149,15 +168,19 @@ export function usePerformanceTracker(componentName: string, threshold = 16) {
 
     // Be more lenient during app initialization (first 3 seconds)
     const isInitializing = timeSinceAppStart < 3000;
-    const adjustedThreshold = isInitializing ? Math.max(threshold * 4, 100) : threshold;
+    const adjustedThreshold = isInitializing
+      ? Math.max(threshold * 4, 100)
+      : threshold;
 
     // Also be more lenient for the first few renders of each component
     const isEarlyRender = renderCount.current <= 3;
-    const finalThreshold = isEarlyRender ? Math.max(adjustedThreshold * 2, 50) : adjustedThreshold;
+    const finalThreshold = isEarlyRender
+      ? Math.max(adjustedThreshold * 2, 50)
+      : adjustedThreshold;
 
     if (renderTime > finalThreshold && import.meta.env.DEV) {
-      const context = isInitializing ? ' (during initialization)' : '';
-      const severity = renderTime > finalThreshold * 2 ? '🚨' : '🐌';
+      const context = isInitializing ? " (during initialization)" : "";
+      const severity = renderTime > finalThreshold * 2 ? "🚨" : "🐌";
 
       globalThis.console.warn(
         `${severity} Slow render detected in ${componentName}: ${renderTime}ms (threshold: ${finalThreshold}ms)${context}`
@@ -187,7 +210,7 @@ export function usePropChangeTracker<T extends Record<string, any>>(
       const removedProps: string[] = [];
 
       // Check for changed and added props
-      Object.keys(props).forEach(key => {
+      Object.keys(props).forEach((key) => {
         if (!(key in prevProps.current)) {
           addedProps.push(key);
         } else if (props[key] !== prevProps.current[key]) {
@@ -196,32 +219,38 @@ export function usePropChangeTracker<T extends Record<string, any>>(
       });
 
       // Check for removed props
-      Object.keys(prevProps.current).forEach(key => {
+      Object.keys(prevProps.current).forEach((key) => {
         if (!(key in props)) {
           removedProps.push(key);
         }
       });
 
-      if (changedProps.length > 0 || addedProps.length > 0 || removedProps.length > 0) {
+      if (
+        changedProps.length > 0 ||
+        addedProps.length > 0 ||
+        removedProps.length > 0
+      ) {
         globalThis.console.group(`📊 ${componentName} Props Analysis`);
 
         if (changedProps.length > 0) {
-          globalThis.console.log('🔄 Changed:', changedProps);
-          changedProps.forEach(key => {
+          globalThis.console.log("🔄 Changed:", changedProps);
+          changedProps.forEach((key) => {
             globalThis.console.log(
               `  ${key}:`,
-              'Old:', prevProps.current[key],
-              'New:', props[key]
+              "Old:",
+              prevProps.current[key],
+              "New:",
+              props[key]
             );
           });
         }
 
         if (addedProps.length > 0) {
-          globalThis.console.log('➕ Added:', addedProps);
+          globalThis.console.log("➕ Added:", addedProps);
         }
 
         if (removedProps.length > 0) {
-          globalThis.console.log('➖ Removed:', removedProps);
+          globalThis.console.log("➖ Removed:", removedProps);
         }
 
         globalThis.console.groupEnd();
@@ -230,4 +259,4 @@ export function usePropChangeTracker<T extends Record<string, any>>(
 
     prevProps.current = props;
   });
-} 
+}

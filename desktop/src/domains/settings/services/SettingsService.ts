@@ -1,9 +1,13 @@
-import { DatabaseAdapter } from '../../../infrastructure/database';
-import { logger } from '../../../infrastructure/logging';
-import type { SystemSettings } from '../entities/SystemSettings';
-import { DEFAULT_SETTINGS, mergeWithDefaults } from '../entities/SystemSettings';
-import type { CompanyInfo } from '../entities/CompanyInfo';
-import { EMPTY_COMPANY_INFO } from '../entities/CompanyInfo';
+import { DatabaseAdapter } from "../../../infrastructure/database";
+import type { TransactionStatement } from "../../../infrastructure/database";
+import { logger } from "../../../infrastructure/logging";
+import type { SystemSettings } from "../entities/SystemSettings";
+import {
+  DEFAULT_SETTINGS,
+  mergeWithDefaults,
+} from "../entities/SystemSettings";
+import type { CompanyInfo } from "../entities/CompanyInfo";
+import { EMPTY_COMPANY_INFO } from "../entities/CompanyInfo";
 
 interface SettingsRow {
   key: string;
@@ -29,7 +33,7 @@ export class SettingsService {
     const settingsData: Record<string, unknown> = {};
 
     for (const row of rows) {
-      const key = row.key.replace('settings.', '');
+      const key = row.key.replace("settings.", "");
       try {
         settingsData[key] = JSON.parse(row.value);
       } catch {
@@ -41,12 +45,17 @@ export class SettingsService {
     return this.cache;
   }
 
-  async get<K extends keyof SystemSettings>(key: K): Promise<SystemSettings[K]> {
+  async get<K extends keyof SystemSettings>(
+    key: K
+  ): Promise<SystemSettings[K]> {
     const settings = await this.load();
     return settings[key];
   }
 
-  async set<K extends keyof SystemSettings>(key: K, value: SystemSettings[K]): Promise<void> {
+  async set<K extends keyof SystemSettings>(
+    key: K,
+    value: SystemSettings[K]
+  ): Promise<void> {
     const dbKey = `settings.${String(key)}`;
     const dbValue = JSON.stringify(value);
 
@@ -62,24 +71,28 @@ export class SettingsService {
       this.notifyListeners();
     }
 
-    logger.info('Setting updated', { key, value });
+    logger.info("Setting updated", { key, value });
   }
 
   async setMultiple(settings: Partial<SystemSettings>): Promise<void> {
-    await DatabaseAdapter.transaction(async () => {
-      for (const [key, value] of Object.entries(settings)) {
-        if (value !== undefined) {
-          const dbKey = `settings.${key}`;
-          const dbValue = JSON.stringify(value);
+    const statements: TransactionStatement[] = [];
 
-          await DatabaseAdapter.execute(
-            `INSERT INTO system_settings (key, value) VALUES (?, ?)
+    for (const [key, value] of Object.entries(settings)) {
+      if (value !== undefined) {
+        const dbKey = `settings.${key}`;
+        const dbValue = JSON.stringify(value);
+
+        statements.push({
+          sql: `INSERT INTO system_settings (key, value) VALUES (?, ?)
              ON CONFLICT(key) DO UPDATE SET value = ?, updated_at = CURRENT_TIMESTAMP`,
-            [dbKey, dbValue, dbValue]
-          );
-        }
+          params: [dbKey, dbValue, dbValue],
+        });
       }
-    });
+    }
+
+    if (statements.length > 0) {
+      await DatabaseAdapter.transactionBatch(statements);
+    }
 
     // Update cache
     if (this.cache) {
@@ -87,14 +100,16 @@ export class SettingsService {
       this.notifyListeners();
     }
 
-    logger.info('Multiple settings updated', { keys: Object.keys(settings) });
+    logger.info("Multiple settings updated", { keys: Object.keys(settings) });
   }
 
   async reset(): Promise<void> {
-    await DatabaseAdapter.execute("DELETE FROM system_settings WHERE key LIKE 'settings.%'");
+    await DatabaseAdapter.execute(
+      "DELETE FROM system_settings WHERE key LIKE 'settings.%'"
+    );
     this.cache = DEFAULT_SETTINGS;
     this.notifyListeners();
-    logger.info('Settings reset to defaults');
+    logger.info("Settings reset to defaults");
   }
 
   subscribe(listener: SettingsChangeListener): () => void {
@@ -136,7 +151,7 @@ export class SettingsService {
       [value, value]
     );
 
-    logger.info('Company info updated');
+    logger.info("Company info updated");
   }
 
   invalidateCache(): void {

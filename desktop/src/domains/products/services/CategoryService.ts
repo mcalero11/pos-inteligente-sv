@@ -1,6 +1,14 @@
-import { DatabaseAdapter, buildInsertQuery, buildUpdateQuery } from '../../../infrastructure/database';
-import { logger } from '../../../infrastructure/logging';
-import type { Category, CreateCategoryInput, UpdateCategoryInput } from '../entities/Category';
+import {
+  DatabaseAdapter,
+  buildInsertQuery,
+  buildUpdateQuery,
+} from "../../../infrastructure/database";
+import { logger } from "../../../infrastructure/logging";
+import type {
+  Category,
+  CreateCategoryInput,
+  UpdateCategoryInput,
+} from "../entities/Category";
 
 interface CategoryRow {
   id: number;
@@ -24,11 +32,11 @@ function mapRowToCategory(row: CategoryRow): Category {
 
 export class CategoryService {
   async findAll(activeOnly: boolean = true): Promise<Category[]> {
-    let sql = 'SELECT * FROM categories';
+    let sql = "SELECT * FROM categories";
     if (activeOnly) {
-      sql += ' WHERE is_active = 1';
+      sql += " WHERE is_active = 1";
     }
-    sql += ' ORDER BY name ASC'; // Simple alphabetical order
+    sql += " ORDER BY name ASC"; // Simple alphabetical order
 
     const rows = await DatabaseAdapter.query<CategoryRow>(sql);
     return rows.map(mapRowToCategory);
@@ -36,7 +44,7 @@ export class CategoryService {
 
   async findById(id: number): Promise<Category | null> {
     const row = await DatabaseAdapter.queryOne<CategoryRow>(
-      'SELECT * FROM categories WHERE id = ?',
+      "SELECT * FROM categories WHERE id = ?",
       [id]
     );
     return row ? mapRowToCategory(row) : null;
@@ -49,10 +57,13 @@ export class CategoryService {
       is_active: 1,
     };
 
-    const { sql, params } = buildInsertQuery('categories', data);
+    const { sql, params } = buildInsertQuery("categories", data);
     const result = await DatabaseAdapter.execute(sql, params);
 
-    logger.info('Category created', { categoryId: result.lastInsertId, name: input.name });
+    logger.info("Category created", {
+      categoryId: result.lastInsertId,
+      name: input.name,
+    });
 
     const category = await this.findById(result.lastInsertId);
     return category!;
@@ -70,23 +81,28 @@ export class CategoryService {
       return category!;
     }
 
-    const { sql, params } = buildUpdateQuery('categories', data, 'id = ?', [id]);
+    const { sql, params } = buildUpdateQuery("categories", data, "id = ?", [
+      id,
+    ]);
     await DatabaseAdapter.execute(sql, params);
 
-    logger.info('Category updated', { categoryId: id });
+    logger.info("Category updated", { categoryId: id });
 
     const category = await this.findById(id);
     return category!;
   }
 
   async delete(id: number): Promise<void> {
-    await DatabaseAdapter.execute('UPDATE categories SET is_active = 0 WHERE id = ?', [id]);
-    logger.info('Category deactivated', { categoryId: id });
+    await DatabaseAdapter.execute(
+      "UPDATE categories SET is_active = 0 WHERE id = ?",
+      [id]
+    );
+    logger.info("Category deactivated", { categoryId: id });
   }
 
   async getProductCount(categoryId: number): Promise<number> {
     const result = await DatabaseAdapter.queryOne<{ count: number }>(
-      'SELECT COUNT(*) as count FROM products WHERE category_id = ? AND is_active = 1',
+      "SELECT COUNT(*) as count FROM products WHERE category_id = ? AND is_active = 1",
       [categoryId]
     );
     return result?.count ?? 0;

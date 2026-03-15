@@ -1,2 +1,2 @@
 // Audit Domain - Entities
-export * from './AuditLog';
+export * from "./AuditLog";

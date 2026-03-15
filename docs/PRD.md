@@ -1,9 +1,10 @@
 # 📋 Product Requirements Document (PRD) - POS Inteligente El Salvador
 
 > **Status**: ✅ APPROVED & LOCKED
-> **Last Updated**: November 22, 2025
+> **Last Updated**: March 2026
 > **Approved By**: Marvin Calero (Owner)
 > **Note**: Any changes require a formal Change Request (CR).
+> **CR-001**: Added Section 9 (Scope Tiers). No features added or removed. Approved by Marvin Calero (March 2026).
 
 ## 1. 🌟 Product Vision
 To build the most reliable, offline-capable POS ecosystem for any business size in El Salvador. From individual freelancers to multi-branch retailers, our platform makes sales, inventory, and tax compliance (DTE) invisible and automatic. We empower the Salvadoran economy with tools that just work.
@@ -110,3 +111,91 @@ To build the most reliable, offline-capable POS ecosystem for any business size 
 - **Reliability**: 99.9% uptime for offline sales (local mode).
 - **Speed**: < 30 seconds to onboard a new Freelancer user.
 - **Compliance**: 100% of DTEs accepted by Hacienda within 24 hours.
+
+---
+
+## 9. Scope Tiers & Milestones
+
+This section categorizes all 42 PRD features into four delivery tiers. No features are added or removed -- this is a sequencing overlay that prioritizes the DTE compliance wedge for entrepreneurs first, then expands into retail POS, multi-location operations, and long-term differentiation.
+
+For the full business rationale behind this sequencing, see [Business Model](BUSINESS_MODEL.md).
+
+### Tier 1 -- MVP: DTE Compliance Tool (9 features)
+
+Target persona: Alex (Freelancer). Product: PWA.
+
+| Feature | PRD Ref |
+|---------|---------|
+| Unified Auth | 3.1 |
+| RBAC | 3.1 |
+| Universal Signing | 3.2 |
+| Contingency Mode | 3.2 |
+| Invalidation | 3.2 |
+| Smart Retry | 3.2 |
+| Taxpayer Logic | 3.2 |
+| Quick Invoice | 5.1 |
+| Client Rolodex | 5.1 |
+
+### Tier 2 -- Desktop POS: Single-Store Sales (14 features)
+
+Target persona: Don Carlos, Maria. Product: Desktop POS.
+
+| Feature | PRD Ref |
+|---------|---------|
+| Audit Log | 3.1 |
+| Stock Movements (basic) | 3.3 |
+| Real-time Sync | 3.3 |
+| Speed UI | 4.1 |
+| Training Mode | 4.1 |
+| Smart Search | 4.1 |
+| Dynamic Pricing | 4.1 |
+| Cart Actions | 4.1 |
+| Returns & Refunds | 4.1 |
+| Quote-to-Sale | 4.1 |
+| Payments (Cash, Card) | 4.1 |
+| Blind Close | 4.2 |
+| Cash Management | 4.2 |
+| X/Z Cuts | 4.2 |
+
+> **Note**: Bitcoin payments (from 4.1) are deferred to Tier 4.
+
+### Tier 3 -- Scale: Multi-Location & Reports (16 features)
+
+Target persona: Don Carlos (multi-store), Sofia, Accountant.
+
+| Feature | PRD Ref |
+|---------|---------|
+| Multi-Location | 3.3 |
+| Stock Taking | 3.3 |
+| Traceability | 3.3 |
+| Vendor Returns | 3.3 |
+| Unit Conversion | 3.3 |
+| Kits/Bundles | 3.3 |
+| Pharmacy | 4.3 |
+| Service Catalog | 5.1 |
+| Export Mode | 5.1 |
+| Payment Links | 5.2 |
+| Live Dashboard | 6.1 |
+| Profitability | 6.1 |
+| Onboarding Wizard | 6.2 |
+| Catalog Manager | 6.2 |
+| Libros de IVA | 6.3 |
+| F07 Helper | 6.3 |
+
+### Tier 4 -- Differentiation (3+ features)
+
+| Feature | PRD Ref |
+|---------|---------|
+| AI Copilot | 6.1 |
+| E-commerce Bridge | 7 |
+| Open API | 7 |
+| Bitcoin Payments | 4.1 (deferred) |
+
+### Summary
+
+| Tier | Name | Features | Persona | Status |
+|------|------|----------|---------|--------|
+| 1 | MVP: DTE Compliance | 9 | Alex (Freelancer) | Current focus |
+| 2 | Desktop POS | 14 | Don Carlos, Maria | Next |
+| 3 | Scale | 16 | Multi-store, Sofia, Accountant | Future |
+| 4 | Differentiation | 3+ | All | Long-term |

@@ -28,7 +28,7 @@ POS Inteligente El Salvador is an offline-first point-of-sale system designed fo
 2. **Web Admin (React)** - Centralized administration panel
 3. **Backend API (Go)** - Server with PostgreSQL and DTE integration
 
-**Current Status**: Sprint 2 at 40% - Building core POS features with SQLite integration
+**Current Status**: Sprint 3 - Core Sales Flow Implementation (cart, transactions, multi-window POS)
 
 ## Development Commands
 
@@ -85,21 +85,32 @@ docker-compose --profile tools up  # Include PgAdmin and Redis Commander
 | Component | Technology | Version |
 |-----------|------------|---------|
 | Desktop Frontend | Preact | 10.26.9 |
-| Desktop Backend | Tauri/Rust | 2.5 |
+| Desktop Backend | Tauri/Rust | 2.10 |
 | Web Frontend | React | 19.1.0 |
-| Backend | Go + Echo | 1.23+ |
+| Backend | Go + Echo | 1.26+ |
 | Local Database | SQLite | via rusqlite 0.32 |
-| Server Database | PostgreSQL | 16 |
+| Server Database | PostgreSQL | 17 |
 | Build Tool | Vite | 6.x |
 | Package Manager | pnpm | - |
 | CSS Framework | Tailwind CSS | 4.1.10 |
+| Toast Notifications | Sonner | 2.0.7 |
 | Testing | Vitest | 3.2.4 |
 
 ### Tauri Backend Architecture
-The Tauri backend follows a layered architecture:
-- **Commands** (`src-tauri/src/commands/`): Tauri IPC handlers organized by domain (auth, DTE, storage, system)
-- **Services** (`src-tauri/src/services/`): Business logic (database operations, DTE signing, secure storage)
+The Tauri backend is a **lean Rust layer** — most business logic lives in TypeScript via `tauri-plugin-sql`:
+- **Commands** (`src-tauri/src/commands/`): Tauri IPC handlers (auth, database, DTE, secure_storage, system)
+  - `database.rs`: Batch SQL execution via `execute_transaction` with `$LAST_INSERT_ID` / `$INSERT_ID_[N]` cross-statement references
+  - `system.rs`: Multi-window management (`create_sale_window`), log utilities
+  - `auth.rs`: PIN hashing (Argon2id) with legacy SHA-256 backward compatibility
+- **Domains** (`src-tauri/src/domains/`): Only DTE remains (requires Rust crypto - RSA signing)
+- **Services** (`src-tauri/src/services/`): DTE signing, secure storage
 - **Plugins** (`src-tauri/src/plugins/`): Infrastructure configuration (SQL, logging, stronghold)
+
+### Multi-Window Architecture
+- Main window (`main`) has full capabilities including window creation
+- Child sale windows (`pos-sale-{N}`) have restricted capabilities (no window creation, no secure storage)
+- `WindowManagerContext` tracks active windows, emits events on create/destroy
+- Capabilities defined in `src-tauri/capabilities/main-window.json` and `sale-window.json`
 
 ### Desktop Frontend DDD Architecture
 The Preact frontend (`desktop/src/`) follows Domain-Driven Design:
@@ -112,7 +123,7 @@ The Preact frontend (`desktop/src/`) follows Domain-Driven Design:
 - **Presentation** (`presentation/`): UI layer (providers, hooks, screens, dialogs)
   - `AppStateProvider`: App lifecycle state machine
   - `SettingsProvider`: Reactive app settings
-- **Shared** (`shared/`): Cross-cutting UI components and utilities
+- **Shared** (`shared/`): Cross-cutting UI components (shadcn/ui, sonner toasts, digital-clock) and utilities
 - **Lib** (`lib/`): Application-level services that bridge multiple domains
 
 ### Backend Clean Architecture
@@ -121,11 +132,6 @@ The Go backend follows clean architecture:
 - **Application** (`internal/application/`): Use cases and handlers
 - **Infrastructure** (`internal/infrastructure/`): Database, cache, external services
 - **Interfaces** (`internal/interfaces/http/`): HTTP route handlers
-
-### Shared Types
-The `shared/` directory contains TypeScript types used across all clients:
-- `domain.ts` - Core types: Product, Customer, Sale, SaleItem, Terminal, CashRegister
-- `index.ts` - Re-exports and constants (TAX_RATE_IVA = 13%, MAX_OFFLINE_DAYS = 7)
 
 ## Key Features
 
@@ -147,7 +153,7 @@ Desktop app uses i18next with Spanish locale support in `desktop/src/i18n/locale
 ## Development Guidelines
 
 ### Node.js Version
-All JavaScript/TypeScript projects require **Node.js 22+** (enforced in package.json engines).
+All JavaScript/TypeScript projects require **Node.js 24+** (enforced in package.json engines).
 
 ### Package Manager
 Use `pnpm` for all Node.js projects. Lock files are committed.
@@ -200,13 +206,13 @@ pos-inteligente-sv/
 │   │   │   ├── storage/    # Secure & local storage
 │   │   │   └── tauri/      # Tauri IPC commands
 │   │   ├── presentation/   # UI layer
-│   │   │   ├── providers/  # React contexts (AppState, Settings, Theme)
+│   │   │   ├── providers/  # React contexts (AppState, Settings, Theme, WindowManager)
 │   │   │   ├── hooks/      # Presentation hooks
 │   │   │   ├── screens/    # Full-page screens (POS, Loading, Error)
-│   │   │   ├── dialogs/    # Modal dialogs
+│   │   │   ├── dialogs/    # Modal dialogs (Transaction, ReceiptPreview, ActiveSalesWarning)
 │   │   │   └── layouts/    # Layout components
 │   │   ├── shared/         # Cross-cutting concerns
-│   │   │   ├── ui/         # UI components (shadcn/ui)
+│   │   │   ├── ui/         # UI components (shadcn/ui, sonner, digital-clock)
 │   │   │   ├── utils/      # Utilities (cn, formatters)
 │   │   │   └── components/ # Shared components (theme picker)
 │   │   ├── lib/            # Application services
@@ -216,10 +222,13 @@ pos-inteligente-sv/
 │   │   └── i18n/           # Internationalization
 │   └── src-tauri/          # Rust backend
 │       ├── src/            # Commands, services, plugins
+│       │   ├── commands/   # auth, database, dte, secure_storage, system
+│       │   ├── domains/    # Only DTE (crypto-dependent)
+│       │   └── plugins/    # SQL, logging, stronghold config
+│       ├── capabilities/   # Window permissions (main-window, sale-window)
 │       ├── migrations/     # SQLite migrations
-│       └── scripts/        # Seed script
+│       └── scripts/        # Seed SQL script
 ├── web/                    # React admin panel
-├── shared/                 # Shared TypeScript types
 ├── docs/                   # Documentation
 │   ├── ARCHITECTURE.md     # System architecture
 │   ├── decisions/          # ADRs
@@ -236,12 +245,16 @@ The SQLite database (`desktop/src-tauri/migrations/001_initial_tables.sql`) incl
 |-------|---------|
 | users | System users with role-based access |
 | categories | Product categories |
-| products | Inventory items with pricing |
-| customers | Customer info with NIT/DUI |
-| transactions | Sales transactions |
-| transaction_items | Individual line items |
-| dte | Electronic invoice documents |
-| system_settings | App configuration |
+| products | Inventory items with pricing and stock tracking |
+| customers | Customer info with NIT/DUI/NRC tax identifiers |
+| transactions | Sales transactions (draft, held, quote, completed, cancelled, refunded) |
+| transaction_items | Individual line items with price tier tracking |
+| payments | Split payment support (cash, card, transfer, check, credit) |
+| cash_register_sessions | Shift management with opening/closing balances |
+| cash_movements | Cash withdrawals, deposits, adjustments during sessions |
+| stock_movements | Inventory ledger (purchase, sale, return, adjustment, loss, transfer) |
+| dte | Electronic invoice documents with contingency handling |
+| system_settings | Application configuration by category |
 | audit_logs | Activity tracking |
 
 ## Important Patterns
@@ -271,14 +284,15 @@ The SQLite database (`desktop/src-tauri/migrations/001_initial_tables.sql`) incl
 
 ### Development Setup
 - Ensure Rust is installed for Tauri development
-- Use correct Node.js version (22+)
+- Use correct Node.js version (24+)
 - Install all dependencies with `pnpm install`
 - For Tauri: `rustup update` to get latest stable Rust
 
 ### Database Issues
 - SQLite database created automatically on first run
 - Check migration files for schema changes
-- Seed data: `cargo run --bin seed` (from src-tauri directory)
+- Seed data: SQL seed script in `desktop/src-tauri/scripts/seed.sql`
+- Database uses WAL mode with NORMAL synchronous for better concurrent performance
 
 ### Build Issues
 - Run `pnpm type-check` to identify TypeScript errors
@@ -306,3 +320,4 @@ See `docs/decisions/` for detailed ADRs:
 - [Architecture Overview](docs/ARCHITECTURE.md)
 - [Project Status](PROJECT_STATUS.md)
 - [Sprint 1 Details](docs/sprints/sprint-01.md)
+- [Sprint 3 Details](docs/sprints/sprint-03.md)

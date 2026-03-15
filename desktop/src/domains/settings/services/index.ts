@@ -1,1 +1,1 @@
-export { SettingsService, settingsService } from './SettingsService';
+export { SettingsService, settingsService } from "./SettingsService";

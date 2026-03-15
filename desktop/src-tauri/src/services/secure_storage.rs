@@ -35,6 +35,7 @@ impl From<serde_json::Error> for SecureStorageError {
     }
 }
 
+#[allow(dead_code)]
 impl SecureStorageManager {
     pub fn new() -> Self {
         Self {

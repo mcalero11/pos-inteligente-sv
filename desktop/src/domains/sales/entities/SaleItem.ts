@@ -1,20 +1,30 @@
+export type PriceTier = "retail" | "partner" | "vip";
+
 export interface SaleItem {
   id: number;
   transactionId: number;
   productId: number;
-  productName: string;
   quantity: number;
   unitPrice: number;
   discountAmount: number;
-  subtotal: number;
+  totalPrice: number;
+  appliedPriceTier?: PriceTier;
+  // Pharmacy-specific fields
+  doctorName?: string;
+  doctorLicense?: string;
+  requiresPrescription?: boolean;
+  createdAt: string;
 }
 
 export interface CreateSaleItemInput {
   productId: number;
-  productName: string;
   quantity: number;
   unitPrice: number;
   discountAmount?: number;
+  appliedPriceTier?: PriceTier;
+  doctorName?: string;
+  doctorLicense?: string;
+  requiresPrescription?: boolean;
 }
 
 export function calculateItemSubtotal(

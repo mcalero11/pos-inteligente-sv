@@ -7,7 +7,9 @@ interface ErrorScreenProps {
   showPOSBackground?: boolean;
 }
 
-export default function ErrorScreen({ showPOSBackground = false }: ErrorScreenProps) {
+export default function ErrorScreen({
+  showPOSBackground = false,
+}: ErrorScreenProps) {
   const { currentDialog, openDialog, closeDialog } = useDialog();
 
   return (
@@ -29,4 +31,4 @@ export default function ErrorScreen({ showPOSBackground = false }: ErrorScreenPr
       />
     </div>
   );
-} 
+}

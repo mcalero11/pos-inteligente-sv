@@ -1,8 +1,13 @@
-import { DatabaseAdapter } from '../../../infrastructure/database';
-import { logger } from '../../../infrastructure/logging';
-import { signDTE as signDTECommand } from '../../../infrastructure/tauri';
-import type { DTE, CreateDTEInput, DTEStatus, DTESigningResult } from '../entities/DTE';
-import type { DTEType } from '../entities/DTETypes';
+import { DatabaseAdapter } from "../../../infrastructure/database";
+import { logger } from "../../../infrastructure/logging";
+import { signDTE as signDTECommand } from "../../../infrastructure/tauri";
+import type {
+  DTE,
+  CreateDTEInput,
+  DTEStatus,
+  DTESigningResult,
+} from "../entities/DTE";
+import type { DTEType } from "../entities/DTETypes";
 
 interface DTERow {
   id: number;
@@ -50,33 +55,33 @@ export class DTEService {
     endDate?: string;
     limit?: number;
   }): Promise<DTE[]> {
-    let sql = 'SELECT * FROM dte WHERE 1=1';
+    let sql = "SELECT * FROM dte WHERE 1=1";
     const params: unknown[] = [];
 
     if (options?.status) {
-      sql += ' AND status = ?';
+      sql += " AND status = ?";
       params.push(options.status);
     }
 
     if (options?.dteType) {
-      sql += ' AND dte_type = ?';
+      sql += " AND dte_type = ?";
       params.push(options.dteType);
     }
 
     if (options?.startDate) {
-      sql += ' AND fecha_emision >= ?';
+      sql += " AND fecha_emision >= ?";
       params.push(options.startDate);
     }
 
     if (options?.endDate) {
-      sql += ' AND fecha_emision <= ?';
+      sql += " AND fecha_emision <= ?";
       params.push(options.endDate);
     }
 
-    sql += ' ORDER BY created_at DESC';
+    sql += " ORDER BY created_at DESC";
 
     if (options?.limit) {
-      sql += ' LIMIT ?';
+      sql += " LIMIT ?";
       params.push(options.limit);
     }
 
@@ -86,7 +91,7 @@ export class DTEService {
 
   async findById(id: number): Promise<DTE | null> {
     const row = await DatabaseAdapter.queryOne<DTERow>(
-      'SELECT * FROM dte WHERE id = ?',
+      "SELECT * FROM dte WHERE id = ?",
       [id]
     );
     return row ? mapRowToDTE(row) : null;
@@ -94,7 +99,7 @@ export class DTEService {
 
   async findByTransactionId(transactionId: number): Promise<DTE | null> {
     const row = await DatabaseAdapter.queryOne<DTERow>(
-      'SELECT * FROM dte WHERE transaction_id = ?',
+      "SELECT * FROM dte WHERE transaction_id = ?",
       [transactionId]
     );
     return row ? mapRowToDTE(row) : null;
@@ -108,10 +113,20 @@ export class DTEService {
     const result = await DatabaseAdapter.execute(
       `INSERT INTO dte (transaction_id, dte_type, codigo_generacion, numero_control, fecha_emision, json_data, status, retry_count)
        VALUES (?, ?, ?, ?, ?, ?, 'pending', 0)`,
-      [input.transactionId, input.dteType, codigoGeneracion, numeroControl, fechaEmision, input.jsonData]
+      [
+        input.transactionId,
+        input.dteType,
+        codigoGeneracion,
+        numeroControl,
+        fechaEmision,
+        input.jsonData,
+      ]
     );
 
-    logger.info('DTE created', { dteId: result.lastInsertId, type: input.dteType });
+    logger.info("DTE created", {
+      dteId: result.lastInsertId,
+      type: input.dteType,
+    });
 
     const dte = await this.findById(result.lastInsertId);
     return dte!;
@@ -120,7 +135,7 @@ export class DTEService {
   async sign(id: number): Promise<DTESigningResult> {
     const dte = await this.findById(id);
     if (!dte) {
-      return { success: false, errorMessage: 'DTE not found' };
+      return { success: false, errorMessage: "DTE not found" };
     }
 
     try {
@@ -129,25 +144,17 @@ export class DTEService {
         jsonData: dte.jsonData,
       });
 
-      if (result.success && result.signedData) {
-        await this.updateStatus(id, 'signed', {
-          signedData: result.signedData,
-        });
+      await this.updateStatus(id, "signed", {
+        signedData: result.signedData,
+      });
 
-        logger.info('DTE signed successfully', { dteId: id });
-        return result;
-      } else {
-        await this.updateStatus(id, 'error', {
-          errorMessage: result.error || 'Unknown signing error',
-        });
-
-        logger.error('DTE signing failed', { dteId: id, error: result.error });
-        return { success: false, errorMessage: result.error };
-      }
+      logger.info("DTE signed successfully", { dteId: id });
+      return { success: true, ...result };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      await this.updateStatus(id, 'error', { errorMessage });
-      logger.error('DTE signing exception', { dteId: id, error });
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      await this.updateStatus(id, "error", { errorMessage });
+      logger.error("DTE signing failed", { dteId: id, error });
       return { success: false, errorMessage };
     }
   }
@@ -155,45 +162,52 @@ export class DTEService {
   async updateStatus(
     id: number,
     status: DTEStatus,
-    data?: { signedData?: string; selloRecibido?: string; errorMessage?: string }
+    data?: {
+      signedData?: string;
+      selloRecibido?: string;
+      errorMessage?: string;
+    }
   ): Promise<void> {
-    let sql = 'UPDATE dte SET status = ?, updated_at = CURRENT_TIMESTAMP';
+    let sql = "UPDATE dte SET status = ?, updated_at = CURRENT_TIMESTAMP";
     const params: unknown[] = [status];
 
     if (data?.signedData) {
-      sql += ', signed_data = ?';
+      sql += ", signed_data = ?";
       params.push(data.signedData);
     }
 
     if (data?.selloRecibido) {
-      sql += ', sello_recibido = ?';
+      sql += ", sello_recibido = ?";
       params.push(data.selloRecibido);
     }
 
     if (data?.errorMessage) {
-      sql += ', error_message = ?, retry_count = retry_count + 1, last_retry_at = CURRENT_TIMESTAMP';
+      sql +=
+        ", error_message = ?, retry_count = retry_count + 1, last_retry_at = CURRENT_TIMESTAMP";
       params.push(data.errorMessage);
     }
 
-    sql += ' WHERE id = ?';
+    sql += " WHERE id = ?";
     params.push(id);
 
     await DatabaseAdapter.execute(sql, params);
   }
 
   async getPendingDTEs(): Promise<DTE[]> {
-    return this.findAll({ status: 'pending' });
+    return this.findAll({ status: "pending" });
   }
 
   async getFailedDTEs(maxRetries: number = 3): Promise<DTE[]> {
     const rows = await DatabaseAdapter.query<DTERow>(
-      'SELECT * FROM dte WHERE status = ? AND retry_count < ? ORDER BY created_at ASC',
-      ['error', maxRetries]
+      "SELECT * FROM dte WHERE status = ? AND retry_count < ? ORDER BY created_at ASC",
+      ["error", maxRetries]
     );
     return rows.map(mapRowToDTE);
   }
 
-  async retryFailed(maxRetries: number = 3): Promise<{ success: number; failed: number }> {
+  async retryFailed(
+    maxRetries: number = 3
+  ): Promise<{ success: number; failed: number }> {
     const failedDTEs = await this.getFailedDTEs(maxRetries);
     let success = 0;
     let failed = 0;
@@ -207,15 +221,15 @@ export class DTEService {
       }
     }
 
-    logger.info('DTE retry completed', { success, failed });
+    logger.info("DTE retry completed", { success, failed });
     return { success, failed };
   }
 
   private generateCodigo(): string {
     // Generate UUID-like code for DTE
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
       const r = (Math.random() * 16) | 0;
-      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      const v = c === "x" ? r : (r & 0x3) | 0x8;
       return v.toString(16).toUpperCase();
     });
   }
@@ -223,7 +237,7 @@ export class DTEService {
   private async generateNumeroControl(dteType: DTEType): Promise<string> {
     // Get next sequence number for this DTE type
     const result = await DatabaseAdapter.queryOne<{ max_num: string | null }>(
-      'SELECT MAX(numero_control) as max_num FROM dte WHERE dte_type = ?',
+      "SELECT MAX(numero_control) as max_num FROM dte WHERE dte_type = ?",
       [dteType]
     );
 
@@ -236,7 +250,7 @@ export class DTEService {
     }
 
     // Format: DTE-FCF-00000001
-    return `DTE-${dteType}-${String(nextNum).padStart(8, '0')}`;
+    return `DTE-${dteType}-${String(nextNum).padStart(8, "0")}`;
   }
 }
 

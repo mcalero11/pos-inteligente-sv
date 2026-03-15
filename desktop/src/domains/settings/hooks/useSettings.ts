@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'preact/hooks';
-import type { SystemSettings } from '../entities/SystemSettings';
-import { settingsService } from '../services/SettingsService';
+import { useState, useEffect, useCallback } from "preact/hooks";
+import type { SystemSettings } from "../entities/SystemSettings";
+import { settingsService } from "../services/SettingsService";
 
 interface UseSettingsReturn {
   settings: SystemSettings | null;
@@ -26,34 +26,46 @@ export function useSettings(): UseSettingsReturn {
       const data = await settingsService.load();
       setSettings(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load settings');
+      setError(err instanceof Error ? err.message : "Failed to load settings");
     } finally {
       setLoading(false);
     }
   }, []);
 
   const updateSetting = useCallback(
-    async <K extends keyof SystemSettings>(key: K, value: SystemSettings[K]): Promise<void> => {
+    async <K extends keyof SystemSettings>(
+      key: K,
+      value: SystemSettings[K]
+    ): Promise<void> => {
       try {
         await settingsService.set(key, value);
-        setSettings((current) => (current ? { ...current, [key]: value } : null));
+        setSettings((current) =>
+          current ? { ...current, [key]: value } : null
+        );
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to update setting');
+        setError(
+          err instanceof Error ? err.message : "Failed to update setting"
+        );
         throw err;
       }
     },
     []
   );
 
-  const updateSettings = useCallback(async (updates: Partial<SystemSettings>): Promise<void> => {
-    try {
-      await settingsService.setMultiple(updates);
-      setSettings((current) => (current ? { ...current, ...updates } : null));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update settings');
-      throw err;
-    }
-  }, []);
+  const updateSettings = useCallback(
+    async (updates: Partial<SystemSettings>): Promise<void> => {
+      try {
+        await settingsService.setMultiple(updates);
+        setSettings((current) => (current ? { ...current, ...updates } : null));
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to update settings"
+        );
+        throw err;
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     loadSettings();

@@ -142,5 +142,26 @@
     "tax": "Impuesto (13%):",
     "method": "Método:",
     "no_items": "No hay artículos en la transacción"
+  },
+  "active_sales_warning": {
+    "title": "Ventas Activas",
+    "message_one": "Hay {{count}} venta activa en otra ventana. Por favor, ciérrela primero antes de cerrar la ventana principal.",
+    "message_other": "Hay {{count}} ventas activas en otras ventanas. Por favor, ciérrelas primero antes de cerrar la ventana principal.",
+    "confirm": "Entendido"
+  },
+  "receipt": {
+    "title": "Recibo de Venta",
+    "transaction_number": "Transacción #{{number}}",
+    "cashier": "Cajero: {{name}}",
+    "date": "Fecha",
+    "time": "Hora",
+    "items": "Artículos",
+    "payment_info": "Información de Pago",
+    "method": "Método",
+    "amount_paid": "Monto Pagado",
+    "change": "Cambio",
+    "print": "Imprimir",
+    "close": "Cerrar",
+    "print_coming_soon": "Función de impresión próximamente"
   }
 }

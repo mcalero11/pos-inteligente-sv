@@ -1,28 +1,44 @@
 use chrono;
-use tauri::{AppHandle, Manager};
+use std::sync::atomic::{AtomicU32, Ordering};
+use tauri::{AppHandle, Emitter, Manager, State};
 use tauri_plugin_shell::ShellExt;
+
+use crate::error::AppError;
+
+/// Thread-safe counter for sale window numbering
+pub struct SaleWindowCounter(AtomicU32);
+
+impl SaleWindowCounter {
+    pub fn new() -> Self {
+        Self(AtomicU32::new(0))
+    }
+
+    pub fn next(&self) -> u32 {
+        self.0.fetch_add(1, Ordering::SeqCst) + 1
+    }
+}
 
 /// Open the application log folder in the system file explorer
 #[tauri::command]
-pub async fn open_log_folder(app_handle: AppHandle) -> Result<(), String> {
+pub async fn open_log_folder(app_handle: AppHandle) -> Result<(), AppError> {
     log::info!("Opening log folder");
 
     // Use the system log directory where Tauri plugin writes logs
     let logs_dir = app_handle
         .path()
         .app_log_dir()
-        .map_err(|e| format!("Failed to get app log dir: {}", e))?;
+        .map_err(|e| AppError::System(format!("Failed to get app log dir: {}", e)))?;
 
     // Always create logs directory if it doesn't exist
     std::fs::create_dir_all(&logs_dir)
-        .map_err(|e| format!("Failed to create logs directory: {}", e))?;
+        .map_err(|e| AppError::System(format!("Failed to create logs directory: {}", e)))?;
 
     log::debug!("Opening logs directory: {:?}", logs_dir);
 
     // Convert path to string for the shell command
     let logs_dir_str = logs_dir
         .to_str()
-        .ok_or_else(|| "Invalid logs directory path".to_string())?;
+        .ok_or_else(|| AppError::System("Invalid logs directory path".to_string()))?;
 
     // Use shell plugin to open the folder with the appropriate command for each OS
     let shell = app_handle.shell();
@@ -33,7 +49,7 @@ pub async fn open_log_folder(app_handle: AppHandle) -> Result<(), String> {
             .command("open")
             .args([logs_dir_str])
             .spawn()
-            .map_err(|e| format!("Failed to open logs folder: {}", e))?;
+            .map_err(|e| AppError::System(format!("Failed to open logs folder: {}", e)))?;
     }
 
     #[cfg(target_os = "windows")]
@@ -42,7 +58,7 @@ pub async fn open_log_folder(app_handle: AppHandle) -> Result<(), String> {
             .command("explorer")
             .args([logs_dir_str])
             .spawn()
-            .map_err(|e| format!("Failed to open logs folder: {}", e))?;
+            .map_err(|e| AppError::System(format!("Failed to open logs folder: {}", e)))?;
     }
 
     #[cfg(target_os = "linux")]
@@ -51,7 +67,7 @@ pub async fn open_log_folder(app_handle: AppHandle) -> Result<(), String> {
             .command("xdg-open")
             .args([logs_dir_str])
             .spawn()
-            .map_err(|e| format!("Failed to open logs folder: {}", e))?;
+            .map_err(|e| AppError::System(format!("Failed to open logs folder: {}", e)))?;
     }
 
     log::info!("Log folder opened successfully");
@@ -89,18 +105,18 @@ pub async fn open_log_folder(app_handle: AppHandle) -> Result<(), String> {
 
 /// Generate test logs for debugging purposes
 #[tauri::command]
-pub async fn generate_test_logs(app_handle: AppHandle) -> Result<(), String> {
+pub async fn generate_test_logs(app_handle: AppHandle) -> Result<(), AppError> {
     log::info!("Generating test logs for debugging purposes");
 
     // Use the same system log directory where Tauri plugin writes logs
     let logs_dir = app_handle
         .path()
         .app_log_dir()
-        .map_err(|e| format!("Failed to get app log dir: {}", e))?;
+        .map_err(|e| AppError::System(format!("Failed to get app log dir: {}", e)))?;
 
     // Always create logs directory if it doesn't exist
     std::fs::create_dir_all(&logs_dir)
-        .map_err(|e| format!("Failed to create logs directory: {}", e))?;
+        .map_err(|e| AppError::System(format!("Failed to create logs directory: {}", e)))?;
 
     // Generate various log levels
     log::trace!("Test TRACE level log from generate_test_logs command");
@@ -128,10 +144,76 @@ pub async fn generate_test_logs(app_handle: AppHandle) -> Result<(), String> {
     );
 
     std::fs::write(&test_log_path, test_content)
-        .map_err(|e| format!("Failed to create manual test log: {}", e))?;
+        .map_err(|e| AppError::System(format!("Failed to create manual test log: {}", e)))?;
 
     log::info!("Test logs generation completed successfully");
     log::info!("Manual test log file created: {:?}", test_log_path);
 
     Ok(())
+}
+
+/// Response from creating a sale window
+#[derive(serde::Serialize)]
+pub struct SaleWindowCreated {
+    pub label: String,
+    pub sale_number: u32,
+}
+
+/// Create a new sale window from the backend
+#[tauri::command]
+pub async fn create_sale_window(
+    app_handle: AppHandle,
+    counter: State<'_, SaleWindowCounter>,
+) -> Result<SaleWindowCreated, AppError> {
+    let sale_number = counter.next();
+    let label = format!("pos-sale-{}", sale_number);
+    let title = format!("POS Inteligente - Venta #{}", sale_number);
+
+    log::info!("Backend: Creating sale window: {} ({})", label, title);
+
+    let _window = tauri::WebviewWindowBuilder::new(
+        &app_handle,
+        &label,
+        tauri::WebviewUrl::App(format!("index.html?sale={}", sale_number).into()),
+    )
+    .title(&title)
+    .inner_size(1024.0, 768.0)
+    .resizable(true)
+    .decorations(true)
+    .visible(true)
+    .focused(true)
+    .build()
+    .map_err(|e| AppError::System(format!("Failed to create window: {}", e)))?;
+
+    log::info!(
+        "Backend: Sale window created successfully: {} (sale #{})",
+        label,
+        sale_number
+    );
+
+    // Emit event to main window to notify of new window creation
+    let payload = SaleWindowCreated {
+        label: label.clone(),
+        sale_number,
+    };
+    if let Err(e) = app_handle.emit_to("main", "window-created", &payload) {
+        log::warn!("Failed to emit window-created to main window: {}", e);
+    }
+
+    Ok(payload)
+}
+
+/// Force close the application (bypassing close prevention).
+/// Only allowed from the main window.
+#[tauri::command]
+pub async fn force_close_app(app_handle: AppHandle, window: tauri::Window) {
+    if window.label() != "main" {
+        log::warn!(
+            "force_close_app rejected: called from non-main window '{}'",
+            window.label()
+        );
+        return;
+    }
+    log::info!("Backend: Force closing application requested");
+    app_handle.exit(0);
 }

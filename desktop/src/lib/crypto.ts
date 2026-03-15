@@ -18,13 +18,16 @@ export interface SignDteInput {
  * @param dteType - Type of DTE document (e.g., 'FCF')
  * @param jsonData - DTE data as JSON string
  */
-export async function signDte(dteType: string, jsonData: string): Promise<SigningResult> {
+export async function signDte(
+  dteType: string,
+  jsonData: string
+): Promise<SigningResult> {
   try {
-    return await invoke<SigningResult>('sign_dte', {
-      payload: { dte_type: dteType, json_data: jsonData }
+    return await invoke<SigningResult>("sign_dte", {
+      payload: { dte_type: dteType, json_data: jsonData },
     });
   } catch (error) {
-    (globalThis as any).console?.error('Failed to sign DTE document:', error);
+    (globalThis as any).console?.error("Failed to sign DTE document:", error);
     throw error;
   }
 }
@@ -34,11 +37,14 @@ export async function signDte(dteType: string, jsonData: string): Promise<Signin
  * @param path - Path to the certificate file
  * @param password - Certificate password
  */
-export async function loadCertificate(path: string, password: string): Promise<boolean> {
+export async function loadCertificate(
+  path: string,
+  password: string
+): Promise<boolean> {
   try {
-    return await invoke<boolean>('load_certificate', { path, password });
+    return await invoke<boolean>("load_certificate", { path, password });
   } catch (error) {
-    (globalThis as any).console?.error('Failed to load certificate:', error);
+    (globalThis as any).console?.error("Failed to load certificate:", error);
     throw error;
   }
 }
@@ -48,9 +54,12 @@ export async function loadCertificate(path: string, password: string): Promise<b
  */
 export async function isCertificateLoaded(): Promise<boolean> {
   try {
-    return await invoke<boolean>('is_certificate_loaded');
+    return await invoke<boolean>("is_certificate_loaded");
   } catch (error) {
-    (globalThis as any).console?.error('Failed to check certificate status:', error);
+    (globalThis as any).console?.error(
+      "Failed to check certificate status:",
+      error
+    );
     return false;
   }
 }

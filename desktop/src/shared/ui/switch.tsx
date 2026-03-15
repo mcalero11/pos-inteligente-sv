@@ -1,7 +1,7 @@
-import React from "preact/compat"
-import * as SwitchPrimitive from "@radix-ui/react-switch"
+import React from "preact/compat";
+import * as SwitchPrimitive from "@radix-ui/react-switch";
 
-import { cn } from "@/shared/utils/index"
+import { cn } from "@/shared/utils/index";
 
 function Switch({
   className,
@@ -23,7 +23,7 @@ function Switch({
         )}
       />
     </SwitchPrimitive.Root>
-  )
+  );
 }
 
-export { Switch }
+export { Switch };

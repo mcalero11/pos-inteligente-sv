@@ -13,7 +13,7 @@ export class SecureStorageService {
   private static instance: SecureStorageService;
   private initialized = false;
 
-  private constructor() { }
+  private constructor() {}
 
   static getInstance(): SecureStorageService {
     if (!SecureStorageService.instance) {
@@ -28,7 +28,7 @@ export class SecureStorageService {
    */
   async initialize(passwordHash: number[]): Promise<void> {
     try {
-      await invoke('initialize_secure_storage', { passwordHash });
+      await invoke("initialize_secure_storage", { passwordHash });
       this.initialized = true;
     } catch (error) {
       this.initialized = false;
@@ -43,11 +43,11 @@ export class SecureStorageService {
    */
   async storeSecret(key: string, secretData: number[]): Promise<void> {
     if (!this.initialized) {
-      throw new Error('Secure storage not initialized');
+      throw new Error("Secure storage not initialized");
     }
 
     try {
-      await invoke('store_secret', { key, secretData });
+      await invoke("store_secret", { key, secretData });
     } catch (error) {
       throw new Error(`Failed to store secret: ${error}`);
     }
@@ -59,11 +59,11 @@ export class SecureStorageService {
    */
   async hasSecret(key: string): Promise<boolean> {
     if (!this.initialized) {
-      throw new Error('Secure storage not initialized');
+      throw new Error("Secure storage not initialized");
     }
 
     try {
-      return await invoke('has_secret', { key });
+      return await invoke("has_secret", { key });
     } catch (error) {
       throw new Error(`Failed to check secret: ${error}`);
     }
@@ -75,11 +75,11 @@ export class SecureStorageService {
    */
   async removeSecret(key: string): Promise<void> {
     if (!this.initialized) {
-      throw new Error('Secure storage not initialized');
+      throw new Error("Secure storage not initialized");
     }
 
     try {
-      await invoke('remove_secret', { key });
+      await invoke("remove_secret", { key });
     } catch (error) {
       throw new Error(`Failed to remove secret: ${error}`);
     }
@@ -91,11 +91,11 @@ export class SecureStorageService {
    */
   async getSecretsMetadata(keys: string[]): Promise<SecretMetadata[]> {
     if (!this.initialized) {
-      throw new Error('Secure storage not initialized');
+      throw new Error("Secure storage not initialized");
     }
 
     try {
-      return await invoke('get_secret_metadata', { keys });
+      return await invoke("get_secret_metadata", { keys });
     } catch (error) {
       throw new Error(`Failed to get secrets metadata: ${error}`);
     }
@@ -106,7 +106,7 @@ export class SecureStorageService {
    */
   async isInitialized(): Promise<boolean> {
     try {
-      const result = await invoke('is_secure_storage_initialized');
+      const result = await invoke("is_secure_storage_initialized");
       this.initialized = result as boolean;
       return this.initialized;
     } catch {
@@ -120,7 +120,7 @@ export class SecureStorageService {
    */
   async clear(): Promise<void> {
     try {
-      await invoke('clear_secure_storage');
+      await invoke("clear_secure_storage");
       this.initialized = false;
     } catch (error) {
       throw new Error(`Failed to clear secure storage: ${error}`);
@@ -136,7 +136,10 @@ export class SecureStorageService {
 
   // === HELPER METHODS FOR COMMON USE CASES ===
 
-  async storeDtePrivateKey(keyId: string, privateKeyPem: string): Promise<void> {
+  async storeDtePrivateKey(
+    keyId: string,
+    privateKeyPem: string
+  ): Promise<void> {
     // Convert string to bytes using UTF-8 encoding
     const encoder = new (globalThis as any).TextEncoder();
     const encoded = encoder.encode(privateKeyPem);

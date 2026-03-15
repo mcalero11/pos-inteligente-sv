@@ -1,6 +1,10 @@
-import { DatabaseAdapter } from '../../../infrastructure/database';
-import { logger } from '../../../infrastructure/logging';
-import type { AuditLog, CreateAuditLogInput, AuditAction } from '../entities/AuditLog';
+import { DatabaseAdapter } from "../../../infrastructure/database";
+import { logger } from "../../../infrastructure/logging";
+import type {
+  AuditLog,
+  CreateAuditLogInput,
+  AuditAction,
+} from "../entities/AuditLog";
 
 interface AuditLogRow {
   id: number;
@@ -41,41 +45,41 @@ export class AuditService {
     endDate?: string;
     limit?: number;
   }): Promise<AuditLog[]> {
-    let sql = 'SELECT * FROM audit_logs WHERE 1=1';
+    let sql = "SELECT * FROM audit_logs WHERE 1=1";
     const params: unknown[] = [];
 
     if (options?.userId) {
-      sql += ' AND user_id = ?';
+      sql += " AND user_id = ?";
       params.push(options.userId);
     }
 
     if (options?.action) {
-      sql += ' AND action = ?';
+      sql += " AND action = ?";
       params.push(options.action);
     }
 
     if (options?.entityType) {
-      sql += ' AND entity_type = ?';
+      sql += " AND entity_type = ?";
       params.push(options.entityType);
     }
 
     if (options?.startDate) {
-      sql += ' AND created_at >= ?';
+      sql += " AND created_at >= ?";
       params.push(options.startDate);
     }
 
     if (options?.endDate) {
-      sql += ' AND created_at <= ?';
+      sql += " AND created_at <= ?";
       params.push(options.endDate);
     }
 
-    sql += ' ORDER BY created_at DESC';
+    sql += " ORDER BY created_at DESC";
 
     if (options?.limit) {
-      sql += ' LIMIT ?';
+      sql += " LIMIT ?";
       params.push(options.limit);
     } else {
-      sql += ' LIMIT 1000'; // Default limit
+      sql += " LIMIT 1000"; // Default limit
     }
 
     const rows = await DatabaseAdapter.query<AuditLogRow>(sql, params);
@@ -84,7 +88,7 @@ export class AuditService {
 
   async findById(id: number): Promise<AuditLog | null> {
     const row = await DatabaseAdapter.queryOne<AuditLogRow>(
-      'SELECT * FROM audit_logs WHERE id = ?',
+      "SELECT * FROM audit_logs WHERE id = ?",
       [id]
     );
     return row ? mapRowToAuditLog(row) : null;
@@ -107,7 +111,7 @@ export class AuditService {
       );
     } catch (error) {
       // Don't throw - audit logging should not break the main flow
-      logger.error('Failed to create audit log', { input, error });
+      logger.error("Failed to create audit log", { input, error });
     }
   }
 
@@ -115,8 +119,8 @@ export class AuditService {
   async logLogin(userId: number): Promise<void> {
     await this.log({
       userId,
-      action: 'LOGIN',
-      entityType: 'user',
+      action: "LOGIN",
+      entityType: "user",
       entityId: String(userId),
     });
   }
@@ -124,37 +128,48 @@ export class AuditService {
   async logLogout(userId: number): Promise<void> {
     await this.log({
       userId,
-      action: 'LOGOUT',
-      entityType: 'user',
+      action: "LOGOUT",
+      entityType: "user",
       entityId: String(userId),
     });
   }
 
-  async logSaleCreated(userId: number, saleId: number, total: number): Promise<void> {
+  async logSaleCreated(
+    userId: number,
+    saleId: number,
+    total: number
+  ): Promise<void> {
     await this.log({
       userId,
-      action: 'SALE_CREATED',
-      entityType: 'transaction',
+      action: "SALE_CREATED",
+      entityType: "transaction",
       entityId: String(saleId),
       newValue: { saleId, total },
     });
   }
 
-  async logSaleVoided(userId: number, saleId: number, reason?: string): Promise<void> {
+  async logSaleVoided(
+    userId: number,
+    saleId: number,
+    reason?: string
+  ): Promise<void> {
     await this.log({
       userId,
-      action: 'SALE_VOIDED',
-      entityType: 'transaction',
+      action: "SALE_VOIDED",
+      entityType: "transaction",
       entityId: String(saleId),
       metadata: { reason },
     });
   }
 
-  async logSettingsChanged(userId: number, changes: Record<string, unknown>): Promise<void> {
+  async logSettingsChanged(
+    userId: number,
+    changes: Record<string, unknown>
+  ): Promise<void> {
     await this.log({
       userId,
-      action: 'SETTINGS_CHANGED',
-      entityType: 'settings',
+      action: "SETTINGS_CHANGED",
+      entityType: "settings",
       newValue: changes,
     });
   }
@@ -163,7 +178,10 @@ export class AuditService {
     return this.findAll({ limit });
   }
 
-  async getUserActivity(userId: number, limit: number = 50): Promise<AuditLog[]> {
+  async getUserActivity(
+    userId: number,
+    limit: number = 50
+  ): Promise<AuditLog[]> {
     return this.findAll({ userId, limit });
   }
 
@@ -174,7 +192,10 @@ export class AuditService {
     );
 
     if (result.rowsAffected > 0) {
-      logger.info('Audit logs cleaned up', { deletedCount: result.rowsAffected, daysToKeep });
+      logger.info("Audit logs cleaned up", {
+        deletedCount: result.rowsAffected,
+        daysToKeep,
+      });
     }
 
     return result.rowsAffected;

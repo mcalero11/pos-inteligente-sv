@@ -21,7 +21,7 @@ export function useDialog(): UseDialogReturn {
   }, []);
 
   const updateDialogProps = useCallback((props: any) => {
-    setCurrentDialog(prev =>
+    setCurrentDialog((prev) =>
       prev ? { ...prev, props: { ...prev.props, ...props } } : null
     );
   }, []);
@@ -33,6 +33,6 @@ export function useDialog(): UseDialogReturn {
     isDialogOpen,
     openDialog,
     closeDialog,
-    updateDialogProps
+    updateDialogProps,
   };
-} 
+}

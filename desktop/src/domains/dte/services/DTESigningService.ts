@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from "@tauri-apps/api/core";
 
 export interface SigningResult {
   success: boolean;
@@ -16,7 +16,7 @@ export interface SignDteInput {
 export class DTESigningService {
   private static instance: DTESigningService;
 
-  private constructor() { }
+  private constructor() {}
 
   static getInstance(): DTESigningService {
     if (!DTESigningService.instance) {
@@ -32,7 +32,7 @@ export class DTESigningService {
    */
   async loadCertificate(path: string, password: string): Promise<boolean> {
     try {
-      return await invoke<boolean>('load_certificate', { path, password });
+      return await invoke<boolean>("load_certificate", { path, password });
     } catch (error) {
       throw new Error(`Failed to load certificate: ${error}`);
     }
@@ -43,8 +43,8 @@ export class DTESigningService {
    */
   async isCertificateLoaded(): Promise<boolean> {
     try {
-      return await invoke<boolean>('is_certificate_loaded');
-    } catch (error) {
+      return await invoke<boolean>("is_certificate_loaded");
+    } catch {
       return false;
     }
   }
@@ -54,10 +54,13 @@ export class DTESigningService {
    * @param dteType - Type of DTE (e.g., 'FCF', 'CCF')
    * @param jsonData - DTE document data as JSON string
    */
-  async signDocument(dteType: string, jsonData: string): Promise<SigningResult> {
+  async signDocument(
+    dteType: string,
+    jsonData: string
+  ): Promise<SigningResult> {
     try {
-      return await invoke<SigningResult>('sign_dte', {
-        payload: { dte_type: dteType, json_data: jsonData }
+      return await invoke<SigningResult>("sign_dte", {
+        payload: { dte_type: dteType, json_data: jsonData },
       });
     } catch (error) {
       throw new Error(`Failed to sign DTE document: ${error}`);

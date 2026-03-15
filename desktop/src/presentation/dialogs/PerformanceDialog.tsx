@@ -1,11 +1,17 @@
-import { useState, useEffect } from 'preact/hooks';
-import { getRenderStats } from '@/presentation/hooks/use-render-tracker';
-import { useDebug } from '@/presentation/providers';
-import { Dialog } from '@/shared/ui/dialog';
-import { Button } from '@/shared/ui/button';
-import { Badge } from '@/shared/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
-import { RefreshCw, Clock, Zap, AlertTriangle, BarChart3 } from 'lucide-preact';
+import { useState, useEffect } from "preact/hooks";
+import { getRenderStats } from "@/presentation/hooks/use-render-tracker";
+import { useDebug } from "@/presentation/providers";
+import { Dialog } from "@/shared/ui/dialog";
+import { Button } from "@/shared/ui/button";
+import { Badge } from "@/shared/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui/select";
+import { RefreshCw, Clock, Zap, AlertTriangle, BarChart3 } from "lucide-preact";
 
 interface PerformanceDialogProps {
   isOpen: boolean;
@@ -32,11 +38,16 @@ const formatNumber = (value: any, decimals: number = 0): string => {
 //   return safeNumber((numValue / numTotal) * 100);
 // };
 
-export default function PerformanceDialog({ isOpen, onClose }: PerformanceDialogProps) {
+export default function PerformanceDialog({
+  isOpen,
+  onClose,
+}: PerformanceDialogProps) {
   const { isRenderDebuggingActive, enableRenderDebugging } = useDebug();
   const [stats, setStats] = useState<any[]>([]);
-  const [sortBy, setSortBy] = useState<'renderCount' | 'lastRender' | 'name'>('renderCount');
-  const [filter, setFilter] = useState<'all' | 'high' | 'recent'>('all');
+  const [sortBy, setSortBy] = useState<"renderCount" | "lastRender" | "name">(
+    "renderCount"
+  );
+  const [filter, setFilter] = useState<"all" | "high" | "recent">("all");
   const [autoRefresh, setAutoRefresh] = useState(true);
 
   // Enable render debugging when dialog opens
@@ -73,11 +84,9 @@ export default function PerformanceDialog({ isOpen, onClose }: PerformanceDialog
   // Clear stats
   const handleClear = () => {
     globalThis.console.clear();
-    globalThis.console.log('🧹 Render stats cleared');
+    globalThis.console.log("🧹 Render stats cleared");
     setStats([]);
   };
-
-
 
   if (!isOpen || !import.meta.env.DEV) {
     return null;
@@ -85,36 +94,43 @@ export default function PerformanceDialog({ isOpen, onClose }: PerformanceDialog
 
   // Filter and sort stats with NaN protection
   const filteredStats = stats
-    .filter(stat => {
+    .filter((stat) => {
       const renderCount = safeNumber(stat?.renderCount);
-      const lastRender = stat?.lastRender instanceof Date ? stat.lastRender : new Date();
+      const lastRender =
+        stat?.lastRender instanceof Date ? stat.lastRender : new Date();
       const timeSinceRender = safeNumber(Date.now() - lastRender.getTime());
 
       switch (filter) {
-        case 'high':
+        case "high":
           return renderCount > 5;
-        case 'recent':
+        case "recent":
           return timeSinceRender < 10000; // Last 10 seconds
         default:
           return true;
       }
     })
     .sort((a, b) => {
-      const aValue = safeNumber(a?.[sortBy === 'lastRender' ? 'lastRender' : sortBy]);
-      const bValue = safeNumber(b?.[sortBy === 'lastRender' ? 'lastRender' : sortBy]);
+      const aValue = safeNumber(
+        a?.[sortBy === "lastRender" ? "lastRender" : sortBy]
+      );
+      const bValue = safeNumber(
+        b?.[sortBy === "lastRender" ? "lastRender" : sortBy]
+      );
 
       switch (sortBy) {
-        case 'renderCount': {
+        case "renderCount": {
           return bValue - aValue;
         }
-        case 'lastRender': {
-          const aTime = a?.lastRender instanceof Date ? a.lastRender.getTime() : 0;
-          const bTime = b?.lastRender instanceof Date ? b.lastRender.getTime() : 0;
+        case "lastRender": {
+          const aTime =
+            a?.lastRender instanceof Date ? a.lastRender.getTime() : 0;
+          const bTime =
+            b?.lastRender instanceof Date ? b.lastRender.getTime() : 0;
           return safeNumber(bTime) - safeNumber(aTime);
         }
-        case 'name': {
-          const aName = String(a?.component || '');
-          const bName = String(b?.component || '');
+        case "name": {
+          const aName = String(a?.component || "");
+          const bName = String(b?.component || "");
           return aName.localeCompare(bName);
         }
         default:
@@ -123,9 +139,15 @@ export default function PerformanceDialog({ isOpen, onClose }: PerformanceDialog
     });
 
   // Calculate safe statistics
-  const totalRenders = stats.reduce((sum, stat) => sum + safeNumber(stat?.renderCount), 0);
-  const highRenderComponents = stats.filter(stat => safeNumber(stat?.renderCount) > 10).length;
-  const averageRenders = stats.length > 0 ? safeNumber(totalRenders / stats.length) : 0;
+  const totalRenders = stats.reduce(
+    (sum, stat) => sum + safeNumber(stat?.renderCount),
+    0
+  );
+  const highRenderComponents = stats.filter(
+    (stat) => safeNumber(stat?.renderCount) > 10
+  ).length;
+  const averageRenders =
+    stats.length > 0 ? safeNumber(totalRenders / stats.length) : 0;
 
   return (
     <Dialog
@@ -143,20 +165,36 @@ export default function PerformanceDialog({ isOpen, onClose }: PerformanceDialog
         {/* Stats Summary */}
         <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
           <div className="text-center">
-            <div className="text-xl font-bold text-blue-600">{formatNumber(stats.length)}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Components</div>
+            <div className="text-xl font-bold text-blue-600">
+              {formatNumber(stats.length)}
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              Components
+            </div>
           </div>
           <div className="text-center">
-            <div className="text-xl font-bold text-green-600">{formatNumber(totalRenders)}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Total Renders</div>
+            <div className="text-xl font-bold text-green-600">
+              {formatNumber(totalRenders)}
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              Total Renders
+            </div>
           </div>
           <div className="text-center">
-            <div className="text-xl font-bold text-yellow-600">{formatNumber(averageRenders, 1)}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Avg Renders</div>
+            <div className="text-xl font-bold text-yellow-600">
+              {formatNumber(averageRenders, 1)}
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              Avg Renders
+            </div>
           </div>
           <div className="text-center">
-            <div className="text-xl font-bold text-red-600">{formatNumber(highRenderComponents)}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">High Count</div>
+            <div className="text-xl font-bold text-red-600">
+              {formatNumber(highRenderComponents)}
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              High Count
+            </div>
           </div>
         </div>
 
@@ -166,8 +204,15 @@ export default function PerformanceDialog({ isOpen, onClose }: PerformanceDialog
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             {/* Sort Options */}
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">Sort:</span>
-              <Select value={sortBy} onValueChange={(value: string) => setSortBy(value as 'renderCount' | 'lastRender' | 'name')}>
+              <span className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                Sort:
+              </span>
+              <Select
+                value={sortBy}
+                onValueChange={(value: string) =>
+                  setSortBy(value as "renderCount" | "lastRender" | "name")
+                }
+              >
                 <SelectTrigger size="sm" className="min-w-0 flex-1">
                   <SelectValue />
                 </SelectTrigger>
@@ -181,8 +226,15 @@ export default function PerformanceDialog({ isOpen, onClose }: PerformanceDialog
 
             {/* Filter Options */}
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">Filter:</span>
-              <Select value={filter} onValueChange={(value: string) => setFilter(value as 'all' | 'high' | 'recent')}>
+              <span className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                Filter:
+              </span>
+              <Select
+                value={filter}
+                onValueChange={(value: string) =>
+                  setFilter(value as "all" | "high" | "recent")
+                }
+              >
                 <SelectTrigger size="sm" className="min-w-0 flex-1">
                   <SelectValue />
                 </SelectTrigger>
@@ -239,24 +291,30 @@ export default function PerformanceDialog({ isOpen, onClose }: PerformanceDialog
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {stats.length === 0
                   ? "No render data yet. Interact with the app to see statistics."
-                  : "No components match the current filter."
-                }
+                  : "No components match the current filter."}
               </p>
             </div>
           ) : (
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredStats.map((stat, index) => {
                 const renderCount = safeNumber(stat?.renderCount);
-                const lastRender = stat?.lastRender instanceof Date ? stat.lastRender : new Date();
-                const timeSinceLastRender = Math.round(safeNumber(Date.now() - lastRender.getTime()) / 1000);
+                const lastRender =
+                  stat?.lastRender instanceof Date
+                    ? stat.lastRender
+                    : new Date();
+                const timeSinceLastRender = Math.round(
+                  safeNumber(Date.now() - lastRender.getTime()) / 1000
+                );
                 const isHighRender = renderCount > 10;
                 const isMediumRender = renderCount > 5;
-                const componentName = String(stat?.component || `Unknown-${index}`);
+                const componentName = String(
+                  stat?.component || `Unknown-${index}`
+                );
 
                 return (
                   <div
                     key={`${componentName}-${index}`}
-                    className={`p-3 hover:bg-gray-50 dark:hover:bg-gray-700 ${isHighRender ? 'bg-red-50 dark:bg-red-900/20' : ''}`}
+                    className={`p-3 hover:bg-gray-50 dark:hover:bg-gray-700 ${isHighRender ? "bg-red-50 dark:bg-red-900/20" : ""}`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
@@ -295,20 +353,28 @@ export default function PerformanceDialog({ isOpen, onClose }: PerformanceDialog
                           </div>
                         </div>
 
-                        {stat?.reasons && Array.isArray(stat.reasons) && stat.reasons.length > 0 && (
-                          <div className="mt-1">
-                            <div className="text-xs text-gray-600 dark:text-gray-300 truncate">
-                              <strong>Reasons:</strong> {stat.reasons.join(', ')}
+                        {stat?.reasons &&
+                          Array.isArray(stat.reasons) &&
+                          stat.reasons.length > 0 && (
+                            <div className="mt-1">
+                              <div className="text-xs text-gray-600 dark:text-gray-300 truncate">
+                                <strong>Reasons:</strong>{" "}
+                                {stat.reasons.join(", ")}
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
                       </div>
 
                       <div className="ml-3 text-right">
-                        <div className={`text-lg font-bold ${isHighRender ? 'text-red-600' :
-                          isMediumRender ? 'text-yellow-600' :
-                            'text-green-600'
-                          }`}>
+                        <div
+                          className={`text-lg font-bold ${
+                            isHighRender
+                              ? "text-red-600"
+                              : isMediumRender
+                                ? "text-yellow-600"
+                                : "text-green-600"
+                          }`}
+                        >
                           {formatNumber(renderCount)}
                         </div>
                       </div>
@@ -322,14 +388,10 @@ export default function PerformanceDialog({ isOpen, onClose }: PerformanceDialog
 
         {/* Footer */}
         <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-          <div>
-            💡 Check browser console for detailed logs
-          </div>
-          <div>
-            Auto-refresh: {autoRefresh ? '✅ On' : '❌ Off'}
-          </div>
+          <div>💡 Check browser console for detailed logs</div>
+          <div>Auto-refresh: {autoRefresh ? "✅ On" : "❌ Off"}</div>
         </div>
       </div>
     </Dialog>
   );
-} 
+}

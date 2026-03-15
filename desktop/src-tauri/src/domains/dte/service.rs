@@ -1,8 +1,11 @@
-use base64::{engine::general_purpose::STANDARD, Engine};
-use rsa::{pkcs1v15::SigningKey, signature::{Signer, SignatureEncoding}, RsaPrivateKey};
+use base64::{Engine, engine::general_purpose::STANDARD};
+use rsa::{
+    RsaPrivateKey,
+    pkcs1v15::SigningKey,
+    signature::{SignatureEncoding, Signer},
+};
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
-use std::sync::Mutex;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -86,11 +89,6 @@ impl Default for DteSignerService {
     fn default() -> Self {
         Self::new()
     }
-}
-
-// Global signer instance
-lazy_static::lazy_static! {
-    pub static ref DTE_SIGNER: Mutex<DteSignerService> = Mutex::new(DteSignerService::new());
 }
 
 fn generate_uuid() -> String {

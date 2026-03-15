@@ -1,4 +1,4 @@
-export type Role = 'admin' | 'supervisor' | 'cashier';
+export type Role = "admin" | "supervisor" | "cashier";
 
 export interface RoleDefinition {
   name: Role;
@@ -9,21 +9,21 @@ export interface RoleDefinition {
 
 export const ROLE_DEFINITIONS: Record<Role, RoleDefinition> = {
   admin: {
-    name: 'admin',
-    displayName: 'Administrador',
-    description: 'Acceso completo al sistema',
+    name: "admin",
+    displayName: "Administrador",
+    description: "Acceso completo al sistema",
     level: 100,
   },
   supervisor: {
-    name: 'supervisor',
-    displayName: 'Supervisor',
-    description: 'Gestión de ventas y reportes',
+    name: "supervisor",
+    displayName: "Supervisor",
+    description: "Gestión de ventas y reportes",
     level: 50,
   },
   cashier: {
-    name: 'cashier',
-    displayName: 'Cajero',
-    description: 'Operaciones de venta básicas',
+    name: "cashier",
+    displayName: "Cajero",
+    description: "Operaciones de venta básicas",
     level: 10,
   },
 };

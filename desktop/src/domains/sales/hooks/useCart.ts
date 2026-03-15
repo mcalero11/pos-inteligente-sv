@@ -1,6 +1,6 @@
-import { useState, useCallback, useMemo } from 'preact/hooks';
-import type { Product } from '../../products/entities/Product';
-import type { Cart, CartItem } from '../entities/Cart';
+import { useState, useCallback, useMemo, useEffect } from "preact/hooks";
+import type { Product } from "../../products/entities/Product";
+import type { Cart, CartItem } from "../entities/Cart";
 import {
   createEmptyCart,
   addToCart,
@@ -8,8 +8,8 @@ import {
   updateCartItemQuantity,
   calculateCartTotals,
   clearCart,
-} from '../entities/Cart';
-import { settingsService } from '../../settings/services/SettingsService';
+} from "../entities/Cart";
+import { settingsService } from "../../settings/services/SettingsService";
 
 interface UseCartReturn {
   cart: Cart;
@@ -31,14 +31,20 @@ export function useCart(): UseCartReturn {
   const [cart, setCart] = useState<Cart>(createEmptyCart);
   const [taxRate, setTaxRate] = useState(0.13);
 
-  // Load tax rate from settings
-  useState(() => {
-    settingsService.get('taxRate').then((rate) => {
-      if (typeof rate === 'number') {
+  // Load tax rate from settings on mount
+  useEffect(() => {
+    let cancelled = false;
+
+    settingsService.get("taxRate").then((rate) => {
+      if (!cancelled && typeof rate === "number") {
         setTaxRate(rate);
       }
-    });
-  });
+    }).catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const addItem = useCallback((product: Product, quantity: number = 1) => {
     setCart((current) => addToCart(current, product, quantity));
@@ -61,10 +67,13 @@ export function useCart(): UseCartReturn {
   }, []);
 
   const clear = useCallback(() => {
-    setCart(clearCart(cart));
-  }, [cart]);
+    setCart(clearCart());
+  }, []);
 
-  const totals = useMemo(() => calculateCartTotals(cart, taxRate), [cart, taxRate]);
+  const totals = useMemo(
+    () => calculateCartTotals(cart, taxRate),
+    [cart, taxRate]
+  );
 
   return {
     cart,
