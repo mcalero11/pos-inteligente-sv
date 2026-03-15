@@ -1,3 +1,3 @@
 // Settings Domain - Entities
-export * from './SystemSettings';
-export * from './CompanyInfo';
+export * from "./SystemSettings";
+export * from "./CompanyInfo";

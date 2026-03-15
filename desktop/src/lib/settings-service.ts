@@ -1,5 +1,5 @@
-import { DatabaseAdapter } from '@/infrastructure/database';
-import { logger } from '@/infrastructure/logging';
+import { DatabaseAdapter } from "@/infrastructure/database";
+import { logger } from "@/infrastructure/logging";
 
 // Settings types for better type safety
 export interface AppSettings {
@@ -22,46 +22,49 @@ export interface AppSettings {
 
   // UI settings
   defaultCustomerName: string;
-  defaultCustomerType: 'general' | 'partner' | 'vip';
+  defaultCustomerType: "general" | "partner" | "vip";
 }
 
 // Default fallback values
 export const DEFAULT_SETTINGS: AppSettings = {
   taxRate: 13.0,
-  currency: 'USD',
-  companyName: 'Mi Empresa',
-  companyAddress: '',
-  companyPhone: '',
-  receiptFooter: 'Gracias por su compra',
+  currency: "USD",
+  companyName: "Mi Empresa",
+  companyAddress: "",
+  companyPhone: "",
+  receiptFooter: "Gracias por su compra",
   lowStockAlert: 10,
   backupFrequency: 24,
   sessionTimeout: 480,
-  defaultCustomerName: 'Cliente General',
-  defaultCustomerType: 'general',
+  defaultCustomerName: "Cliente General",
+  defaultCustomerType: "general",
 };
 
 // Settings mapping from database keys to app settings
 const SETTINGS_MAPPING: Record<keyof AppSettings, string> = {
-  taxRate: 'tax_rate',
-  currency: 'currency',
-  companyName: 'company_name',
-  companyAddress: 'company_address',
-  companyPhone: 'company_phone',
-  receiptFooter: 'receipt_footer',
-  lowStockAlert: 'low_stock_alert',
-  backupFrequency: 'backup_frequency',
-  sessionTimeout: 'session_timeout',
-  defaultCustomerName: 'default_customer_name',
-  defaultCustomerType: 'default_customer_type',
+  taxRate: "tax_rate",
+  currency: "currency",
+  companyName: "company_name",
+  companyAddress: "company_address",
+  companyPhone: "company_phone",
+  receiptFooter: "receipt_footer",
+  lowStockAlert: "low_stock_alert",
+  backupFrequency: "backup_frequency",
+  sessionTimeout: "session_timeout",
+  defaultCustomerName: "default_customer_name",
+  defaultCustomerType: "default_customer_type",
 };
 
 // Event types for reactive updates
 type SettingsListener = (settings: AppSettings) => void;
-type SettingChangeListener = <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => void;
+type SettingChangeListener = <K extends keyof AppSettings>(
+  key: K,
+  value: AppSettings[K]
+) => void;
 
 /**
  * Reactive Settings Service with caching and real-time updates
- * 
+ *
  * Features:
  * - Cached settings for performance
  * - Reactive updates via listeners
@@ -109,7 +112,9 @@ export class SettingsService {
   /**
    * Get a specific setting value
    */
-  async getSetting<K extends keyof AppSettings>(key: K): Promise<AppSettings[K]> {
+  async getSetting<K extends keyof AppSettings>(
+    key: K
+  ): Promise<AppSettings[K]> {
     const settings = await this.getSettings();
     return settings[key];
   }
@@ -126,7 +131,7 @@ export class SettingsService {
       const dbValue = this.serializeValue(value);
 
       await DatabaseAdapter.execute(
-        'INSERT OR REPLACE INTO system_settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)',
+        "INSERT OR REPLACE INTO system_settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)",
         [dbKey, dbValue]
       );
 
@@ -154,7 +159,7 @@ export class SettingsService {
         const dbKey = SETTINGS_MAPPING[key as keyof AppSettings];
         const dbValue = this.serializeValue(value as string | number | boolean);
         return DatabaseAdapter.execute(
-          'INSERT OR REPLACE INTO system_settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)',
+          "INSERT OR REPLACE INTO system_settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)",
           [dbKey, dbValue]
         );
       });
@@ -168,13 +173,16 @@ export class SettingsService {
 
         // Notify individual changes
         Object.entries(updates).forEach(([key, value]) => {
-          this.notifyChangeListeners(key as keyof AppSettings, value as AppSettings[keyof AppSettings]);
+          this.notifyChangeListeners(
+            key as keyof AppSettings,
+            value as AppSettings[keyof AppSettings]
+          );
         });
       }
 
-      logger.info('Settings updated in batch:', Object.keys(updates));
+      logger.info("Settings updated in batch:", Object.keys(updates));
     } catch (error) {
-      logger.error('Failed to update settings in batch:', error);
+      logger.error("Failed to update settings in batch:", error);
       throw error;
     }
   }
@@ -245,15 +253,22 @@ export class SettingsService {
       const settings = { ...DEFAULT_SETTINGS };
 
       // Load all settings from database
-      const dbSettings = await DatabaseAdapter.query<{ key: string, value: string }>('SELECT key, value FROM system_settings');
-
+      const dbSettings = await DatabaseAdapter.query<{
+        key: string;
+        value: string;
+      }>("SELECT key, value FROM system_settings");
 
       // Map database settings to app settings
-      for (const appKey of Object.keys(SETTINGS_MAPPING) as Array<keyof AppSettings>) {
+      for (const appKey of Object.keys(SETTINGS_MAPPING) as Array<
+        keyof AppSettings
+      >) {
         const dbKey = SETTINGS_MAPPING[appKey];
-        const dbSetting = dbSettings.find(s => s.key === dbKey);
+        const dbSetting = dbSettings.find((s) => s.key === dbKey);
         if (dbSetting) {
-          (settings as any)[appKey] = this.deserializeValue(appKey, dbSetting.value);
+          (settings as any)[appKey] = this.deserializeValue(
+            appKey,
+            dbSetting.value
+          );
         }
       }
 
@@ -261,11 +276,10 @@ export class SettingsService {
       this.lastLoadTime = Date.now();
       this.notifyListeners();
 
-      logger.info('Settings loaded and cached');
+      logger.info("Settings loaded and cached");
       return settings;
-
     } catch (error) {
-      logger.error('Failed to load settings, using defaults:', error);
+      logger.error("Failed to load settings, using defaults:", error);
       this.cachedSettings = { ...DEFAULT_SETTINGS };
       return this.cachedSettings;
     } finally {
@@ -276,7 +290,7 @@ export class SettingsService {
   private async waitForLoad(): Promise<AppSettings> {
     // Wait for current load to complete
     while (this.isLoading) {
-      await new Promise(resolve => globalThis.setTimeout(resolve, 50));
+      await new Promise((resolve) => globalThis.setTimeout(resolve, 50));
     }
     return this.cachedSettings || DEFAULT_SETTINGS;
   }
@@ -286,7 +300,7 @@ export class SettingsService {
   }
 
   private serializeValue(value: string | number | boolean): string {
-    if (typeof value === 'string') return value;
+    if (typeof value === "string") return value;
     return String(value);
   }
 
@@ -296,13 +310,13 @@ export class SettingsService {
   ): AppSettings[K] {
     const defaultValue = DEFAULT_SETTINGS[key];
 
-    if (typeof defaultValue === 'number') {
+    if (typeof defaultValue === "number") {
       const parsed = parseFloat(value);
       return (isNaN(parsed) ? defaultValue : parsed) as AppSettings[K];
     }
 
-    if (typeof defaultValue === 'boolean') {
-      return (value === 'true' || value === '1') as unknown as AppSettings[K];
+    if (typeof defaultValue === "boolean") {
+      return (value === "true" || value === "1") as unknown as AppSettings[K];
     }
 
     return value as AppSettings[K];
@@ -310,11 +324,11 @@ export class SettingsService {
 
   private notifyListeners(): void {
     if (this.cachedSettings) {
-      this.listeners.forEach(listener => {
+      this.listeners.forEach((listener) => {
         try {
           listener(this.cachedSettings!);
         } catch (error) {
-          logger.error('Error in settings listener:', error);
+          logger.error("Error in settings listener:", error);
         }
       });
     }
@@ -324,11 +338,11 @@ export class SettingsService {
     key: K,
     value: AppSettings[K]
   ): void {
-    this.changeListeners.forEach(listener => {
+    this.changeListeners.forEach((listener) => {
       try {
         listener(key, value);
       } catch (error) {
-        logger.error('Error in settings change listener:', error);
+        logger.error("Error in settings change listener:", error);
       }
     });
   }
@@ -339,25 +353,25 @@ export const settingsService = SettingsService.getInstance();
 
 // Utility functions for common operations
 export const formatCurrency = async (amount: number): Promise<string> => {
-  const currency = await settingsService.getSetting('currency');
-  return new Intl.NumberFormat('es-SV', {
-    style: 'currency',
+  const currency = await settingsService.getSetting("currency");
+  return new Intl.NumberFormat("es-SV", {
+    style: "currency",
     currency,
-    minimumFractionDigits: 2
+    minimumFractionDigits: 2,
   }).format(amount);
 };
 
 export const calculateTax = async (amount: number): Promise<number> => {
-  const taxRate = await settingsService.getSetting('taxRate');
+  const taxRate = await settingsService.getSetting("taxRate");
   return amount * (taxRate / 100);
 };
 
 export const getCompanyInfo = async () => {
   const [name, address, phone] = await Promise.all([
-    settingsService.getSetting('companyName'),
-    settingsService.getSetting('companyAddress'),
-    settingsService.getSetting('companyPhone'),
+    settingsService.getSetting("companyName"),
+    settingsService.getSetting("companyAddress"),
+    settingsService.getSetting("companyPhone"),
   ]);
 
   return { name, address, phone };
-}; 
+};

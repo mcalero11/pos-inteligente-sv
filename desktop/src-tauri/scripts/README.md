@@ -1,79 +1,55 @@
 # Database Scripts
 
-This directory contains database management scripts for the POS Inteligente SV application.
+## Seed Data
 
-## Database Seeder
+The `seed.sql` file contains sample data for development:
 
-The seeder script populates the database with initial data required for the application to function properly.
+- **8 Categories** - Pharmacy-focused product categories
+- **26 Products** - Sample pharmacy products with pricing tiers, stock, and cost data
+- **2 Users** - Admin and Cashier with default PINs
+- **1 Customer** - "Consumidor Final" for anonymous sales
+- **11 Settings** - System configuration
+- **1 Cash Session** - Open session for testing
+- **7 Stock Movements** - Initial stock purchases
 
-### Usage
+### Running the Seeder
 
-From the `src-tauri` directory, run:
+**Prerequisites:**
+- Database must exist (run the app once to create it via migrations)
+- SQLite3 CLI installed (`brew install sqlite3` on macOS)
 
+**Find your database:**
 ```bash
-# Use default database path (pos_database.db)
-./scripts/run_seeder.sh
+# macOS - Database is in app data directory
+ls ~/Library/Application\ Support/com.pos-inteligente.app/
 
-# Or specify a custom database path
-./scripts/run_seeder.sh /path/to/your/database.db
+# The database file is named via tauri-plugin-sql configuration
 ```
 
-### What gets seeded
-
-The seeder will populate the following data:
-
-1. **System Settings**:
-   - Tax rate: 13.0%
-   - Currency: USD
-   - Company information
-   - Session timeout and other system configurations
-
-2. **Categories** (Pharmacy-focused):
-   - Medicamentos
-   - Cuidado Personal
-   - Vitaminas y Suplementos
-   - Primeros Auxilios
-   - Bebé y Maternidad
-   - Equipos Médicos
-   - Cosméticos
-   - General
-
-3. **Default Users**:
-   - **Admin**: username `admin`, PIN `1234`
-     - Full permissions for all modules
-   - **Cashier**: username `cajero`, PIN `5678`
-     - Limited permissions (read products, manage customers, create transactions, view reports)
-
-### Security
-
-- User PINs are hashed using SHA-256 before storage
-- The seeder uses `INSERT OR IGNORE` statements, so running it multiple times won't create duplicates
-- **Important**: Change the default PINs after first login!
-
-### Requirements
-
-- The database must exist (migrations must have been run first)
-- Rust toolchain must be available to build the seeder binary
-
-### Manual Seeder Execution
-
-You can also run the seeder binary directly:
-
+**Run the seeder:**
 ```bash
-# Build the seeder
-cargo build --bin seed --release
-
-# Run with default database
-./target/release/seed
-
-# Run with custom database path
-./target/release/seed /path/to/database.db
+# From desktop/src-tauri directory
+sqlite3 "$HOME/Library/Application Support/com.pos.desktop/pos_database.db" < src-tauri/scripts/seed.sql
 ```
 
-## Development
+### Default Users
 
-The seeder source code is in `seed.rs`. It uses:
+| Username | PIN  | Role    | Permissions |
+|----------|------|---------|-------------|
+| admin    | 1234 | Admin   | Full access |
+| cajero   | 5678 | Cashier | Limited POS access |
 
-- `rusqlite` for direct database access
-- `sha2` for PIN hashing
-- Standard error handling and validation
+> **Note:** PIN hashes in the seed file use SHA-256 for simplicity. The app's `hash_pin` command uses Argon2. For production, regenerate hashes via the app.
+
+### Re-seeding
+
+The seed uses `INSERT OR IGNORE` so it's safe to run multiple times - existing records won't be duplicated.
+
+To reset and re-seed:
+```bash
+# Delete existing data first (careful!)
+sqlite3 ~/Library/Application\ Support/com.pos-inteligente.app/pos_database.db "DELETE FROM products; DELETE FROM categories; DELETE FROM users; DELETE FROM customers;"
+
+# Then run seed
+sqlite3 ~/Library/Application\ Support/com.pos-inteligente.app/pos_database.db < scripts/seed.sql
+```

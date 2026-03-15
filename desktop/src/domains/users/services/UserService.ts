@@ -1,8 +1,12 @@
-import { DatabaseAdapter, buildInsertQuery, buildUpdateQuery } from '../../../infrastructure/database';
-import { logger } from '../../../infrastructure/logging';
-import { hashPin, verifyPin } from '../../../infrastructure/tauri';
-import type { User, CreateUserInput, UpdateUserInput } from '../entities/User';
-import type { Role } from '../entities/Role';
+import {
+  DatabaseAdapter,
+  buildInsertQuery,
+  buildUpdateQuery,
+} from "../../../infrastructure/database";
+import { logger } from "../../../infrastructure/logging";
+import { hashPin, verifyPin } from "../../../infrastructure/tauri";
+import type { User, CreateUserInput, UpdateUserInput } from "../entities/User";
+import type { Role } from "../entities/Role";
 
 interface UserRow {
   id: number;
@@ -11,6 +15,11 @@ interface UserRow {
   full_name: string;
   role: string;
   is_active: number;
+  permissions: string;
+  company_id: string | null;
+  backend_user_id: string | null;
+  phone_number: string | null;
+  email: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -23,6 +32,11 @@ function mapRowToUser(row: UserRow): User {
     fullName: row.full_name,
     role: row.role as Role,
     isActive: row.is_active === 1,
+    permissions: row.permissions,
+    companyId: row.company_id ?? undefined,
+    backendUserId: row.backend_user_id ?? undefined,
+    phoneNumber: row.phone_number ?? undefined,
+    email: row.email ?? undefined,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -30,11 +44,11 @@ function mapRowToUser(row: UserRow): User {
 
 export class UserService {
   async findAll(activeOnly: boolean = true): Promise<User[]> {
-    let sql = 'SELECT * FROM users';
+    let sql = "SELECT * FROM users";
     if (activeOnly) {
-      sql += ' WHERE is_active = 1';
+      sql += " WHERE is_active = 1";
     }
-    sql += ' ORDER BY full_name ASC';
+    sql += " ORDER BY full_name ASC";
 
     const rows = await DatabaseAdapter.query<UserRow>(sql);
     return rows.map(mapRowToUser);
@@ -42,7 +56,7 @@ export class UserService {
 
   async findById(id: number): Promise<User | null> {
     const row = await DatabaseAdapter.queryOne<UserRow>(
-      'SELECT * FROM users WHERE id = ?',
+      "SELECT * FROM users WHERE id = ?",
       [id]
     );
     return row ? mapRowToUser(row) : null;
@@ -50,7 +64,7 @@ export class UserService {
 
   async findByUsername(username: string): Promise<User | null> {
     const row = await DatabaseAdapter.queryOne<UserRow>(
-      'SELECT * FROM users WHERE username = ?',
+      "SELECT * FROM users WHERE username = ?",
       [username]
     );
     return row ? mapRowToUser(row) : null;
@@ -70,10 +84,13 @@ export class UserService {
       is_active: 1,
     };
 
-    const { sql, params } = buildInsertQuery('users', data);
+    const { sql, params } = buildInsertQuery("users", data);
     const result = await DatabaseAdapter.execute(sql, params);
 
-    logger.info('User created', { userId: result.lastInsertId, username: input.username });
+    logger.info("User created", {
+      userId: result.lastInsertId,
+      username: input.username,
+    });
 
     const user = await this.findById(result.lastInsertId);
     return user!;
@@ -95,18 +112,21 @@ export class UserService {
       return user!;
     }
 
-    const { sql, params } = buildUpdateQuery('users', data, 'id = ?', [id]);
+    const { sql, params } = buildUpdateQuery("users", data, "id = ?", [id]);
     await DatabaseAdapter.execute(sql, params);
 
-    logger.info('User updated', { userId: id });
+    logger.info("User updated", { userId: id });
 
     const user = await this.findById(id);
     return user!;
   }
 
   async delete(id: number): Promise<void> {
-    await DatabaseAdapter.execute('UPDATE users SET is_active = 0 WHERE id = ?', [id]);
-    logger.info('User deactivated', { userId: id });
+    await DatabaseAdapter.execute(
+      "UPDATE users SET is_active = 0 WHERE id = ?",
+      [id]
+    );
+    logger.info("User deactivated", { userId: id });
   }
 
   async authenticateByPin(userId: number, pin: string): Promise<boolean> {
@@ -115,12 +135,12 @@ export class UserService {
       return false;
     }
 
-    const isValid = await verifyPin(userId, pin);
+    const isValid = await verifyPin(pin, user.pinHash);
 
     if (isValid) {
-      logger.info('User authenticated', { userId });
+      logger.info("User authenticated", { userId });
     } else {
-      logger.warn('Authentication failed', { userId });
+      logger.warn("Authentication failed", { userId });
     }
 
     return isValid;

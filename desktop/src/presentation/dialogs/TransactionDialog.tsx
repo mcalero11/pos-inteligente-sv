@@ -1,9 +1,27 @@
-import { ShoppingCart, Plus, Minus, Trash2, Calculator, CreditCard } from "lucide-preact";
+import {
+  ShoppingCart,
+  Plus,
+  Minus,
+  Trash2,
+  Calculator,
+  CreditCard,
+} from "lucide-preact";
 import { Button } from "@/shared/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui/select";
 import { useState } from "preact/hooks";
 import { usePOSTranslation } from "@/presentation/hooks/use-pos-translation";
-import { useFinancialSettings, useCustomerDefaults } from "@/presentation/providers";
+import {
+  useFinancialSettings,
+  useCustomerDefaults,
+} from "@/presentation/providers";
+import { useWindowManager } from "@/presentation/providers";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 interface TransactionItem {
   id: string;
@@ -30,20 +48,21 @@ function TransactionDialog({
   const { t, formatCurrency, getPaymentMethodLabel } = usePOSTranslation();
   const financialSettings = useFinancialSettings();
   const customerDefaults = useCustomerDefaults();
+  const windowManager = useWindowManager();
   const [items, setItems] = useState<TransactionItem[]>([
     // Sample items for demo
     { id: "1", name: "Coffee", price: 2.5, quantity: 2, total: 5.0 },
     { id: "2", name: "Sandwich", price: 8.95, quantity: 1, total: 8.95 },
   ]);
 
-  const [paymentMethod, setPaymentMethod] = useState<string>('cash');
+  const [paymentMethod, setPaymentMethod] = useState<string>("cash");
 
   const paymentOptions = [
-    { value: 'cash', label: getPaymentMethodLabel('cash') },
-    { value: 'card', label: getPaymentMethodLabel('card') },
-    { value: 'debit', label: getPaymentMethodLabel('debit') },
-    { value: 'transfer', label: getPaymentMethodLabel('transfer') },
-    { value: 'check', label: getPaymentMethodLabel('check') },
+    { value: "cash", label: getPaymentMethodLabel("cash") },
+    { value: "card", label: getPaymentMethodLabel("card") },
+    { value: "debit", label: getPaymentMethodLabel("debit") },
+    { value: "transfer", label: getPaymentMethodLabel("transfer") },
+    { value: "check", label: getPaymentMethodLabel("check") },
   ];
 
   const updateQuantity = (id: string, change: number) => {
@@ -69,17 +88,34 @@ function TransactionDialog({
   };
 
   // Use settings-based values with fallbacks
-  const displayCustomerName = customerName || customerDefaults?.defaultCustomerName || 'Cliente General';
+  const displayCustomerName =
+    customerName || customerDefaults?.defaultCustomerName || "Cliente General";
   const taxRate = financialSettings?.taxRate || 13;
 
   const subtotal = items.reduce((sum, item) => sum + item.total, 0);
   const tax = subtotal * (taxRate / 100);
   const total = subtotal + tax;
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     if (onComplete) {
       onComplete({ items, total });
     }
+
+    // If this is a child window, close the Tauri window directly
+    if (!windowManager.isMainWindow) {
+      try {
+        const currentWindow = getCurrentWindow();
+        await currentWindow.close();
+      } catch (error) {
+        console.error(
+          "[TransactionDialog] Failed to close child window:",
+          error
+        );
+      }
+      return;
+    }
+
+    // For main window, just close the dialog
     onClose();
   };
 
@@ -88,20 +124,32 @@ function TransactionDialog({
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <ShoppingCart class="w-5 h-5 text-primary dark:text-primary" />
-          <span class="font-medium">{t('dialogs:transaction.customer')} {displayCustomerName}</span>
+          <span class="font-medium">
+            {t("dialogs:transaction.customer")} {displayCustomerName}
+          </span>
         </div>
         <div class="text-sm text-muted-foreground">
-          {t('dialogs:transaction.transaction_number', { number: Date.now().toString().slice(-6) })}
+          {t("dialogs:transaction.transaction_number", {
+            number: Date.now().toString().slice(-6),
+          })}
         </div>
       </div>
 
       <div class="border rounded-lg">
         <div class="bg-muted p-3 rounded-t-lg">
           <div class="grid grid-cols-12 gap-2 text-sm font-medium">
-            <div class="col-span-5">{t('dialogs:transaction_detailed.item')}</div>
-            <div class="col-span-2 text-right">{t('dialogs:transaction_detailed.price')}</div>
-            <div class="col-span-2 text-center">{t('dialogs:transaction_detailed.qty')}</div>
-            <div class="col-span-2 text-right">{t('dialogs:transaction_detailed.total')}</div>
+            <div class="col-span-5">
+              {t("dialogs:transaction_detailed.item")}
+            </div>
+            <div class="col-span-2 text-right">
+              {t("dialogs:transaction_detailed.price")}
+            </div>
+            <div class="col-span-2 text-center">
+              {t("dialogs:transaction_detailed.qty")}
+            </div>
+            <div class="col-span-2 text-right">
+              {t("dialogs:transaction_detailed.total")}
+            </div>
             <div class="col-span-1"></div>
           </div>
         </div>
@@ -157,7 +205,7 @@ function TransactionDialog({
       {items.length === 0 && (
         <div class="text-center py-8 text-muted-foreground">
           <ShoppingCart class="w-12 h-12 mx-auto mb-2 opacity-50" />
-          <p>{t('dialogs:transaction_detailed.no_items')}</p>
+          <p>{t("dialogs:transaction_detailed.no_items")}</p>
         </div>
       )}
 
@@ -167,11 +215,15 @@ function TransactionDialog({
           <div class="space-y-3">
             <div class="flex items-center gap-2">
               <CreditCard class="w-4 h-4 text-primary" />
-              <label class="text-sm font-medium">{t('dialogs:transaction.payment_method')}</label>
+              <label class="text-sm font-medium">
+                {t("dialogs:transaction.payment_method")}
+              </label>
             </div>
             <Select value={paymentMethod} onValueChange={setPaymentMethod}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={t('dialogs:transaction.select_payment')} />
+                <SelectValue
+                  placeholder={t("dialogs:transaction.select_payment")}
+                />
               </SelectTrigger>
               <SelectContent>
                 {paymentOptions.map((option) => (
@@ -186,22 +238,28 @@ function TransactionDialog({
           {/* Transaction Summary */}
           <div class="bg-primary-light dark:bg-primary-dark p-4 rounded-lg space-y-2">
             <div class="flex justify-between text-sm">
-              <span>{t('dialogs:transaction_detailed.subtotal')}</span>
+              <span>{t("dialogs:transaction_detailed.subtotal")}</span>
               <span>{formatCurrency(subtotal)}</span>
             </div>
             <div class="flex justify-between text-sm">
-              <span>{t('dialogs:transaction_detailed.tax')}</span>
+              <span>{t("dialogs:transaction_detailed.tax")}</span>
               <span>{formatCurrency(tax)}</span>
             </div>
             <div class="flex justify-between text-lg font-semibold border-t pt-2">
-              <span>{t('dialogs:transaction_detailed.total')}</span>
+              <span>{t("dialogs:transaction_detailed.total")}</span>
               <span class="text-primary dark:text-primary">
                 {formatCurrency(total)}
               </span>
             </div>
             <div class="flex justify-between text-sm text-muted-foreground border-t pt-2">
-              <span>{t('dialogs:transaction_detailed.method')}</span>
-              <span>{paymentOptions.find(option => option.value === paymentMethod)?.label}</span>
+              <span>{t("dialogs:transaction_detailed.method")}</span>
+              <span>
+                {
+                  paymentOptions.find(
+                    (option) => option.value === paymentMethod
+                  )?.label
+                }
+              </span>
             </div>
           </div>
         </>
@@ -209,7 +267,7 @@ function TransactionDialog({
 
       <div class="flex gap-2">
         <Button variant="outline" class="flex-1" onClick={onClose}>
-          {t('common:buttons.cancel')}
+          {t("common:buttons.cancel")}
         </Button>
         <Button
           class="flex-1 bg-primary hover:bg-primary-hover text-primary-foreground dark:bg-primary dark:hover:bg-primary-hover dark:text-primary-foreground"
@@ -217,7 +275,7 @@ function TransactionDialog({
           disabled={items.length === 0}
         >
           <Calculator class="w-4 h-4 mr-2" />
-          {t('dialogs:transaction.complete')}
+          {t("dialogs:transaction.complete")}
         </Button>
       </div>
     </div>

@@ -1,6 +1,12 @@
-import type { DTEType } from './DTETypes';
+import type { DTEType } from "./DTETypes";
 
-export type DTEStatus = 'pending' | 'signed' | 'sent' | 'accepted' | 'rejected' | 'error';
+export type DTEStatus =
+  | "pending"
+  | "signed"
+  | "sent"
+  | "accepted"
+  | "rejected"
+  | "error";
 
 export interface DTE {
   id: number;
@@ -41,7 +47,7 @@ export interface DTESendResult {
 }
 
 export function isDTEPending(dte: DTE): boolean {
-  return dte.status === 'pending' || dte.status === 'error';
+  return dte.status === "pending" || dte.status === "error";
 }
 
 export function canRetryDTE(dte: DTE, maxRetries: number = 3): boolean {
@@ -50,12 +56,12 @@ export function canRetryDTE(dte: DTE, maxRetries: number = 3): boolean {
 
 export function formatDTEStatus(status: DTEStatus): string {
   const statusLabels: Record<DTEStatus, string> = {
-    pending: 'Pendiente',
-    signed: 'Firmado',
-    sent: 'Enviado',
-    accepted: 'Aceptado',
-    rejected: 'Rechazado',
-    error: 'Error',
+    pending: "Pendiente",
+    signed: "Firmado",
+    sent: "Enviado",
+    accepted: "Aceptado",
+    rejected: "Rechazado",
+    error: "Error",
   };
   return statusLabels[status] || status;
 }

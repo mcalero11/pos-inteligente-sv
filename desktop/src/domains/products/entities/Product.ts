@@ -8,7 +8,14 @@ export interface Product {
   partnerPrice: number;
   vipPrice: number;
   discountPercentage: number;
+  stockQuantity: number;
+  cost?: number;
   isActive: boolean;
+  // Backend sync fields
+  backendId?: string;
+  syncStatus?: "pending" | "synced" | "conflict";
+  lastSyncedAt?: string;
+  version?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -22,19 +29,24 @@ export interface CreateProductInput {
   partnerPrice?: number;
   vipPrice?: number;
   discountPercentage?: number;
+  stockQuantity?: number;
+  cost?: number;
 }
 
 export interface UpdateProductInput extends Partial<CreateProductInput> {
   isActive?: boolean;
 }
 
-export type PriceType = 'regular' | 'partner' | 'vip';
+export type PriceType = "regular" | "partner" | "vip";
 
-export function getProductPrice(product: Product, priceType: PriceType = 'regular'): number {
+export function getProductPrice(
+  product: Product,
+  priceType: PriceType = "regular"
+): number {
   switch (priceType) {
-    case 'partner':
+    case "partner":
       return product.partnerPrice || product.price;
-    case 'vip':
+    case "vip":
       return product.vipPrice || product.price;
     default:
       return product.price;

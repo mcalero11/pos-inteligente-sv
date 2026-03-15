@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'preact/hooks';
-import type { User } from '../entities/User';
-import { userService } from '../services/UserService';
+import { useState, useEffect, useCallback } from "preact/hooks";
+import type { User } from "../entities/User";
+import { userService } from "../services/UserService";
 
 interface UseUsersOptions {
   activeOnly?: boolean;
@@ -34,7 +34,7 @@ export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
 
       setUsers(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load users');
+      setError(err instanceof Error ? err.message : "Failed to load users");
     } finally {
       setLoading(false);
     }
@@ -44,7 +44,7 @@ export function useUsers(options: UseUsersOptions = {}): UseUsersReturn {
     try {
       return await userService.findById(id);
     } catch (err) {
-      console.error('Failed to fetch user:', err);
+      console.error("Failed to fetch user:", err);
       return null;
     }
   }, []);

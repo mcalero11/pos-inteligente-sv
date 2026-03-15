@@ -3,15 +3,18 @@ import POS from "@/presentation/screens/POS";
 import LoadingScreen from "@/presentation/screens/LoadingScreen";
 import ErrorScreen from "@/presentation/screens/ErrorScreen";
 import MaintenanceScreen from "@/presentation/screens/MaintenanceScreen";
-import { useRenderTracker, usePerformanceTracker } from "@/presentation/hooks/use-render-tracker";
+import {
+  useRenderTracker,
+  usePerformanceTracker,
+} from "@/presentation/hooks/use-render-tracker";
+import { Toaster } from "@/shared/ui/sonner";
 
 export default function App() {
   const { state, error } = useAppState();
 
-
   // Track renders for the main App component
-  useRenderTracker('App', { state, error });
-  usePerformanceTracker('App');
+  useRenderTracker("App", { state, error });
+  usePerformanceTracker("App");
 
   // Show loading screen for initializing and loading states
   if (state === AppState.INITIALIZING || state === AppState.LOADING) {
@@ -31,5 +34,10 @@ export default function App() {
   // TODO: Add unauthenticated states
 
   // Default: Show the POS interface for READY state
-  return <POS />;
-} 
+  return (
+    <>
+      <POS />
+      <Toaster />
+    </>
+  );
+}

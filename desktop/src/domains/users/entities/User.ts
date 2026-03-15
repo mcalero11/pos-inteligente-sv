@@ -1,4 +1,4 @@
-import type { Role } from './Role';
+import type { Role } from "./Role";
 
 export interface User {
   id: number;
@@ -7,6 +7,12 @@ export interface User {
   fullName: string;
   role: Role;
   isActive: boolean;
+  permissions: string; // JSON string of permissions object
+  // Backend sync fields
+  companyId?: string;
+  backendUserId?: string;
+  phoneNumber?: string;
+  email?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -18,7 +24,8 @@ export interface CreateUserInput {
   pin?: string;
 }
 
-export interface UpdateUserInput extends Partial<Omit<CreateUserInput, 'username'>> {
+export interface UpdateUserInput
+  extends Partial<Omit<CreateUserInput, "username">> {
   isActive?: boolean;
 }
 
@@ -30,33 +37,33 @@ export interface AuthenticatedUser {
 
 export function hasPermission(user: User, permission: string): boolean {
   const rolePermissions: Record<Role, string[]> = {
-    admin: ['*'],
+    admin: ["*"],
     supervisor: [
-      'sales:create',
-      'sales:view',
-      'sales:void',
-      'products:view',
-      'products:edit',
-      'customers:view',
-      'customers:edit',
-      'reports:view',
-      'shifts:manage',
+      "sales:create",
+      "sales:view",
+      "sales:void",
+      "products:view",
+      "products:edit",
+      "customers:view",
+      "customers:edit",
+      "reports:view",
+      "shifts:manage",
     ],
-    cashier: ['sales:create', 'sales:view', 'products:view', 'customers:view'],
+    cashier: ["sales:create", "sales:view", "products:view", "customers:view"],
   };
 
   const permissions = rolePermissions[user.role] || [];
-  return permissions.includes('*') || permissions.includes(permission);
+  return permissions.includes("*") || permissions.includes(permission);
 }
 
 export function canVoidSale(user: User): boolean {
-  return hasPermission(user, 'sales:void');
+  return hasPermission(user, "sales:void");
 }
 
 export function canManageProducts(user: User): boolean {
-  return hasPermission(user, 'products:edit');
+  return hasPermission(user, "products:edit");
 }
 
 export function canManageUsers(user: User): boolean {
-  return user.role === 'admin';
+  return user.role === "admin";
 }

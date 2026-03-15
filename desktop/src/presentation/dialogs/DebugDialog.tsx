@@ -1,12 +1,20 @@
-import { useState } from 'preact/hooks';
-import { Button } from '@/shared/ui/button';
-import { Card } from '@/shared/ui/card';
-import { Badge } from '@/shared/ui/badge';
-import { useAppState, AppState, ErrorType } from '@/presentation/providers';
-import { Bug, Zap, AlertTriangle, RefreshCw, Settings } from 'lucide-preact';
+import { useState } from "preact/hooks";
+import { Button } from "@/shared/ui/button";
+import { Card } from "@/shared/ui/card";
+import { Badge } from "@/shared/ui/badge";
+import { useAppState, AppState, ErrorType } from "@/presentation/providers";
+import { Bug, Zap, AlertTriangle, RefreshCw, Settings } from "lucide-preact";
 
 export default function DebugDialog() {
-  const { state, error, setState, clearError, handleError, handleFatalError, retry } = useAppState();
+  const {
+    state,
+    error,
+    setState,
+    clearError,
+    handleError,
+    handleFatalError,
+    retry,
+  } = useAppState();
   const [isLoading, setIsLoading] = useState(false);
 
   if (!import.meta.env.DEV) {
@@ -14,50 +22,72 @@ export default function DebugDialog() {
   }
 
   const handleStateChange = async (newState: AppState) => {
-    globalThis.console.log(`🔄 Debug: handleStateChange called with ${newState}`);
+    globalThis.console.log(
+      `🔄 Debug: handleStateChange called with ${newState}`
+    );
     setIsLoading(true);
     try {
       // Clear any existing error first if changing to a non-error state
-      if (error && newState !== AppState.ERROR && newState !== AppState.FATAL_ERROR) {
-        globalThis.console.log('🔄 Debug: Clearing existing error');
+      if (
+        error &&
+        newState !== AppState.ERROR &&
+        newState !== AppState.FATAL_ERROR
+      ) {
+        globalThis.console.log("🔄 Debug: Clearing existing error");
         clearError();
       }
 
       // Simulate async operation
-      globalThis.console.log('🔄 Debug: Starting async operation');
-      await new Promise(resolve => globalThis.setTimeout(resolve, 500));
+      globalThis.console.log("🔄 Debug: Starting async operation");
+      await new Promise((resolve) => globalThis.setTimeout(resolve, 500));
 
       // Set the new state
       globalThis.console.log(`🔄 Debug: Setting state to ${newState}`);
       setState(newState);
 
       // Log the state change for debugging
-      globalThis.console.log(`🔄 Debug: State changed to ${newState.toUpperCase()}`);
+      globalThis.console.log(
+        `🔄 Debug: State changed to ${newState.toUpperCase()}`
+      );
     } catch (err) {
-      globalThis.console.error('❌ Error during state change:', err);
+      globalThis.console.error("❌ Error during state change:", err);
     } finally {
       setIsLoading(false);
-      globalThis.console.log('🔄 Debug: handleStateChange completed');
+      globalThis.console.log("🔄 Debug: handleStateChange completed");
     }
   };
 
-  const triggerError = (type: ErrorType, message: string, recoverable: boolean = true) => {
+  const triggerError = (
+    type: ErrorType,
+    message: string,
+    recoverable: boolean = true
+  ) => {
     handleError(new Error(message), type, recoverable);
   };
 
   const triggerFatalError = () => {
-    handleFatalError('Simulated fatal crash', 'This is a test of the fatal error handling system');
+    handleFatalError(
+      "Simulated fatal crash",
+      "This is a test of the fatal error handling system"
+    );
   };
 
   const getStateColor = (currentState: AppState) => {
     switch (currentState) {
-      case AppState.READY: return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case AppState.LOADING: return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case AppState.ERROR: return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case AppState.FATAL_ERROR: return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      case AppState.MAINTENANCE: return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
-      case AppState.OFFLINE: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+      case AppState.READY:
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case AppState.LOADING:
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+      case AppState.ERROR:
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+      case AppState.FATAL_ERROR:
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+      case AppState.MAINTENANCE:
+        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200";
+      case AppState.OFFLINE:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
   };
 
@@ -67,9 +97,7 @@ export default function DebugDialog() {
       <Card className="p-4 mb-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Current Application State</h3>
-          <Badge className={getStateColor(state)}>
-            {state.toUpperCase()}
-          </Badge>
+          <Badge className={getStateColor(state)}>{state.toUpperCase()}</Badge>
         </div>
 
         {error && (
@@ -97,7 +125,6 @@ export default function DebugDialog() {
       {/* State Controls */}
       <Card className="p-4 mb-6">
         <h3 className="text-lg font-semibold mb-4">State Controls</h3>
-
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Button
@@ -128,7 +155,7 @@ export default function DebugDialog() {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              globalThis.console.log('🔄 Debug: Offline button clicked');
+              globalThis.console.log("🔄 Debug: Offline button clicked");
               handleStateChange(AppState.OFFLINE);
             }}
             variant={state === AppState.OFFLINE ? "default" : "outline"}
@@ -146,7 +173,9 @@ export default function DebugDialog() {
         <div className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <Button
-              onClick={() => triggerError(ErrorType.NETWORK, 'Simulated network timeout')}
+              onClick={() =>
+                triggerError(ErrorType.NETWORK, "Simulated network timeout")
+              }
               variant="outline"
               size="sm"
               className="justify-start"
@@ -155,7 +184,9 @@ export default function DebugDialog() {
               Network Error
             </Button>
             <Button
-              onClick={() => triggerError(ErrorType.DATABASE, 'Database connection failed')}
+              onClick={() =>
+                triggerError(ErrorType.DATABASE, "Database connection failed")
+              }
               variant="outline"
               size="sm"
               className="justify-start"
@@ -164,7 +195,9 @@ export default function DebugDialog() {
               Database Error
             </Button>
             <Button
-              onClick={() => triggerError(ErrorType.AUTHENTICATION, 'Session expired')}
+              onClick={() =>
+                triggerError(ErrorType.AUTHENTICATION, "Session expired")
+              }
               variant="outline"
               size="sm"
               className="justify-start"
@@ -173,7 +206,9 @@ export default function DebugDialog() {
               Auth Error
             </Button>
             <Button
-              onClick={() => triggerError(ErrorType.VALIDATION, 'Invalid input data')}
+              onClick={() =>
+                triggerError(ErrorType.VALIDATION, "Invalid input data")
+              }
               variant="outline"
               size="sm"
               className="justify-start"
@@ -202,11 +237,7 @@ export default function DebugDialog() {
         <Card className="p-4">
           <h3 className="text-lg font-semibold mb-4">Recovery Actions</h3>
           <div className="flex space-x-3">
-            <Button
-              onClick={retry}
-              variant="default"
-              size="sm"
-            >
+            <Button onClick={retry} variant="default" size="sm">
               <RefreshCw className="w-4 h-4 mr-2" />
               Retry
             </Button>
@@ -222,4 +253,4 @@ export default function DebugDialog() {
       )}
     </div>
   );
-} 
+}

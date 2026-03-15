@@ -25,7 +25,7 @@ export interface SystemSettings {
   dteRetryAttempts: number;
 
   // UI Configuration
-  theme: 'light' | 'dark' | 'system';
+  theme: "light" | "dark" | "system";
   language: string;
   currency: string;
   currencySymbol: string;
@@ -38,12 +38,12 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   taxIncluded: false,
 
   // Receipt
-  receiptHeader: '',
-  receiptFooter: 'Gracias por su compra',
+  receiptHeader: "",
+  receiptFooter: "Gracias por su compra",
   showLogo: true,
 
   // POS
-  defaultPaymentMethod: 'cash',
+  defaultPaymentMethod: "cash",
   allowPartialPayments: false,
   requireCustomerForSale: false,
   autoOpenCashDrawer: true,
@@ -59,13 +59,15 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   dteRetryAttempts: 3,
 
   // UI
-  theme: 'system',
-  language: 'es',
-  currency: 'USD',
-  currencySymbol: '$',
+  theme: "system",
+  language: "es",
+  currency: "USD",
+  currencySymbol: "$",
   decimalPlaces: 2,
 };
 
-export function mergeWithDefaults(partial: Partial<SystemSettings>): SystemSettings {
+export function mergeWithDefaults(
+  partial: Partial<SystemSettings>
+): SystemSettings {
   return { ...DEFAULT_SETTINGS, ...partial };
 }

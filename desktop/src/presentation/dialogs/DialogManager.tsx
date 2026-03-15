@@ -29,7 +29,7 @@ export default function DialogManager({
   if (!config) return null;
 
   const DialogComponent = config.component;
-  const dialogSize = sizeMap[config.size as keyof typeof sizeMap || "md"];
+  const dialogSize = sizeMap[(config.size as keyof typeof sizeMap) || "md"];
 
   return (
     <Dialog

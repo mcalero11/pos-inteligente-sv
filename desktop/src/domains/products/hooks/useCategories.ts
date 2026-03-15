@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'preact/hooks';
-import type { Category } from '../entities/Category';
-import { categoryService } from '../services/CategoryService';
+import { useState, useEffect, useCallback } from "preact/hooks";
+import type { Category } from "../entities/Category";
+import { categoryService } from "../services/CategoryService";
 
 interface UseCategoriesOptions {
   activeOnly?: boolean;
@@ -15,7 +15,9 @@ interface UseCategoriesReturn {
   getCategoryById: (id: number) => Category | undefined;
 }
 
-export function useCategories(options: UseCategoriesOptions = {}): UseCategoriesReturn {
+export function useCategories(
+  options: UseCategoriesOptions = {}
+): UseCategoriesReturn {
   const { activeOnly = true, autoLoad = true } = options;
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -29,7 +31,9 @@ export function useCategories(options: UseCategoriesOptions = {}): UseCategories
       const data = await categoryService.findAll(activeOnly);
       setCategories(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load categories');
+      setError(
+        err instanceof Error ? err.message : "Failed to load categories"
+      );
     } finally {
       setLoading(false);
     }

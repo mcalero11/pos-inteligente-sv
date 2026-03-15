@@ -40,9 +40,11 @@ export default function SystemMenuDialog({
           >
             <Package className="w-4 h-4 mr-3 text-primary" />
             <div className="text-left">
-              <div className="font-medium">{t('dialogs:system_menu.inventory.title')}</div>
+              <div className="font-medium">
+                {t("dialogs:system_menu.inventory.title")}
+              </div>
               <div className="text-xs text-primary/70">
-                {t('dialogs:system_menu.inventory.description')}
+                {t("dialogs:system_menu.inventory.description")}
               </div>
             </div>
           </Button>
@@ -58,8 +60,12 @@ export default function SystemMenuDialog({
           >
             <Clock className="w-4 h-4 mr-3 text-primary" />
             <div className="text-left">
-              <div className="font-medium">{t('dialogs:system_menu.shifts.title')}</div>
-              <div className="text-xs text-primary/70">{t('dialogs:system_menu.shifts.description')}</div>
+              <div className="font-medium">
+                {t("dialogs:system_menu.shifts.title")}
+              </div>
+              <div className="text-xs text-primary/70">
+                {t("dialogs:system_menu.shifts.description")}
+              </div>
             </div>
           </Button>
         </div>
@@ -74,9 +80,11 @@ export default function SystemMenuDialog({
           >
             <UserCheck className="w-4 h-4 mr-3 text-primary" />
             <div className="text-left">
-              <div className="font-medium">{t('dialogs:system_menu.users.title')}</div>
+              <div className="font-medium">
+                {t("dialogs:system_menu.users.title")}
+              </div>
               <div className="text-xs text-primary/70">
-                {t('dialogs:system_menu.users.description')}
+                {t("dialogs:system_menu.users.description")}
               </div>
             </div>
           </Button>
@@ -92,9 +100,11 @@ export default function SystemMenuDialog({
           >
             <FileText className="w-4 h-4 mr-3 text-primary" />
             <div className="text-left">
-              <div className="font-medium">{t('dialogs:system_menu.logs.title')}</div>
+              <div className="font-medium">
+                {t("dialogs:system_menu.logs.title")}
+              </div>
               <div className="text-xs text-primary/70">
-                {t('dialogs:system_menu.logs.description')}
+                {t("dialogs:system_menu.logs.description")}
               </div>
             </div>
           </Button>
@@ -110,9 +120,11 @@ export default function SystemMenuDialog({
           >
             <Settings className="w-4 h-4 mr-3 text-primary" />
             <div className="text-left">
-              <div className="font-medium">{t('dialogs:system_menu.settings.title')}</div>
+              <div className="font-medium">
+                {t("dialogs:system_menu.settings.title")}
+              </div>
               <div className="text-xs text-primary/70">
-                {t('dialogs:system_menu.settings.description')}
+                {t("dialogs:system_menu.settings.description")}
               </div>
             </div>
           </Button>
@@ -122,7 +134,7 @@ export default function SystemMenuDialog({
       <Separator className="my-2" />
 
       <div className="flex items-center justify-between px-3 py-2">
-        <span className="text-sm font-medium">{t('common:labels.theme')}</span>
+        <span className="text-sm font-medium">{t("common:labels.theme")}</span>
         <ThemeToggle />
       </div>
 
@@ -137,7 +149,7 @@ export default function SystemMenuDialog({
             onClick={() => handleMenuItemClick("debug")}
           >
             <Bug className="w-4 h-4 mr-3 text-primary" />
-            {t('dialogs:system_menu.debug.title')}
+            {t("dialogs:system_menu.debug.title")}
           </Button>
         </div>
       )}
@@ -149,11 +161,9 @@ export default function SystemMenuDialog({
           onClick={() => handleMenuItemClick("help")}
         >
           <HelpCircle className="w-4 h-4 mr-3 text-primary" />
-          {t('dialogs:system_menu.help.title')}
+          {t("dialogs:system_menu.help.title")}
         </Button>
       </div>
-
-
     </div>
   );
 }

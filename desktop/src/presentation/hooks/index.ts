@@ -1,13 +1,13 @@
 // Presentation layer hooks
 
 // Dialog management
-export { useDialog, type UseDialogReturn } from './use-dialog';
+export { useDialog, type UseDialogReturn } from "./use-dialog";
 
 // Theme hooks
-export { useTheme as useThemeHook } from './use-theme';
+export { useTheme as useThemeHook } from "./use-theme";
 
 // Translation hooks
-export { usePOSTranslation } from './use-pos-translation';
+export { usePOSTranslation } from "./use-pos-translation";
 
 // Render performance tracking
 export {
@@ -19,4 +19,4 @@ export {
   setRenderDebugging,
   getRenderStats,
   logRenderStats,
-} from './use-render-tracker';
+} from "./use-render-tracker";

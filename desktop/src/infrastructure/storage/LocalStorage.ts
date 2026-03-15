@@ -1,4 +1,4 @@
-import { logger } from '@/infrastructure/logging';
+import { logger } from "@/infrastructure/logging";
 
 /**
  * Centralized localStorage service for the POS application
@@ -6,18 +6,20 @@ import { logger } from '@/infrastructure/logging';
  */
 
 export type StorageKeys = {
-  'pos-color-theme': string;
-  'pos-dark-mode': string;
-  'pos-user-preferences': string;
-  'pos-session-data': string;
+  "pos-color-theme": string;
+  "pos-dark-mode": string;
+  "pos-user-preferences": string;
+  "pos-session-data": string;
 };
 
 class LocalStorageService {
   private isAvailable(): boolean {
     try {
-      return typeof globalThis !== 'undefined' &&
+      return (
+        typeof globalThis !== "undefined" &&
         globalThis.localStorage !== undefined &&
-        globalThis.localStorage !== null;
+        globalThis.localStorage !== null
+      );
     } catch {
       return false;
     }
@@ -85,7 +87,7 @@ class LocalStorageService {
       globalThis.localStorage.clear();
       return true;
     } catch (error) {
-      logger.warn('Failed to clear localStorage:', error);
+      logger.warn("Failed to clear localStorage:", error);
       return false;
     }
   }
@@ -98,7 +100,7 @@ class LocalStorageService {
     if (value === null) {
       return null;
     }
-    return value === 'true';
+    return value === "true";
   }
 
   /**
@@ -120,7 +122,10 @@ class LocalStorageService {
     try {
       return JSON.parse(value) as T;
     } catch (error) {
-      logger.warn(`Failed to parse JSON from localStorage item "${key}":`, error);
+      logger.warn(
+        `Failed to parse JSON from localStorage item "${key}":`,
+        error
+      );
       return null;
     }
   }
@@ -133,7 +138,10 @@ class LocalStorageService {
       const jsonString = JSON.stringify(value);
       return this.setItem(key, jsonString as StorageKeys[K]);
     } catch (error) {
-      logger.warn(`Failed to stringify JSON for localStorage item "${key}":`, error);
+      logger.warn(
+        `Failed to stringify JSON for localStorage item "${key}":`,
+        error
+      );
       return false;
     }
   }
@@ -151,8 +159,10 @@ export const localStorageService = new LocalStorageService();
 
 // Export specific theme-related methods for convenience
 export const themeStorage = {
-  getColorTheme: () => localStorageService.getItem('pos-color-theme'),
-  setColorTheme: (theme: string) => localStorageService.setItem('pos-color-theme', theme),
-  getDarkMode: () => localStorageService.getBooleanItem('pos-dark-mode'),
-  setDarkMode: (isDark: boolean) => localStorageService.setBooleanItem('pos-dark-mode', isDark),
+  getColorTheme: () => localStorageService.getItem("pos-color-theme"),
+  setColorTheme: (theme: string) =>
+    localStorageService.setItem("pos-color-theme", theme),
+  getDarkMode: () => localStorageService.getBooleanItem("pos-dark-mode"),
+  setDarkMode: (isDark: boolean) =>
+    localStorageService.setBooleanItem("pos-dark-mode", isDark),
 };

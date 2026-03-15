@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
 // Extend global types for testing
 declare global {
@@ -16,7 +16,7 @@ declare global {
 };
 
 // Mock the logger
-vi.mock('../lib/logger', () => ({
+vi.mock("../lib/logger", () => ({
   logger: {
     info: vi.fn(),
     warn: vi.fn(),
@@ -26,7 +26,7 @@ vi.mock('../lib/logger', () => ({
 }));
 
 // Mock the database service
-vi.mock('../lib/database', () => ({
+vi.mock("../lib/database", () => ({
   databaseService: {
     getAllSystemSettings: vi.fn(),
     setSystemSetting: vi.fn(),
@@ -35,9 +35,9 @@ vi.mock('../lib/database', () => ({
 }));
 
 // Setup DOM globals for jsdom
-Object.defineProperty(globalThis, 'matchMedia', {
+Object.defineProperty(globalThis, "matchMedia", {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -47,4 +47,4 @@ Object.defineProperty(globalThis, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-}); 
+});

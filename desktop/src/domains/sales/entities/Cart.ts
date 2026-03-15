@@ -1,4 +1,4 @@
-import type { Product } from '../../products/entities/Product';
+import type { Product } from "../../products/entities/Product";
 
 export interface CartItem {
   product: Product;
@@ -20,8 +20,14 @@ export function createEmptyCart(): Cart {
   };
 }
 
-export function addToCart(cart: Cart, product: Product, quantity: number = 1): Cart {
-  const existingIndex = cart.items.findIndex((item) => item.product.id === product.id);
+export function addToCart(
+  cart: Cart,
+  product: Product,
+  quantity: number = 1
+): Cart {
+  const existingIndex = cart.items.findIndex(
+    (item) => item.product.id === product.id
+  );
 
   if (existingIndex >= 0) {
     const updatedItems = [...cart.items];
@@ -45,7 +51,11 @@ export function removeFromCart(cart: Cart, productId: number): Cart {
   };
 }
 
-export function updateCartItemQuantity(cart: Cart, productId: number, quantity: number): Cart {
+export function updateCartItemQuantity(
+  cart: Cart,
+  productId: number,
+  quantity: number
+): Cart {
   if (quantity <= 0) {
     return removeFromCart(cart, productId);
   }
@@ -78,6 +88,6 @@ export function calculateCartTotals(
   };
 }
 
-export function clearCart(_cart: Cart): Cart {
+export function clearCart(): Cart {
   return createEmptyCart();
 }

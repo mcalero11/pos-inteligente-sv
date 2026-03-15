@@ -2,11 +2,24 @@ import { ColorThemePicker } from "@/shared/components/ColorThemePicker";
 import { ThemeToggle } from "@/shared/components/theme-toggle";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui/select";
 import { useSettings } from "@/presentation/providers/SettingsContext";
 import { usePOSTranslation } from "@/presentation/hooks/use-pos-translation";
 import { logger } from "@/infrastructure/logging";
-import { Settings, Palette, Database, DollarSign, Building, Receipt } from "lucide-preact";
+import {
+  Settings,
+  Palette,
+  Database,
+  DollarSign,
+  Building,
+  Receipt,
+} from "lucide-preact";
 import { useState, useEffect } from "preact/hooks";
 
 export default function SettingsDialog() {
@@ -40,20 +53,24 @@ export default function SettingsDialog() {
 
       // Find changed settings
       const changes: any = {};
-      Object.keys(localSettings).forEach(key => {
-        if (settings && localSettings[key as keyof typeof localSettings] !== settings[key as keyof typeof settings]) {
+      Object.keys(localSettings).forEach((key) => {
+        if (
+          settings &&
+          localSettings[key as keyof typeof localSettings] !==
+            settings[key as keyof typeof settings]
+        ) {
           changes[key] = localSettings[key as keyof typeof localSettings];
         }
       });
 
       if (Object.keys(changes).length > 0) {
         await updateSettings(changes);
-        logger.info('Settings saved successfully', changes);
+        logger.info("Settings saved successfully", changes);
       }
 
       setHasChanges(false);
     } catch (err) {
-      logger.error('Failed to save settings:', err);
+      logger.error("Failed to save settings:", err);
     } finally {
       setSaving(false);
     }
@@ -79,7 +96,11 @@ export default function SettingsDialog() {
     return (
       <div class="text-center py-8 text-red-600">
         <p>Error cargando configuración: {error}</p>
-        <Button variant="outline" class="mt-2" onClick={() => globalThis.location.reload()}>
+        <Button
+          variant="outline"
+          class="mt-2"
+          onClick={() => globalThis.location.reload()}
+        >
           Reintentar
         </Button>
       </div>
@@ -98,7 +119,9 @@ export default function SettingsDialog() {
     <div class="space-y-6">
       <div class="flex items-center gap-2 pb-2 border-b">
         <Settings class="w-5 h-5 text-primary" />
-        <h3 class="text-lg font-semibold">{t('dialogs:settings_detailed.system_settings')}</h3>
+        <h3 class="text-lg font-semibold">
+          {t("dialogs:settings_detailed.system_settings")}
+        </h3>
       </div>
 
       {/* Financial Settings */}
@@ -111,14 +134,21 @@ export default function SettingsDialog() {
         <div class="pl-6 space-y-4">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="text-sm font-medium block mb-1">Tasa de Impuesto (%)</label>
+              <label class="text-sm font-medium block mb-1">
+                Tasa de Impuesto (%)
+              </label>
               <Input
                 type="number"
                 step="0.1"
                 min="0"
                 max="100"
                 value={localSettings.taxRate}
-                onInput={(e: any) => handleSettingChange('taxRate', parseFloat(e.target.value) || 0)}
+                onInput={(e: any) =>
+                  handleSettingChange(
+                    "taxRate",
+                    parseFloat(e.target.value) || 0
+                  )
+                }
                 class="w-full"
               />
             </div>
@@ -126,13 +156,17 @@ export default function SettingsDialog() {
               <label class="text-sm font-medium block mb-1">Moneda</label>
               <Select
                 value={localSettings.currency}
-                onValueChange={(value: string) => handleSettingChange('currency', value)}
+                onValueChange={(value: string) =>
+                  handleSettingChange("currency", value)
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="USD">USD - Dólar Estadounidense</SelectItem>
+                  <SelectItem value="USD">
+                    USD - Dólar Estadounidense
+                  </SelectItem>
                   <SelectItem value="EUR">EUR - Euro</SelectItem>
                   <SelectItem value="SVC">SVC - Colón Salvadoreño</SelectItem>
                 </SelectContent>
@@ -151,10 +185,14 @@ export default function SettingsDialog() {
 
         <div class="pl-6 space-y-4">
           <div>
-            <label class="text-sm font-medium block mb-1">Nombre de la Empresa</label>
+            <label class="text-sm font-medium block mb-1">
+              Nombre de la Empresa
+            </label>
             <Input
               value={localSettings.companyName}
-              onInput={(e: any) => handleSettingChange('companyName', e.target.value)}
+              onInput={(e: any) =>
+                handleSettingChange("companyName", e.target.value)
+              }
               placeholder="Mi Farmacia"
               class="w-full"
             />
@@ -163,7 +201,9 @@ export default function SettingsDialog() {
             <label class="text-sm font-medium block mb-1">Dirección</label>
             <Input
               value={localSettings.companyAddress}
-              onInput={(e: any) => handleSettingChange('companyAddress', e.target.value)}
+              onInput={(e: any) =>
+                handleSettingChange("companyAddress", e.target.value)
+              }
               placeholder="Dirección de la empresa"
               class="w-full"
             />
@@ -172,7 +212,9 @@ export default function SettingsDialog() {
             <label class="text-sm font-medium block mb-1">Teléfono</label>
             <Input
               value={localSettings.companyPhone}
-              onInput={(e: any) => handleSettingChange('companyPhone', e.target.value)}
+              onInput={(e: any) =>
+                handleSettingChange("companyPhone", e.target.value)
+              }
               placeholder="Número de teléfono"
               class="w-full"
             />
@@ -192,26 +234,36 @@ export default function SettingsDialog() {
             <label class="text-sm font-medium block mb-1">Pie de Recibo</label>
             <Input
               value={localSettings.receiptFooter}
-              onInput={(e: any) => handleSettingChange('receiptFooter', e.target.value)}
+              onInput={(e: any) =>
+                handleSettingChange("receiptFooter", e.target.value)
+              }
               placeholder="Gracias por su compra"
               class="w-full"
             />
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="text-sm font-medium block mb-1">Cliente por Defecto</label>
+              <label class="text-sm font-medium block mb-1">
+                Cliente por Defecto
+              </label>
               <Input
                 value={localSettings.defaultCustomerName}
-                onInput={(e: any) => handleSettingChange('defaultCustomerName', e.target.value)}
+                onInput={(e: any) =>
+                  handleSettingChange("defaultCustomerName", e.target.value)
+                }
                 placeholder="Cliente General"
                 class="w-full"
               />
             </div>
             <div>
-              <label class="text-sm font-medium block mb-1">Tipo de Cliente por Defecto</label>
+              <label class="text-sm font-medium block mb-1">
+                Tipo de Cliente por Defecto
+              </label>
               <Select
                 value={localSettings.defaultCustomerType}
-                onValueChange={(value: string) => handleSettingChange('defaultCustomerType', value)}
+                onValueChange={(value: string) =>
+                  handleSettingChange("defaultCustomerType", value)
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -231,15 +283,19 @@ export default function SettingsDialog() {
       <div class="space-y-4">
         <div class="flex items-center gap-2">
           <Palette class="w-4 h-4 text-primary" />
-          <h4 class="font-medium">{t('dialogs:settings_detailed.appearance')}</h4>
+          <h4 class="font-medium">
+            {t("dialogs:settings_detailed.appearance")}
+          </h4>
         </div>
 
         <div class="pl-6 space-y-4">
           <div class="flex items-center justify-between">
             <div>
-              <label class="text-sm font-medium">{t('dialogs:settings_detailed.dark_mode')}</label>
+              <label class="text-sm font-medium">
+                {t("dialogs:settings_detailed.dark_mode")}
+              </label>
               <p class="text-xs text-muted-foreground">
-                {t('dialogs:settings_detailed.dark_mode_description')}
+                {t("dialogs:settings_detailed.dark_mode_description")}
               </p>
             </div>
             <ThemeToggle />
@@ -261,23 +317,37 @@ export default function SettingsDialog() {
         <div class="pl-6 space-y-4">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="text-sm font-medium block mb-1">Alerta de Stock Bajo</label>
+              <label class="text-sm font-medium block mb-1">
+                Alerta de Stock Bajo
+              </label>
               <Input
                 type="number"
                 min="1"
                 value={localSettings.lowStockAlert}
-                onInput={(e: any) => handleSettingChange('lowStockAlert', parseInt(e.target.value) || 10)}
+                onInput={(e: any) =>
+                  handleSettingChange(
+                    "lowStockAlert",
+                    parseInt(e.target.value) || 10
+                  )
+                }
                 class="w-full"
               />
             </div>
             <div>
-              <label class="text-sm font-medium block mb-1">Tiempo de Sesión (minutos)</label>
+              <label class="text-sm font-medium block mb-1">
+                Tiempo de Sesión (minutos)
+              </label>
               <Input
                 type="number"
                 min="60"
                 max="1440"
                 value={localSettings.sessionTimeout}
-                onInput={(e: any) => handleSettingChange('sessionTimeout', parseInt(e.target.value) || 480)}
+                onInput={(e: any) =>
+                  handleSettingChange(
+                    "sessionTimeout",
+                    parseInt(e.target.value) || 480
+                  )
+                }
                 class="w-full"
               />
             </div>
@@ -292,11 +362,7 @@ export default function SettingsDialog() {
             Tienes cambios sin guardar
           </p>
           <div class="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={handleReset}
-              disabled={saving}
-            >
+            <Button variant="outline" onClick={handleReset} disabled={saving}>
               Cancelar
             </Button>
             <Button
@@ -304,7 +370,7 @@ export default function SettingsDialog() {
               disabled={saving}
               class="bg-primary hover:bg-primary-hover"
             >
-              {saving ? 'Guardando...' : 'Guardar Cambios'}
+              {saving ? "Guardando..." : "Guardar Cambios"}
             </Button>
           </div>
         </div>

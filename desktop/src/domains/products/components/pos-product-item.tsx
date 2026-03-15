@@ -1,18 +1,11 @@
 import { Package } from "lucide-preact";
 import { Card, CardContent } from "@/shared/ui/card";
 import { usePOSTranslation } from "@/presentation/hooks/use-pos-translation";
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  stock: number;
-  category: string;
-}
+import type { Product } from "../entities/Product";
 
 interface ProductItemProps {
   product: Product;
-  onAddToCart: (product: Product) => void;
+  onAddToCart: () => void;
   displayPrice: number;
   showOriginalPrice?: boolean;
   originalPrice?: number;
@@ -27,12 +20,13 @@ function ProductItem({
   originalPrice,
   viewMode,
 }: ProductItemProps) {
-  const { t } = usePOSTranslation();
+  const { formatCurrency } = usePOSTranslation();
+
   if (viewMode === "list") {
     return (
       <Card
         className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:border-primary/30 bg-card border-border"
-        onClick={() => onAddToCart(product)}
+        onClick={onAddToCart}
       >
         <CardContent className="p-4">
           <div className="flex items-center gap-4">
@@ -48,26 +42,19 @@ function ProductItem({
                   <h3 className="font-semibold text-base text-card-foreground truncate">
                     {product.name}
                   </h3>
-                  <div className="flex items-center gap-3 mt-1">
-                    <span className="text-xs bg-muted px-2 py-1 rounded-full text-muted-foreground">
-                      {product.category}
-                    </span>
-                    <span
-                      className={`text-xs font-medium ${product.stock > 10 ? "text-green-600" : product.stock > 0 ? "text-orange-500" : "text-red-500"}`}
-                    >
-                      {product.stock > 0
-                        ? t('pos:products.in_stock', { count: product.stock })
-                        : t('pos:products.out_of_stock')}
-                    </span>
-                  </div>
+                  {product.description && (
+                    <p className="text-xs text-muted-foreground mt-1 truncate">
+                      {product.description}
+                    </p>
+                  )}
                 </div>
                 <div className="text-right ml-4">
                   <p className="text-lg font-bold text-primary">
-                    ${displayPrice.toFixed(2)}
+                    {formatCurrency(displayPrice)}
                   </p>
                   {showOriginalPrice && originalPrice && (
                     <p className="text-sm text-muted-foreground line-through">
-                      ${originalPrice.toFixed(2)}
+                      {formatCurrency(originalPrice)}
                     </p>
                   )}
                 </div>
@@ -83,7 +70,7 @@ function ProductItem({
   return (
     <Card
       className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:border-primary/30 hover:scale-[1.02] bg-card border-border"
-      onClick={() => onAddToCart(product)}
+      onClick={onAddToCart}
     >
       <CardContent className="p-4">
         {/* Product Image/Icon */}
@@ -100,28 +87,21 @@ function ProductItem({
           {/* Price Section */}
           <div className="space-y-1">
             <p className="text-xl font-bold text-primary">
-              ${displayPrice.toFixed(2)}
+              {formatCurrency(displayPrice)}
             </p>
             {showOriginalPrice && originalPrice && (
               <p className="text-sm text-muted-foreground line-through">
-                ${originalPrice.toFixed(2)}
+                {formatCurrency(originalPrice)}
               </p>
             )}
           </div>
 
-          {/* Stock Info */}
-          <div className="flex items-center justify-between text-sm">
-            <span
-              className={`font-medium ${product.stock > 10 ? "text-green-600" : product.stock > 0 ? "text-orange-500" : "text-red-500"}`}
-            >
-              {product.stock > 0
-                ? t('pos:products.in_stock', { count: product.stock })
-                : t('pos:products.out_of_stock')}
-            </span>
-            <span className="text-muted-foreground text-xs bg-muted px-2 py-1 rounded-full">
-              {product.category}
-            </span>
-          </div>
+          {/* Description (if available) */}
+          {product.description && (
+            <p className="text-xs text-muted-foreground line-clamp-2">
+              {product.description}
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>

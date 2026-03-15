@@ -1,8 +1,8 @@
-import { options } from 'preact';
+import { options } from "preact";
 
 // Only enable in development and when debug tools are active
 if (import.meta.env.DEV) {
-  const whyDidYouRender = await import('@welldone-software/why-did-you-render');
+  const whyDidYouRender = await import("@welldone-software/why-did-you-render");
 
   // Configure WDYR for Preact in Tauri environment
   whyDidYouRender.default(options, {
@@ -34,69 +34,81 @@ if (import.meta.env.DEV) {
       /.*Footer.*/,
       /.*Cart.*/,
       /.*Dialog.*/,
-      /.*Window.*/
+      /.*Window.*/,
     ],
 
     // Exclude problematic or uninteresting components
-    exclude: [
-      /^Connect/,
-      /^Router/,
-      /^withRouter/,
-      /^Memo/,
-      /^ForwardRef/
-    ],
+    exclude: [/^Connect/, /^Router/, /^withRouter/, /^Memo/, /^ForwardRef/],
 
     // Custom colors for Tauri environment
-    titleColor: '#0066cc',
-    diffNameColor: '#ff6600',
-    diffPathColor: '#cc0000',
-    textBackgroundColor: 'white',
+    titleColor: "#0066cc",
+    diffNameColor: "#ff6600",
+    diffPathColor: "#cc0000",
+    textBackgroundColor: "white",
 
     // Track custom hooks from our app
     trackExtraHooks: [],
 
     // Custom notifier optimized for Tauri console
-    notifier: ({ Component, displayName, hookName, prevProps, prevState, prevHookResult, nextProps, nextState, nextHookResult, reason }) => {
-      const componentName = displayName || Component?.name || 'Unknown Component';
+    notifier: ({
+      Component,
+      displayName,
+      hookName,
+      prevProps,
+      prevState,
+      prevHookResult,
+      nextProps,
+      nextState,
+      nextHookResult,
+      reason,
+    }) => {
+      const componentName =
+        displayName || Component?.name || "Unknown Component";
       const timestamp = new Date().toLocaleTimeString();
 
       if (hookName) {
-        globalThis.console.group(`🪝 [${timestamp}] ${componentName} > ${hookName} hook changed`);
-        globalThis.console.log('📍 Reason:', reason);
+        globalThis.console.group(
+          `🪝 [${timestamp}] ${componentName} > ${hookName} hook changed`
+        );
+        globalThis.console.log("📍 Reason:", reason);
 
         if (prevHookResult !== nextHookResult) {
-          globalThis.console.log('🔄 Hook result changed:', {
+          globalThis.console.log("🔄 Hook result changed:", {
             previous: prevHookResult,
-            current: nextHookResult
+            current: nextHookResult,
           });
         }
       } else {
-        globalThis.console.group(`🔄 [${timestamp}] ${componentName} re-rendered`);
-        globalThis.console.log('📍 Reason:', reason);
+        globalThis.console.group(
+          `🔄 [${timestamp}] ${componentName} re-rendered`
+        );
+        globalThis.console.log("📍 Reason:", reason);
 
         if (prevProps && nextProps && prevProps !== nextProps) {
-          globalThis.console.log('⚡ Props changed:', {
+          globalThis.console.log("⚡ Props changed:", {
             previous: prevProps,
-            current: nextProps
+            current: nextProps,
           });
         }
 
         if (prevState && nextState && prevState !== nextState) {
-          globalThis.console.log('🏪 State changed:', {
+          globalThis.console.log("🏪 State changed:", {
             previous: prevState,
-            current: nextState
+            current: nextState,
           });
         }
       }
 
       // Additional debug info
-      globalThis.console.log('🔧 Component info:', { Component, displayName });
+      globalThis.console.log("🔧 Component info:", { Component, displayName });
 
       globalThis.console.groupEnd();
-    }
+    },
   });
 
-  globalThis.console.log('🔍 Why Did You Render configured for Tauri environment');
+  globalThis.console.log(
+    "🔍 Why Did You Render configured for Tauri environment"
+  );
 }
 
-export { };
+export {};

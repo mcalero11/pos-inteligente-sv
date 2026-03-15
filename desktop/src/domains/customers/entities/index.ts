@@ -1,2 +1,2 @@
 // Customers Domain - Entities
-export * from './Customer';
+export * from "./Customer";

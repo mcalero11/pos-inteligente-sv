@@ -1,32 +1,32 @@
 import { AppState } from "@/presentation/providers";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 interface LoadingScreenProps {
   state: AppState;
 }
 
 export default function LoadingScreen({ state }: LoadingScreenProps) {
-  const { t } = useTranslation('states');
+  const { t } = useTranslation("states");
 
   const getLoadingMessage = (state: AppState): string => {
     switch (state) {
       case AppState.INITIALIZING:
-        return t('loading.initializing');
+        return t("loading.initializing");
       case AppState.LOADING:
-        return t('loading.loading');
+        return t("loading.loading");
       default:
-        return t('loading.loading');
+        return t("loading.loading");
     }
   };
 
   const getLoadingSubtitle = (state: AppState): string => {
     switch (state) {
       case AppState.INITIALIZING:
-        return t('loading.subtitle.initializing');
+        return t("loading.subtitle.initializing");
       case AppState.LOADING:
-        return t('loading.subtitle.loading');
+        return t("loading.subtitle.loading");
       default:
-        return t('loading.subtitle.default');
+        return t("loading.subtitle.default");
     }
   };
 
@@ -51,9 +51,7 @@ export default function LoadingScreen({ state }: LoadingScreenProps) {
             <h2 class="text-xl font-semibold text-foreground">
               {getLoadingMessage(state)}
             </h2>
-            <p class="text-muted-foreground">
-              {getLoadingSubtitle(state)}
-            </p>
+            <p class="text-muted-foreground">{getLoadingSubtitle(state)}</p>
           </div>
         </div>
 
@@ -66,4 +64,4 @@ export default function LoadingScreen({ state }: LoadingScreenProps) {
       </div>
     </div>
   );
-} 
+}

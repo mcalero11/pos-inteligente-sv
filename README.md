@@ -1,170 +1,228 @@
-# POS Inteligente El Salvador 🚀
+<div align="center">
 
-Sistema de punto de venta (POS) offline-first diseñado específicamente para el mercado salvadoreño. Arquitectura multi-cliente con sincronización inteligente usando tecnologías modernas.
+<img src="desktop/src-tauri/icons/icon.png" alt="POS Inteligente" width="96" />
 
-## 🎯 Visión del Producto
+# POS Inteligente El Salvador
 
-Crear una solución POS resiliente que funcione sin internet, sincronice automáticamente cuando hay conexión, y democratice el acceso a tecnología avanzada para comercios de todos los tamaños en El Salvador.
+*Offline-first point-of-sale system built for the Salvadoran market*
 
-## 🏗️ Arquitectura Multi-Cliente
+[![CI](https://github.com/mcalero11/pos-inteligente-sv/actions/workflows/lint.yml/badge.svg)](https://github.com/mcalero11/pos-inteligente-sv/actions/workflows/lint.yml)
+[![Elastic License 2.0](https://img.shields.io/badge/license-Elastic%202.0-blue)](LICENSE)
+[![Node.js 24+](https://img.shields.io/badge/node-24%2B-brightgreen)](https://nodejs.org)
 
-El sistema consta de tres aplicaciones especializadas:
+[Overview](#overview) | [Architecture](#architecture) | [Getting Started](#getting-started) | [Development](#development) | [Documentation](#documentation)
 
-### 1. **Desktop POS (Tauri)** - Operación Offline-First
-- Cliente principal para punto de venta
-- SQLite para almacenamiento local rápido
-- Sincronización automática con polling inteligente
-- Acceso directo a hardware (impresoras, lectores)
+</div>
 
-### 2. **Web Admin (React)** - Gestión Centralizada
-- Panel de administración y configuración
-- Reportes y análisis de datos en tiempo real
-- Gestión de usuarios y permisos
-- Configuración de productos y precios
+---
 
-### 3. **Backend API (Go)** - Núcleo del Sistema
-- PostgreSQL con change log para sincronización
-- Integración con Ministerio de Hacienda (DTE)
-- Autenticación passwordless (WhatsApp/Email/Google)
-- API REST con polling adaptativo
+## Screenshots
 
-## ✨ Características Principales
+<p align="center">
+  <img src="images/screenshot%201.png" alt="POS Terminal — Light mode, product grid view" width="720" />
+</p>
+<p align="center"><em>POS Terminal — Light mode with product grid and empty cart</em></p>
 
-- **100% Offline-First**: Vende sin internet, sincroniza cuando hay conexión
-- **Sincronización Inteligente**: Change log pattern con resolución de conflictos
-- **Facturación Electrónica**: Integración completa con el sistema DTE
-- **UI Moderna**: Sistema de temas con personalización de colores
-- **Multi-sucursal**: Sincronización entre terminales y con la nube
-- **Hardware Nativo**: Soporte para impresoras, cajones, lectores
-- **Autenticación Segura**: Sin contraseñas, usa WhatsApp o email
+<p align="center">
+  <img src="images/screenshot%202.png" alt="POS Terminal — Dark mode, list view with active cart" width="720" />
+</p>
+<p align="center"><em>POS Terminal — Dark mode with list view, active cart, and IVA calculation</em></p>
 
-## 🚀 Tecnologías Clave
+## Overview
 
-### Cliente Desktop (Tauri)
-- **Tauri + Rust**: Framework nativo multiplataforma
-- **React + TypeScript**: Interfaz de usuario moderna
-- **SQLite**: Base de datos local ultrarrápida
-- **Tailwind CSS**: Diseño responsive y temas
+POS Inteligente is a resilient, offline-capable POS ecosystem designed for Salvadoran businesses of all sizes — from individual freelancers to multi-branch retailers. It works entirely without internet, syncs automatically when connected, and integrates natively with El Salvador's electronic invoicing system (DTE).
 
-### Cliente Web Admin
-- **React 18 + TypeScript**: UI moderna y type-safe
-- **Vite**: Build tool ultra-rápido
-- **TanStack Query**: Gestión de estado del servidor
-- **Tailwind CSS**: Diseño consistente
+### Key Features
 
-### Backend
-- **Go**: Alto rendimiento y concurrencia
-- **PostgreSQL**: Base de datos principal con change log
-- **Redis**: Cache y gestión de sesiones
-- **JWT**: Autenticación stateless
+- **100% Offline-First** — Sell without internet using a local SQLite database; sync automatically when connectivity returns
+- **DTE Integration** — Built-in electronic invoicing compliant with El Salvador's Ministerio de Hacienda (FCF and other document types)
+- **Multi-Window POS** — Open multiple sale windows simultaneously for parallel transactions
+- **Multi-Branch Sync** — Change-log pattern with conflict resolution for eventual consistency across terminals
+- **Secure by Default** — Argon2id password hashing, encrypted certificate storage via Stronghold, no secrets in code
+- **Spanish Localization** — Full i18n support tailored for the Salvadoran market
 
-## 📋 Estado del Desarrollo
+## Architecture
 
-### ✅ Completado
-- Arquitectura de 3 clientes establecida
-- Investigación completa de DTE
-- Sistema de tipos compartidos
-- Endpoint de firmado DTE
-- Componentes UI principales (diálogos, temas)
-- Decisión de arquitectura SQLite + PostgreSQL
+The system is composed of three specialized applications:
 
-### 🚧 En Progreso (Sprint 2: 40%)
-- Flujo completo de ventas
-- Integración SQLite local
-- Servicio de sincronización
-- Generación de facturas (FCF)
+```
+┌─────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│  Desktop POS    │     │   Web Admin       │     │   Backend API    │
+│  (Tauri + Rust) │◄───►│   (React 19)      │◄───►│   (Go + Echo)    │
+│  SQLite local   │     │   Dashboard       │     │   PostgreSQL     │
+│  Offline-first  │     │   Reports         │     │   Redis cache    │
+└─────────────────┘     └──────────────────┘     └──────────────────┘
+         │                                                │
+         └────────── Sync via HTTP polling ───────────────┘
+```
 
-### 📅 Próximamente
-- Soporte para todos los tipos de DTE
-- Integración con hardware POS
-- Sincronización en tiempo real
-- Panel de analytics avanzado
+| Component | Stack | Purpose |
+|-----------|-------|---------|
+| **Desktop POS** | Tauri 2 · Preact · SQLite · Rust | Main offline-first terminal for daily sales operations |
+| **Web Admin** | React 19 · Vite · TypeScript | Centralized management, reporting, and configuration |
+| **Backend API** | Go · Echo · PostgreSQL · Redis | Server-side logic, DTE integration, and data sync |
 
-## 🚀 Comenzando
+> [!NOTE]
+> The Desktop POS is a **lean Rust backend** — most business logic lives in TypeScript via `tauri-plugin-sql`. Rust handles only performance-critical operations like DTE signing (RSA) and secure storage.
 
-### Prerequisitos
-- Node.js 18+
-- Go 1.21+
-- Rust 1.70+
-- PostgreSQL 14+
-- Docker & Docker Compose
+## Getting Started
 
-### Instalación Rápida
+### Prerequisites
+
+- [Node.js 24+](https://nodejs.org/) and [pnpm](https://pnpm.io/)
+- [Rust](https://rustup.rs/) (stable, latest)
+- [Go 1.26+](https://go.dev/) (for backend)
+- [Docker & Docker Compose](https://docs.docker.com/get-docker/) (for services)
+
+### Quick Start
 
 ```bash
-# Clonar el repositorio
+# Clone the repository
 git clone git@github.com:mcalero11/pos-inteligente-sv.git
 cd pos-inteligente-sv
 
-# Copiar variables de entorno
-cp .env.example .env
-
-# Iniciar servicios con Docker
+# Start backend services (PostgreSQL, Redis, API, Web Admin)
 docker-compose up
 
-# En otra terminal, iniciar el cliente Tauri
+# In a separate terminal, run the Desktop POS
 cd desktop
 pnpm install
 pnpm tauri dev
 ```
 
-### Acceso a las Aplicaciones
+> [!TIP]
+> To also start PgAdmin and Redis Commander for debugging, use:
+> ```bash
+> docker-compose --profile tools up
+> ```
 
-- **Desktop POS**: Se abre automáticamente con `pnpm tauri dev`
-- **Web Admin**: http://localhost:5173
-- **API Backend**: http://localhost:8080
-- **API Docs**: http://localhost:8080/swagger
+### Access Points
 
-## 📖 Documentación
+| Application | URL |
+|-------------|-----|
+| Desktop POS | Opens automatically with `pnpm tauri dev` |
+| Web Admin | http://localhost:5173 |
+| Backend API | http://localhost:8080 |
+| Swagger Docs | http://localhost:8080/swagger |
 
-- [Arquitectura del Sistema](./docs/ARCHITECTURE.md)
-- [Estado del Proyecto](./PROJECT_STATUS.md)
-- [Decisiones Técnicas](./docs/decisions/)
-- [API Reference](./docs/API.md)
-- [Guía de Desarrollo](./docs/DEVELOPMENT.md)
+## Development
 
-## 🛠️ Desarrollo
+### Commands
 
-### Estructura del Monorepo
+<details>
+<summary><strong>Desktop (Tauri)</strong></summary>
+
+```bash
+cd desktop
+pnpm install          # Install dependencies
+pnpm tauri dev        # Run in development mode
+pnpm tauri build      # Build production binary
+pnpm lint             # Run ESLint
+pnpm format           # Format with Prettier
+pnpm type-check       # TypeScript type checking
+pnpm test             # Run tests (Vitest)
+pnpm test:coverage    # Run tests with coverage
+```
+
+</details>
+
+<details>
+<summary><strong>Web Admin</strong></summary>
+
+```bash
+cd web
+pnpm install          # Install dependencies
+pnpm dev              # Run development server
+pnpm build            # Build for production
+pnpm lint             # Run ESLint
+```
+
+</details>
+
+<details>
+<summary><strong>Backend (Go)</strong></summary>
+
+```bash
+cd backend
+go run cmd/api/main.go   # Run development server
+go build ./...           # Build binary
+go test ./...            # Run tests
+```
+
+</details>
+
+### Project Structure
 
 ```
 pos-inteligente-sv/
-├── backend/          # API en Go
-├── desktop/          # Cliente Tauri (POS)
-├── web/              # Cliente React (Admin)
-├── shared/           # Tipos TypeScript compartidos
-├── docs/             # Documentación
-└── docker/           # Configuraciones Docker
+├── backend/                 # Go API server (clean architecture)
+│   ├── cmd/api/             # Entry point
+│   └── internal/            # Domain, application, infrastructure layers
+├── desktop/                 # Tauri POS application
+│   ├── src/                 # Preact frontend (DDD architecture)
+│   │   ├── domains/         # Bounded contexts (sales, products, customers, ...)
+│   │   ├── infrastructure/  # Database, logging, storage, Tauri IPC
+│   │   ├── presentation/    # Screens, dialogs, providers
+│   │   └── shared/          # UI components (shadcn/ui), utilities
+│   └── src-tauri/           # Rust backend
+│       ├── src/             # Commands, services, plugins
+│       ├── capabilities/    # Window permissions
+│       └── migrations/      # SQLite schema
+├── web/                     # React admin panel
+├── docs/                    # Architecture docs, ADRs, sprint plans
+└── docker-compose.yml       # Development environment
 ```
 
-### Comandos Útiles
+### Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Desktop Frontend | Preact 10 · TypeScript · Tailwind CSS 4 · shadcn/ui · Vite 6 |
+| Desktop Backend | Tauri 2 · Rust · rusqlite · Stronghold |
+| Web Frontend | React 19 · TypeScript · Vite 6 |
+| Backend API | Go 1.26 · Echo · PostgreSQL 17 · Redis 7 |
+| Testing | Vitest · Go testing |
+| CI/CD | GitHub Actions (lint, type-check, clippy, cargo test) |
+
+### Code Quality
+
+Run these before committing:
 
 ```bash
+# Desktop
+cd desktop && pnpm lint && pnpm type-check && pnpm format:check
+
 # Backend
-cd backend && go run server.go
-
-# Desktop (Tauri)
-cd desktop && pnpm tauri dev
-
-# Web Admin
-cd web && pnpm dev
-
-# Todos con Docker
-docker-compose up
+cd backend && go vet ./... && go fmt ./...
 ```
 
-## 📊 Estado del Proyecto
+## Documentation
 
-Para información detallada sobre el progreso actual del desarrollo, consulta [PROJECT_STATUS.md](PROJECT_STATUS.md).
+| Document | Description |
+|----------|-------------|
+| [Architecture](docs/ARCHITECTURE.md) | System design and component interaction |
+| [Project Status](PROJECT_STATUS.md) | Current sprint progress and metrics |
+| [Sprint Plans](docs/sprints/) | Detailed sprint planning documents |
+| [ADRs](docs/decisions/) | Architecture Decision Records |
+| [PRD](docs/PRD.md) | Product Requirements Document |
 
-## 📝 Licencia
+> [!IMPORTANT]
+> The PRD is **approved and locked**. All feature work must align with it. See sprint documents for current scope.
 
-Este proyecto está licenciado bajo la Elastic License 2.0 - ver el archivo [LICENSE](LICENSE) para más detalles.
+## Database Schema
 
-## 👥 Equipo
+The Desktop POS uses SQLite with the following core tables:
 
-- **Marvin Calero** - *Desarrollador Principal* - [@mcalero11](https://github.com/mcalero11)
+| Table | Purpose |
+|-------|---------|
+| `users` | System users with role-based access |
+| `products` / `categories` | Product catalog and inventory |
+| `transactions` / `transaction_items` | Sales with status tracking (draft, held, completed, ...) |
+| `payments` | Split payments (cash, card, transfer, check, credit) |
+| `cash_register_sessions` | Shift management with opening/closing balances |
+| `stock_movements` | Inventory ledger (purchase, sale, return, adjustment) |
+| `dte` | Electronic invoice documents |
+| `customers` | Customer records with NIT/DUI/NRC identifiers |
+| `audit_logs` | Activity tracking |
 
----
-
-**Estado del Proyecto**: 🟢 En Desarrollo Activo | **Sprint 2**: 40% Completo
+Schema definition: [`desktop/src-tauri/migrations/001_initial_tables.sql`](desktop/src-tauri/migrations/001_initial_tables.sql)

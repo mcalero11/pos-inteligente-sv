@@ -136,7 +136,13 @@ interface CustomDialogProps {
   children: any;
 }
 
-function CustomDialog({ isOpen, onClose, title, size = "md", children }: CustomDialogProps) {
+function CustomDialog({
+  isOpen,
+  onClose,
+  title,
+  size = "md",
+  children,
+}: CustomDialogProps) {
   const sizeClasses = {
     sm: "sm:max-w-sm",
     md: "sm:max-w-md",
@@ -144,7 +150,7 @@ function CustomDialog({ isOpen, onClose, title, size = "md", children }: CustomD
     xl: "sm:max-w-xl",
     "2xl": "sm:max-w-2xl",
     "3xl": "sm:max-w-3xl",
-    "4xl": "sm:max-w-4xl"
+    "4xl": "sm:max-w-4xl",
   };
 
   if (!isOpen) return null;
@@ -152,10 +158,7 @@ function CustomDialog({ isOpen, onClose, title, size = "md", children }: CustomD
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Overlay */}
-      <div
-        className="fixed inset-0 bg-black/50"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
 
       {/* Dialog Content */}
       <div

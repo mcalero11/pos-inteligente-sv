@@ -36,30 +36,30 @@ function EndOfDayDialog({
   );
   const sessionDurationMinutes = Math.floor(
     ((currentTime.getTime() - sessionStart.getTime()) % (1000 * 60 * 60)) /
-    (1000 * 60)
+      (1000 * 60)
   );
 
   return (
     <div class="space-y-4">
       <div class="text-center space-y-2">
-        <p class="text-lg font-semibold">{t('dialogs:end_of_day.title')}</p>
+        <p class="text-lg font-semibold">{t("dialogs:end_of_day.title")}</p>
         <div class="bg-primary-light dark:bg-primary-dark p-4 rounded-lg space-y-2">
           <div class="flex justify-between">
             <span class="flex items-center gap-2">
               <User class="w-4 h-4" />
-              {t('dialogs:end_of_day.cashier')}
+              {t("dialogs:end_of_day.cashier")}
             </span>
             <span class="font-semibold">{cashierName}</span>
           </div>
           <div class="flex justify-between">
             <span class="flex items-center gap-2">
               <Receipt class="w-4 h-4" />
-              {t('dialogs:end_of_day.total_transactions')}
+              {t("dialogs:end_of_day.total_transactions")}
             </span>
             <span class="font-semibold">{transactionCount}</span>
           </div>
           <div class="flex justify-between">
-            <span>{t('dialogs:end_of_day.daily_total')}</span>
+            <span>{t("dialogs:end_of_day.daily_total")}</span>
             <span class="font-semibold text-primary dark:text-primary">
               {formatCurrency(dailyTotal)}
             </span>
@@ -67,7 +67,7 @@ function EndOfDayDialog({
           <div class="flex justify-between">
             <span class="flex items-center gap-2">
               <Clock class="w-4 h-4" />
-              {t('dialogs:end_of_day.session_duration')}
+              {t("dialogs:end_of_day.session_duration")}
             </span>
             <span class="font-semibold">
               {sessionDurationHours}h {sessionDurationMinutes}m
@@ -78,20 +78,20 @@ function EndOfDayDialog({
 
       <div class="space-y-2">
         <p class="text-sm text-muted-foreground">
-          {t('dialogs:end_of_day.generate_report')}
+          {t("dialogs:end_of_day.generate_report")}
         </p>
       </div>
 
       <div class="flex gap-2">
         <Button variant="outline" class="flex-1" onClick={onClose}>
-          {t('common:buttons.cancel')}
+          {t("common:buttons.cancel")}
         </Button>
         <Button
           class="flex-1 bg-primary hover:bg-primary-hover text-primary-foreground dark:bg-primary dark:hover:bg-primary-hover dark:text-primary-foreground"
           onClick={handleConfirm}
         >
           <FileText class="w-4 h-4 mr-2" />
-          {t('dialogs:end_of_day.generate_cardex')}
+          {t("dialogs:end_of_day.generate_cardex")}
         </Button>
       </div>
     </div>

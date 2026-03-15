@@ -12,93 +12,111 @@ import LogoutDialog from "./LogoutDialog";
 import TransactionDialog from "./TransactionDialog";
 import ErrorDialog from "./ErrorDialog";
 import DebugDialog from "./DebugDialog";
+import ActiveSalesWarningDialog from "./ActiveSalesWarningDialog";
+import ReceiptPreviewDialog from "./ReceiptPreviewDialog";
 
 // Function to get dialog registry with translated titles
-export const getDialogRegistry = (t: (key: string) => string): Record<string, DialogConfig> => ({
+export const getDialogRegistry = (
+  t: (key: string) => string
+): Record<string, DialogConfig> => ({
   customers: {
-    title: t('dialogs:customer.title'),
+    title: t("dialogs:customer.title"),
     component: CustomerDialog,
     size: "2xl",
   },
   inventory: {
-    title: t('dialogs:inventory.title'),
+    title: t("dialogs:inventory.title"),
     component: InventoryDialog,
     size: "4xl",
   },
   settings: {
-    title: t('dialogs:settings.title'),
+    title: t("dialogs:settings.title"),
     component: SettingsDialog,
     size: "2xl",
   },
   shifts: {
-    title: t('dialogs:shift.title'),
+    title: t("dialogs:shift.title"),
     component: ShiftDialog,
     size: "xl",
   },
   users: {
-    title: t('dialogs:system_menu.users.title'),
+    title: t("dialogs:system_menu.users.title"),
     component: UserDialog,
     size: "2xl",
   },
   logs: {
-    title: t('dialogs:logs.title'),
+    title: t("dialogs:logs.title"),
     component: LogsDialog,
     size: "3xl",
   },
   help: {
-    title: t('dialogs:help.title'),
+    title: t("dialogs:help.title"),
     component: HelpDialog,
     size: "md",
   },
   systemMenu: {
-    title: t('dialogs:system_menu.title'),
+    title: t("dialogs:system_menu.title"),
     component: SystemMenuDialog,
     size: "sm",
   },
   endOfDay: {
-    title: t('dialogs:end_of_day.title'),
+    title: t("dialogs:end_of_day.title"),
     component: EndOfDayDialog,
     size: "md",
   },
   logout: {
-    title: t('dialogs:logout.title'),
+    title: t("dialogs:logout.title"),
     component: LogoutDialog,
     size: "sm",
   },
   transaction: {
-    title: t('dialogs:transaction.title'),
+    title: t("dialogs:transaction.title"),
     component: TransactionDialog,
     size: "2xl",
   },
   error: {
-    title: t('errors:titles.application'),
+    title: t("errors:titles.application"),
     component: ErrorDialog,
     size: "lg",
   },
   debug: {
-    title: t('dialogs:system_menu.debug.title'),
+    title: t("dialogs:system_menu.debug.title"),
     component: DebugDialog,
     size: "2xl",
+  },
+  activeSalesWarning: {
+    title: t("dialogs:active_sales_warning.title"),
+    component: ActiveSalesWarningDialog,
+    size: "md",
+  },
+  receiptPreview: {
+    title: t("dialogs:receipt.title"),
+    component: ReceiptPreviewDialog,
+    size: "md",
   },
 });
 
 // Backwards compatibility - static registry (deprecated)
-export const dialogRegistry: Record<string, DialogConfig> = getDialogRegistry((key: string) => {
-  // Fallback to English if translation system not available
-  const fallbacks: Record<string, string> = {
-    'dialogs:customer.title': 'Customer Management',
-    'dialogs:inventory.title': 'Inventory Management',
-    'dialogs:settings.title': 'System Settings',
-    'dialogs:shift.title': 'Shift Management',
-    'dialogs:system_menu.users.title': 'User Management',
-    'dialogs:logs.title': 'Activity Logs',
-    'dialogs:help.title': 'Keyboard Shortcuts',
-    'dialogs:system_menu.title': 'System Menu',
-    'dialogs:end_of_day.title': 'End of Day Process',
-    'dialogs:logout.title': 'Confirm Logout',
-    'dialogs:transaction.title': 'New Transaction',
-    'errors:titles.application': 'Application Error',
-    'dialogs:system_menu.debug.title': 'Debug Tools',
-  };
-  return fallbacks[key] || key;
-});
+export const dialogRegistry: Record<string, DialogConfig> = getDialogRegistry(
+  (key: string) => {
+    // Fallback to English if translation system not available
+    const fallbacks: Record<string, string> = {
+      "dialogs:customer.title": "Customer Management",
+      "dialogs:inventory.title": "Inventory Management",
+      "dialogs:settings.title": "System Settings",
+      "dialogs:shift.title": "Shift Management",
+      "dialogs:system_menu.users.title": "User Management",
+      "dialogs:logs.title": "Activity Logs",
+      "dialogs:help.title": "Keyboard Shortcuts",
+      "dialogs:system_menu.title": "System Menu",
+      "dialogs:end_of_day.title": "End of Day Process",
+      "dialogs:logout.title": "Confirm Logout",
+      "dialogs:transaction.title": "New Transaction",
+      "errors:titles.application": "Application Error",
+      "dialogs:system_menu.debug.title": "Debug Tools",
+      "dialogs:active_sales_warning.title": "Ventas Activas",
+      "dialogs:receipt.title": "Recibo de Venta",
+    };
+    return fallbacks[key] || key;
+  }
+);

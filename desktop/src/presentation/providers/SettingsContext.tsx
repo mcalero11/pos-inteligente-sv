@@ -1,14 +1,17 @@
-import { createContext } from 'preact';
-import { useContext, useEffect, useState } from 'preact/hooks';
-import { AppSettings, settingsService } from '@/lib/settings-service';
-import { logger } from '@/infrastructure/logging';
-import { useAppState, AppState } from './AppStateContext';
+import { createContext } from "preact";
+import { useContext, useEffect, useState } from "preact/hooks";
+import { AppSettings, settingsService } from "@/lib/settings-service";
+import { logger } from "@/infrastructure/logging";
+import { useAppState, AppState } from "./AppStateContext";
 
 interface SettingsContextType {
   settings: AppSettings | null;
   isLoading: boolean;
   error: string | null;
-  updateSetting: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => Promise<void>;
+  updateSetting: <K extends keyof AppSettings>(
+    key: K,
+    value: AppSettings[K]
+  ) => Promise<void>;
   updateSettings: (updates: Partial<AppSettings>) => Promise<void>;
   refreshSettings: () => Promise<void>;
 }
@@ -66,9 +69,10 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       const loadedSettings = await settingsService.getSettings();
       setSettings(loadedSettings);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load settings';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to load settings";
       setError(errorMessage);
-      logger.error('Failed to load settings in context:', err);
+      logger.error("Failed to load settings in context:", err);
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +86,8 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       await settingsService.setSetting(key, value);
       // Settings will be updated via subscription
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update setting';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update setting";
       setError(errorMessage);
       logger.error(`Failed to update setting ${key}:`, err);
       throw err;
@@ -94,9 +99,10 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       await settingsService.updateSettings(updates);
       // Settings will be updated via subscription
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update settings';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update settings";
       setError(errorMessage);
-      logger.error('Failed to update settings:', err);
+      logger.error("Failed to update settings:", err);
       throw err;
     }
   };
@@ -108,9 +114,10 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       const refreshedSettings = await settingsService.refresh();
       setSettings(refreshedSettings);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to refresh settings';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to refresh settings";
       setError(errorMessage);
-      logger.error('Failed to refresh settings:', err);
+      logger.error("Failed to refresh settings:", err);
     } finally {
       setIsLoading(false);
     }
@@ -135,7 +142,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
 export function useSettings() {
   const context = useContext(SettingsContext);
   if (!context) {
-    throw new Error('useSettings must be used within a SettingsProvider');
+    throw new Error("useSettings must be used within a SettingsProvider");
   }
   return context;
 }
@@ -175,4 +182,4 @@ export function useFinancialSettings() {
     taxRate: settings.taxRate,
     currency: settings.currency,
   };
-} 
+}
