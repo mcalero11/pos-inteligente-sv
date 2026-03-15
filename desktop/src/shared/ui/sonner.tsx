@@ -5,14 +5,15 @@ import {
   OctagonXIcon,
   TriangleAlertIcon,
 } from "lucide-preact";
-import { useTheme } from "next-themes";
 import type { JSX } from "preact";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
+import { useTheme } from "@/presentation/providers/ThemeContext";
 
 type CSSProperties = JSX.CSSProperties;
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme();
+  const { darkMode } = useTheme();
+  const theme = darkMode ? "dark" : "light";
 
   return (
     <Sonner

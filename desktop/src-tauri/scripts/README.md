@@ -21,7 +21,7 @@ The `seed.sql` file contains sample data for development:
 **Find your database:**
 ```bash
 # macOS - Database is in app data directory
-ls ~/Library/Application\ Support/com.pos-inteligente.app/
+ls ~/Library/Application\ Support/com.pos.desktop/
 
 # The database file is named via tauri-plugin-sql configuration
 ```
@@ -48,8 +48,8 @@ The seed uses `INSERT OR IGNORE` so it's safe to run multiple times - existing r
 To reset and re-seed:
 ```bash
 # Delete existing data first (careful!)
-sqlite3 ~/Library/Application\ Support/com.pos-inteligente.app/pos_database.db "DELETE FROM products; DELETE FROM categories; DELETE FROM users; DELETE FROM customers;"
+sqlite3 ~/Library/Application\ Support/com.pos.desktop/pos_database.db "DELETE FROM products; DELETE FROM categories; DELETE FROM users; DELETE FROM customers;"
 
 # Then run seed
-sqlite3 ~/Library/Application\ Support/com.pos-inteligente.app/pos_database.db < scripts/seed.sql
+sqlite3 ~/Library/Application\ Support/com.pos.desktop/pos_database.db < scripts/seed.sql
 ```

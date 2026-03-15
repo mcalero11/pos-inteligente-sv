@@ -39,7 +39,7 @@ export function useCart(): UseCartReturn {
       if (!cancelled && typeof rate === "number") {
         setTaxRate(rate);
       }
-    });
+    }).catch(() => {});
 
     return () => {
       cancelled = true;
@@ -68,7 +68,7 @@ export function useCart(): UseCartReturn {
 
   const clear = useCallback(() => {
     setCart(clearCart());
-  }, [cart]);
+  }, []);
 
   const totals = useMemo(
     () => calculateCartTotals(cart, taxRate),
