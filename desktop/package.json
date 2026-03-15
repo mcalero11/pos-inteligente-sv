@@ -42,7 +42,7 @@
     "i18next": "^25.2.1",
     "json-edit-react": "^1.27.2",
     "lucide-preact": "^0.518.0",
-"preact": "^10.26.9",
+"preact": "^10.27.3",
     "react-i18next": "^15.5.3",
     "sonner": "^2.0.7"
   },
