@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
-    "@preact/preset-vite": "^2.9.3",
+    "@preact/preset-vite": "^2.10.4",
     "@tailwindcss/vite": "^4.1.10",
     "@tauri-apps/cli": "^2",
     "@testing-library/preact": "^3.2.4",
