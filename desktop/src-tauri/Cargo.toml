@@ -34,7 +34,7 @@ chrono = { version = "0.4", features = ["serde"] }
 thiserror = "1.0"
 tauri-plugin-log = "2.8"
 log = "0.4"
-tauri-plugin-sql = { version = "2.3", features = ["sqlite"] }
+tauri-plugin-sql = { version = "2.4", features = ["sqlite"] }
 rusqlite = { version = "0.32", features = ["bundled"] }
 rand = "0.8"
 
